@@ -6,7 +6,6 @@ generator client {
 generator client_edge {
   provider = "prisma-client-js"
   output   = "../app/generated/prisma/edge"
-  binaryTargets = ["native", "rhel-openssl-3.0.x"]
 }
 
 datasource db {

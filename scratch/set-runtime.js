@@ -46,18 +46,21 @@ const dbFile = path.join(__dirname, '..', 'lib', 'db.ts');
 const prismaFile = path.join(__dirname, '..', 'lib', 'prisma.ts');
 
 if (target === 'edge') {
-  console.log(`Writing edge-specific code to ${dbFile}...`);
-  const edgeDbContent = `import { PrismaClient } from "../app/generated/prisma/edge";
+  console.log(`Writing edge-specific code (Neon Driver Adapter) to ${dbFile}...`);
+  const edgeDbContent = `import { neon } from "@neondatabase/serverless";
+import { PrismaNeon } from "@prisma/adapter-neon";
+import { PrismaClient } from "../app/generated/prisma/edge";
 
 function createPrismaClient() {
   const url = process.env.DATABASE_URL;
   if (!url) {
     throw new Error("DATABASE_URL is not set");
   }
-
+  const sql = neon(url);
+  const adapter = new PrismaNeon(sql);
   return new PrismaClient({
+    adapter,
     log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
-    accelerateUrl: url,
   });
 }
 
@@ -69,22 +72,21 @@ if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
 `;
   fs.writeFileSync(dbFile, edgeDbContent, 'utf8');
 
-  console.log(`Writing edge-specific code to ${prismaFile}...`);
-  const edgePrismaContent = `import { PrismaClient } from "../app/generated/prisma/edge";
+  console.log(`Writing edge-specific code (Neon Driver Adapter) to ${prismaFile}...`);
+  const edgePrismaContent = `import { neon } from "@neondatabase/serverless";
+import { PrismaNeon } from "@prisma/adapter-neon";
+import { PrismaClient } from "../app/generated/prisma/edge";
 
-const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient;
-};
+const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
 
 function getPrismaInstance() {
   const url = process.env.DATABASE_URL;
   if (!url) {
     throw new Error("DATABASE_URL is not set");
   }
-
-  return new PrismaClient({
-    accelerateUrl: url,
-  });
+  const sql = neon(url);
+  const adapter = new PrismaNeon(sql);
+  return new PrismaClient({ adapter });
 }
 
 export const prisma = globalForPrisma.prisma || getPrismaInstance();
@@ -102,30 +104,20 @@ function createPrismaClient() {
     throw new Error("DATABASE_URL is not set");
   }
 
-  const isAccelerate = url.startsWith("prisma://") || url.startsWith("prisma+postgres://");
-
-  if (isAccelerate) {
-    return new PrismaClient({
-      log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
-      accelerateUrl: url,
-    });
-  } else {
-    // Use pg adapter for local PostgreSQL database in Node.js development
-    // Use dynamic variables to prevent Next.js bundler from statically analyzing and bundling node-only packages on Edge build
-    const pgName = "pg";
-    const pgAdapterName = "@prisma/adapter-pg";
-    const pg = typeof require !== "undefined" ? require(pgName) : null;
-    const { PrismaPg } = typeof require !== "undefined" ? require(pgAdapterName) : { PrismaPg: null };
-    if (!pg || !PrismaPg) {
-      throw new Error("Local pg adapter is required in development environment");
-    }
-    const pool = new pg.Pool({ connectionString: url });
-    const adapter = new PrismaPg(pool);
-    return new PrismaClient({
-      adapter,
-      log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
-    });
+  // Local dev: use pg adapter (Node.js only)
+  const pgName = "pg";
+  const pgAdapterName = "@prisma/adapter-pg";
+  const pg = typeof require !== "undefined" ? require(pgName) : null;
+  const { PrismaPg } = typeof require !== "undefined" ? require(pgAdapterName) : { PrismaPg: null };
+  if (!pg || !PrismaPg) {
+    throw new Error("Local pg adapter is required in development environment");
   }
+  const pool = new pg.Pool({ connectionString: url });
+  const adapter = new PrismaPg(pool);
+  return new PrismaClient({
+    adapter,
+    log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
+  });
 }
 
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
@@ -139,9 +131,7 @@ if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
   console.log(`Writing nodejs/development code to ${prismaFile}...`);
   const nodePrismaContent = `import { PrismaClient } from "../app/generated/prisma";
 
-const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient;
-};
+const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
 
 function getPrismaInstance() {
   const url = process.env.DATABASE_URL;
@@ -149,26 +139,17 @@ function getPrismaInstance() {
     throw new Error("DATABASE_URL is not set");
   }
 
-  const isAccelerate = url.startsWith("prisma://") || url.startsWith("prisma+postgres://");
-
-  if (isAccelerate) {
-    return new PrismaClient({
-      accelerateUrl: url,
-    });
-  } else {
-    // Use pg adapter for local PostgreSQL database in Node.js development
-    // Use dynamic variables to prevent Next.js bundler from statically analyzing and bundling node-only packages on Edge build
-    const pgName = "pg";
-    const pgAdapterName = "@prisma/adapter-pg";
-    const pg = typeof require !== "undefined" ? require(pgName) : null;
-    const { PrismaPg } = typeof require !== "undefined" ? require(pgAdapterName) : { PrismaPg: null };
-    if (!pg || !PrismaPg) {
-      throw new Error("Local pg adapter is required in development environment");
-    }
-    const pool = new pg.Pool({ connectionString: url });
-    const adapter = new PrismaPg(pool);
-    return new PrismaClient({ adapter });
+  // Local dev: use pg adapter (Node.js only)
+  const pgName = "pg";
+  const pgAdapterName = "@prisma/adapter-pg";
+  const pg = typeof require !== "undefined" ? require(pgName) : null;
+  const { PrismaPg } = typeof require !== "undefined" ? require(pgAdapterName) : { PrismaPg: null };
+  if (!pg || !PrismaPg) {
+    throw new Error("Local pg adapter is required in development environment");
   }
+  const pool = new pg.Pool({ connectionString: url });
+  const adapter = new PrismaPg(pool);
+  return new PrismaClient({ adapter });
 }
 
 export const prisma = globalForPrisma.prisma || getPrismaInstance();
