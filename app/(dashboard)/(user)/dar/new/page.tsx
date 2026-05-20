@@ -18,7 +18,7 @@ export default async function DarNewPage() {
   }
 
   return (
-    <div className="max-w-350 mx-auto px-4 md:px-8">
+    <div className="max-w-[1400px] mx-auto px-4 md:px-8">
       <DarNewHeader />
       <DarForm
         mode="create"

@@ -58,7 +58,7 @@ export default function DashboardClientView({
   };
 
   return (
-    <div className="max-w-350 mx-auto w-full flex flex-col gap-6 animate-in fade-in duration-500 pb-10">
+    <div className="max-w-[1400px] mx-auto w-full flex flex-col gap-4 animate-in fade-in duration-500 pb-10">
 
       {/* ── 1. Ticker ── */}
       {tickerAnnouncements.length > 0 && (
@@ -86,10 +86,10 @@ export default function DashboardClientView({
       <HeroBanner announcements={tickerAnnouncements} />
 
       {/* ── 4. Main Content Grid ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
 
         {/* Left Column (Main) */}
-        <div className="lg:col-span-8 flex flex-col gap-6">
+        <div className="lg:col-span-8 flex flex-col gap-4">
 
           {/* Announcements List */}
           <div className="card-premium">
@@ -200,7 +200,7 @@ export default function DashboardClientView({
         </div>
 
         {/* Right Column (Sidebar) */}
-        <div className="lg:col-span-4 flex flex-col gap-6">
+        <div className="lg:col-span-4 flex flex-col gap-4">
 
           {/* KPI Monthly */}
           <div className="card-premium">

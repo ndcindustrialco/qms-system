@@ -37,7 +37,7 @@ export default function PostAnnouncementModal() {
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-base-100 rounded-2xl shadow-xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200">
-            <div className="px-6 py-4 border-b border-base-300 flex items-center justify-between bg-base-100/50">
+            <div className="px-5 py-4 border-b border-base-300 flex items-center justify-between bg-base-100/50">
               <h2 className="text-lg font-bold text-base-content flex items-center gap-2">
                 <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
                   <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -57,7 +57,7 @@ export default function PostAnnouncementModal() {
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+            <form onSubmit={handleSubmit} className="p-5 space-y-4">
               <div>
                 <label className="block text-[13px] font-semibold text-base-content mb-1.5">Title</label>
                 <input 

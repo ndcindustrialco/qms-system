@@ -27,7 +27,7 @@ export default function DarItemsSection({ items, onChange, errors }: Props) {
   }
 
   return (
-    <div className="card-premium p-4">
+    <div className="card-premium p-5">
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-sm md:text-base font-bold text-primary">{t("sectionItems")} <span className="text-error">*</span></h2>
         <button type="button" onClick={addRow} className="btn btn-ghost btn-xs gap-1">

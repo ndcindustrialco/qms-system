@@ -288,7 +288,7 @@ export default function DarApprovalPanel({
   );
 
   return (
-    <div className="card-premium p-4 flex flex-col gap-4">
+    <div className="card-premium p-5 flex flex-col gap-4">
       <h2 className="text-sm md:text-base font-bold text-primary">ขั้นตอนการอนุมัติ</h2>
 
       {/* Timeline */}

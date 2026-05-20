@@ -25,9 +25,9 @@ export default function DarItemsTable({ items }: { items: DarItemInput[] }) {
           {items.map((item) => (
             <tr key={item.itemNo} className="border-b border-base-300 text-[14px] hover:bg-base-200 transition-colors duration-100">
               <td className="py-3 px-4 text-neutral">{item.itemNo}</td>
-              <td className="py-3 px-4">{item.docNumber}</td>
-              <td className="py-3 px-4">{item.docName}</td>
-              <td className="py-3 px-4">{item.revision}</td>
+              <td className="py-3.5 px-4">{item.docNumber}</td>
+              <td className="py-3.5 px-4">{item.docName}</td>
+              <td className="py-3.5 px-4">{item.revision}</td>
             </tr>
           ))}
         </tbody>

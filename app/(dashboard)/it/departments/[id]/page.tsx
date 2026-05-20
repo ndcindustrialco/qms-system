@@ -29,7 +29,7 @@ export default async function DepartmentDetailPage({ params }: Props) {
   if (!dept) notFound();
 
   return (
-    <div>
+    <div className="max-w-[1400px] mx-auto px-4 md:px-8">
       {/* ── Header ── */}
       <div className="flex items-start justify-between gap-4 mb-6">
         <div>
@@ -68,27 +68,27 @@ export default async function DepartmentDetailPage({ params }: Props) {
       </div>
 
       {/* ── Summary cards ── */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-        <div className="card-premium p-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+        <div className="card-premium p-5">
           <p className="text-[12px] text-neutral mb-1">สมาชิกทั้งหมด</p>
           <p className="text-[24px] font-semibold text-base-content">{dept.members.length}</p>
           <p className="text-[12px] text-neutral">คน</p>
         </div>
-        <div className="card-premium p-4">
+        <div className="card-premium p-5">
           <p className="text-[12px] text-neutral mb-1">เชื่อม M365</p>
           <p className="text-[24px] font-semibold text-success">
             {dept.members.filter((m) => m.msUserId).length}
           </p>
           <p className="text-[12px] text-neutral">คน</p>
         </div>
-        <div className="card-premium p-4">
+        <div className="card-premium p-5">
           <p className="text-[12px] text-neutral mb-1">มีรหัสพนักงาน</p>
           <p className="text-[24px] font-semibold text-base-content">
             {dept.members.filter((m) => m.employeeId).length}
           </p>
           <p className="text-[12px] text-neutral">คน</p>
         </div>
-        <div className="card-premium p-4">
+        <div className="card-premium p-5">
           <p className="text-[12px] text-neutral mb-1">Role พิเศษ</p>
           <p className="text-[24px] font-semibold text-base-content">
             {dept.members.filter((m) => m.role !== "USER").length}

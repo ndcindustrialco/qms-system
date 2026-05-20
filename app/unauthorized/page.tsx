@@ -20,7 +20,7 @@ export default async function UnauthorizedPage({
         {/* Top accent bar */}
         <div className="h-1 w-full bg-error" />
 
-        <div className="px-8 py-8 flex flex-col items-center gap-6 text-center">
+        <div className="p-5 flex flex-col items-center gap-6 text-center">
           {/* Icon */}
           <div className="w-14 h-14 rounded-2xl bg-error/8 border border-error/15 flex items-center justify-center">
             <svg

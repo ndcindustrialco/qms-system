@@ -62,13 +62,13 @@ export default function AnnouncementForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-6 max-w-3xl">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4 max-w-3xl">
       <div className="card-premium border border-base-300 rounded-xl shadow-sm">
         <div className="px-5 py-4 border-b border-base-200">
           <h2 className="text-sm md:text-base font-bold text-primary">Announcement Details</h2>
         </div>
 
-        <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="md:col-span-2">
             <label className="block text-xs md:text-sm font-semibold mb-2">Title <span className="text-error">*</span></label>
             <input type="text" name="title" required className="input input-bordered w-full text-sm" placeholder="Enter announcement title" />

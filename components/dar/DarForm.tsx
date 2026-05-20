@@ -60,7 +60,7 @@ export default function DarForm({ mode, initialData, departments, requesterInfo,
         errors={{ objective: errors.objective, docType: errors.docType, docTypeOther: errors.docTypeOther }}
       />
 
-      <div className="card-premium p-4">
+      <div className="card-premium p-5">
         <h2 className="text-sm md:text-base font-bold text-primary mb-3">
           {t("sectionReason")} <span className="text-error">*</span>
         </h2>
@@ -87,7 +87,7 @@ export default function DarForm({ mode, initialData, departments, requesterInfo,
       />
 
       {/* Attachment section */}
-      <div className="card-premium p-4">
+      <div className="card-premium p-5">
         <h2 className="text-sm md:text-base font-bold text-primary mb-3">{t("sectionAttach")}</h2>
         <p className="text-[13px] text-neutral mb-3">{t("attachDesc")}</p>
 

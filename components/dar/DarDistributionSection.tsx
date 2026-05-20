@@ -18,7 +18,7 @@ export default function DarDistributionSection({ departments, selected, onChange
   }
 
   return (
-    <div className="card-premium p-4">
+    <div className="card-premium p-5">
       <h2 className="text-sm md:text-base font-bold text-primary mb-3">{t("sectionDistrib")}</h2>
       {departments.length === 0 ? (
         <p className="text-xs md:text-sm text-gray-500">{t("noDeptFound")}</p>

@@ -135,7 +135,7 @@ export default function DepartmentTable({ departments }: Props) {
           <tbody>
             {departments.map((dept) => (
               <tr key={dept.id} className="border-b border-base-200 text-sm hover:bg-base-200 transition-colors duration-100">
-                <td className="py-3 px-4">
+                <td className="py-3.5 px-4">
                   <Link
                     href={`/it/departments/${dept.id}`}
                     className="text-xs md:text-sm font-semibold text-neutral hover:text-primary transition-colors"
@@ -150,7 +150,7 @@ export default function DepartmentTable({ departments }: Props) {
                     <span className="text-base-300">—</span>
                   )}
                 </td>
-                <td className="py-3 px-4">
+                <td className="py-3.5 px-4">
                   <Link
                     href={`/it/departments/${dept.id}`}
                     className="text-[11px] md:text-xs text-gray-500 hover:text-primary transition-colors"
@@ -158,14 +158,14 @@ export default function DepartmentTable({ departments }: Props) {
                     {t.users(dept._count.users)}
                   </Link>
                 </td>
-                <td className="py-3 px-4">
+                <td className="py-3.5 px-4">
                   {dept.isActive ? (
                     <span className="inline-block px-2.5 py-0.5 text-[11px] rounded-full font-bold bg-emerald-100 text-emerald-600">{t.active}</span>
                   ) : (
                     <span className="inline-block px-2.5 py-0.5 text-[11px] rounded-full font-bold bg-slate-100 text-slate-500">{t.inactive}</span>
                   )}
                 </td>
-                <td className="py-3 px-4">
+                <td className="py-3.5 px-4">
                   <div className="flex items-center gap-2">
                     <button
                       className="btn btn-ghost btn-xs text-secondary"

@@ -30,7 +30,7 @@ export default async function AuthErrorPage({
 
   return (
     <div className="min-h-screen bg-base-200 flex items-center justify-center">
-      <div className="card card-premium p-8 w-full max-w-md">
+      <div className="card card-premium p-5 w-full max-w-md">
         <div className="flex flex-col items-center gap-6 text-center">
           <div className="text-error">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">

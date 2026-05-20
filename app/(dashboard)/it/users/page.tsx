@@ -13,7 +13,7 @@ export default async function ItUsersPage() {
   const [users, departments] = await Promise.all([getAllUsers(), getActiveDepartments()]);
 
   return (
-    <div className="max-w-350 mx-auto px-4 md:px-8">
+    <div className="max-w-[1400px] mx-auto px-4 md:px-8">
       <div className="flex items-start justify-between gap-4 mb-6">
         <ItUsersPageHeader userCount={users.length} />
         <SyncActions />

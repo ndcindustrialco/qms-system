@@ -28,7 +28,7 @@ export default function DarRequesterSection({ name, employeeId, department, requ
   ];
 
   return (
-    <div className="card-premium p-4">
+    <div className="card-premium p-5">
       <h2 className="text-sm md:text-base font-bold text-primary mb-3">{t("sectionRequester")}</h2>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {fields.map((f) => (

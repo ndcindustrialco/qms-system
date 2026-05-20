@@ -12,7 +12,7 @@ export default async function NewAnnouncementPage() {
   }
 
   return (
-    <div className="max-w-350 mx-auto px-4 md:px-8 flex flex-col gap-6">
+    <div className="max-w-[1400px] mx-auto px-4 md:px-8 flex flex-col gap-4">
       <div>
         <Link href="/qms/announcements" className="text-xs md:text-sm font-semibold text-gray-500 hover:text-primary flex items-center gap-1 mb-3 w-fit">
           <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>

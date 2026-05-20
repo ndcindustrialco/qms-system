@@ -405,7 +405,7 @@ export default function SharePointBrowserPage() {
   const hasPreview = preview.kind !== "none";
 
   return (
-    <div className="max-w-350 mx-auto px-4 md:px-8 flex flex-col gap-6">
+    <div className="max-w-[1400px] mx-auto px-4 md:px-8 flex flex-col gap-4">
       {/* Page header */}
       <div>
         <h1 className="text-xl md:text-2xl font-bold text-primary">{t("spTitle")}</h1>
@@ -484,10 +484,10 @@ export default function SharePointBrowserPage() {
                     const isDir = !!file.folder;
                     return (
                       <tr key={file.id} className="border-b border-base-200 hover:bg-base-200 transition-colors duration-100">
-                        <td className="py-3 px-4">
+                        <td className="py-3.5 px-4">
                           {isDir ? <FolderIcon /> : <FileDocIcon />}
                         </td>
-                        <td className="py-3 px-4">
+                        <td className="py-3.5 px-4">
                           <button
                             type="button"
                             className="text-xs md:text-sm text-neutral hover:text-primary font-semibold text-left truncate max-w-xs block"
@@ -496,7 +496,7 @@ export default function SharePointBrowserPage() {
                             {file.name}
                           </button>
                         </td>
-                        <td className="py-3 px-4">
+                        <td className="py-3.5 px-4">
                           {isDir
                             ? <span className="text-[11px] md:text-xs text-gray-500">{file.folder?.childCount ?? 0} {t("spItems")}</span>
                             : <FileTypeBadge mime={mime} />}
@@ -507,7 +507,7 @@ export default function SharePointBrowserPage() {
                         <td className="py-3 px-4 text-[11px] md:text-xs text-gray-500">
                           {formatDate(file.lastModifiedDateTime)}
                         </td>
-                        <td className="py-3 px-4">
+                        <td className="py-3.5 px-4">
                           <div className="flex items-center gap-1 justify-end">
                             {!isDir && (
                               <button

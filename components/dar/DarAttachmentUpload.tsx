@@ -68,7 +68,7 @@ function PreviewModal({ target, onClose }: { target: PreviewTarget; onClose: () 
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-base-300">
+        <div className="flex items-center justify-between gap-3 px-5 py-4 border-b border-base-300">
           <div className="flex items-center gap-2 min-w-0">
             <FileIcon mimeType={target.mimeType} />
             <span className="text-[14px] font-medium text-base-content truncate">{target.fileName}</span>

@@ -22,7 +22,7 @@ export default function DarObjectiveSection({
   const t = useT();
 
   return (
-    <div className="card-premium p-4">
+    <div className="card-premium p-5">
       <h2 className="text-sm md:text-base font-bold text-primary mb-3">{t("sectionObjective")}</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="form-control gap-1">

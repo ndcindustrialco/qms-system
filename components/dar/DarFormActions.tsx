@@ -15,7 +15,7 @@ export default function DarFormActions({ isSaving, isSubmitting, onSaveDraft, on
   const isLoading = isSaving || isSubmitting;
 
   return (
-    <div className="card-premium p-4">
+    <div className="card-premium p-5">
       <div className="flex flex-col sm:flex-row gap-3 justify-end">
         <button
           type="button"

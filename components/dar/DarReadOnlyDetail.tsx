@@ -24,7 +24,7 @@ export default function DarReadOnlyDetail({ dar, currentUserId, savedSignatureUr
   const isDraft = dar.status === "DRAFT";
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4">
       {/* Header card */}
       <div className="card-premium px-5 py-4 border border-base-300 rounded-xl shadow-sm">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">

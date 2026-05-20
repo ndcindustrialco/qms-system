@@ -386,7 +386,7 @@ export default function ItUserTable({ users, departments }: Props) {
               <tr><td colSpan={9} className="py-12 text-center text-xs md:text-sm text-gray-500">{t.noUsers}</td></tr>
             ) : sorted.map((user) => (
               <tr key={user.id} className={`border-b border-base-200 transition-colors duration-100 ${selected.has(user.id) ? "bg-primary/5" : "hover:bg-base-200"}`}>
-                <td className="py-3 px-3">
+                <td className="py-3.5 px-3">
                   {user.msUserId
                     ? <input type="checkbox" className="checkbox checkbox-sm checkbox-primary" checked={selected.has(user.id)} onChange={() => toggleOne(user.id)} />
                     : <span className="w-4 h-4 block" />}
@@ -396,7 +396,7 @@ export default function ItUserTable({ users, departments }: Props) {
                 <td className="py-3 px-4 text-[11px] md:text-xs text-gray-500">{user.email}</td>
 
                 {/* Inline employeeId */}
-                <td className="py-3 px-4">
+                <td className="py-3.5 px-4">
                   {editingEmpId === user.id ? (
                     <input
                       ref={empIdRef}
@@ -427,19 +427,19 @@ export default function ItUserTable({ users, departments }: Props) {
                 </td>
 
                 {/* M365 status */}
-                <td className="py-3 px-4">
+                <td className="py-3.5 px-4">
                   {user.msUserId
                     ? <span className="inline-flex items-center gap-1 px-2.5 py-0.5 text-[11px] rounded-full font-bold bg-emerald-100 text-emerald-600"><IconCheck className="w-3 h-3" />{t.linked}</span>
                     : <span className="inline-block px-2.5 py-0.5 text-[11px] rounded-full font-bold bg-slate-100 text-slate-500">{t.unlinked}</span>}
                 </td>
 
                 {/* Role badge */}
-                <td className="py-3 px-4">
+                <td className="py-3.5 px-4">
                   <span className={ROLE_BADGE[user.role]}>{ROLE_LABELS[user.role]}</span>
                 </td>
 
                 {/* Change role */}
-                <td className="py-3 px-4">
+                <td className="py-3.5 px-4">
                   <select
                     className="select select-bordered select-xs text-[13px]"
                     value={user.role}
@@ -451,7 +451,7 @@ export default function ItUserTable({ users, departments }: Props) {
                 </td>
 
                 {/* Change dept */}
-                <td className="py-3 px-4">
+                <td className="py-3.5 px-4">
                   <select
                     className="select select-bordered select-xs text-[13px] min-w-32.5"
                     value={user.department?.id ?? ""}

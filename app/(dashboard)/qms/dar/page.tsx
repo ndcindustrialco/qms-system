@@ -28,10 +28,10 @@ export default async function QmsDarPage() {
   }, {});
 
   return (
-    <div className="max-w-350 mx-auto px-4 md:px-8">
+    <div className="max-w-[1400px] mx-auto px-4 md:px-8">
       <QmsDarPageHeader />
 
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-6">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
         {ORDERED_STATUSES.map((s) => (
           <div key={s} className="card-premium px-5 py-4 flex flex-row items-center gap-3 border border-base-300 rounded-xl shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
             <DarStatusBadge status={s} />
