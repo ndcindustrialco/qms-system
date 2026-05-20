@@ -1,0 +1,178 @@
+{
+  "common": {
+    "loading": "กำลังโหลด...",
+    "error": "เกิดข้อผิดพลาด กรุณาลองใหม่",
+    "errorRetry": "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง",
+    "retry": "ลองอีกครั้ง",
+    "cancel": "ยกเลิก",
+    "save": "บันทึก",
+    "delete": "ลบ",
+    "edit": "แก้ไข",
+    "view": "ดู",
+    "search": "ค้นหา",
+    "filter": "กรอง",
+    "noData": "ไม่พบข้อมูล",
+    "confirm": "ยืนยัน",
+    "back": "กลับ",
+    "next": "ถัดไป",
+    "submit": "ส่ง",
+    "close": "ปิด",
+    "success": "สำเร็จ",
+    "irreversible": "การกระทำนี้ไม่สามารถย้อนกลับได้",
+    "serverError": "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้"
+  },
+  "nav": {
+    "dar": "คำขอเอกสาร (DAR)",
+    "qmsDar": "จัดการ DAR",
+    "sharepoint": "SharePoint Files",
+    "users": "จัดการผู้ใช้",
+    "departments": "จัดการแผนก"
+  },
+  "roles": {
+    "USER": "ผู้ใช้งาน",
+    "QMS": "เจ้าหน้าที่ QMS",
+    "MR": "ผู้แทนฝ่ายบริหาร",
+    "IT": "เจ้าหน้าที่ IT"
+  },
+  "auth": {
+    "signIn": "เข้าสู่ระบบ",
+    "signOut": "ออกจากระบบ",
+    "signInWith": "เข้าสู่ระบบด้วย {provider}",
+    "title": "ระบบ QMS",
+    "subtitle": "เข้าสู่ระบบด้วยบัญชี Microsoft 365 ขององค์กร",
+    "notice": "ระบบนี้รองรับเฉพาะบัญชีอีเมลของบริษัทที่เชื่อมต่อกับ Microsoft Entra ID เท่านั้น"
+  },
+  "unauthorized": {
+    "title": "ไม่มีสิทธิ์เข้าถึง",
+    "noM365": "บัญชีของคุณไม่ได้เชื่อมต่อกับ Microsoft 365 (Entra ID) ขององค์กร",
+    "insufficientRole": "บัญชีของคุณไม่มีสิทธิ์เข้าถึงส่วนนี้ของระบบ",
+    "contactIT": "ติดต่อฝ่าย IT",
+    "goHome": "กลับหน้าหลัก"
+  },
+  "dar": {
+    "title": "คำขอเอกสาร",
+    "new": "สร้างคำขอใหม่",
+    "status": {
+      "DRAFT": "ร่าง",
+      "SUBMITTED": "รอดำเนินการ",
+      "IN_REVIEW": "อยู่ระหว่างพิจารณา",
+      "APPROVED": "อนุมัติแล้ว",
+      "REJECTED": "ปฏิเสธ",
+      "CANCELLED": "ยกเลิก"
+    },
+    "objective": {
+      "PREPARE_NEW": "จัดทำเอกสารใหม่",
+      "REQUEST_COPY_CONTROLLED": "ขอสำเนาควบคุม",
+      "REQUEST_COPY_UNCONTROLLED": "ขอสำเนาไม่ควบคุม",
+      "REVISE": "แก้ไขเอกสาร",
+      "CANCEL": "ยกเลิกเอกสาร"
+    },
+    "emptyUser": "ยังไม่มีคำขอเอกสาร",
+    "emptyUserDesc": "สร้างคำขอใหม่เพื่อเริ่มต้นขั้นตอนการจัดการเอกสาร",
+    "emptyQms": "ยังไม่มีคำขอเอกสารในระบบ",
+    "section": {
+      "requester": "ข้อมูลผู้ขอ",
+      "objective": "วัตถุประสงค์และประเภทเอกสาร",
+      "reason": "เหตุผลในการขอ",
+      "items": "รายการเอกสาร",
+      "distrib": "แผนกที่รับเอกสาร",
+      "attach": "ไฟล์แนบ"
+    },
+    "field": {
+      "fullName": "ชื่อ-นามสกุล",
+      "empId": "รหัสพนักงาน",
+      "department": "แผนก",
+      "date": "วันที่ขอ",
+      "objective": "วัตถุประสงค์",
+      "docType": "ประเภทเอกสาร",
+      "docTypeOther": "ระบุประเภทเอกสาร (อื่นๆ)",
+      "docNum": "เลขที่เอกสาร",
+      "docName": "ชื่อเอกสาร",
+      "revision": "Revision",
+      "darNo": "เลขที่คำขอ",
+      "darNoDraft": "ยังไม่มีเลขที่ (ฉบับร่าง)"
+    },
+    "placeholder": {
+      "reason": "ระบุเหตุผลในการขอเอกสาร",
+      "selectObjective": "เลือกวัตถุประสงค์",
+      "selectDocType": "เลือกประเภทเอกสาร",
+      "specifyDocType": "ระบุประเภทเอกสาร",
+      "docNum": "เช่น QMS-SOP-001",
+      "docName": "ชื่อเอกสาร",
+      "revision": "00"
+    },
+    "table": {
+      "colNo": "ลำดับ",
+      "colDocNum": "เลขที่เอกสาร",
+      "colDocName": "ชื่อเอกสาร",
+      "colRevision": "Revision",
+      "emptyItems": "กดปุ่ม เพิ่มรายการ เพื่อเพิ่มเอกสาร",
+      "addItem": "เพิ่มรายการ",
+      "emptyItemsTable": "ไม่มีรายการเอกสาร"
+    },
+    "distrib": {
+      "noDeptFound": "ไม่พบข้อมูลแผนก"
+    },
+    "action": {
+      "saveDraft": "บันทึกฉบับร่าง",
+      "saveEdits": "บันทึกการแก้ไข",
+      "submitRequest": "ส่งคำขอ",
+      "deleteDraft": "ลบฉบับร่าง",
+      "confirmDeleteDraft": "ยืนยันลบฉบับร่าง",
+      "deleteDraftMsg": "คำขอนี้และไฟล์แนบทั้งหมดจะถูกลบถาวร ไม่สามารถกู้คืนได้",
+      "confirmDelete": "ยืนยันลบ"
+    }
+  },
+  "it": {
+    "users": {
+      "title": "จัดการผู้ใช้",
+      "sync": "ซิงค์จาก M365",
+      "empty": "ยังไม่มีผู้ใช้ในระบบ",
+      "emptyDesc": "กด «ซิงค์ผู้ใช้จาก M365» เพื่อนำเข้าข้อมูลจาก Microsoft Entra ID"
+    },
+    "departments": {
+      "title": "จัดการแผนก",
+      "sync": "ซิงค์แผนกจาก M365",
+      "manage": "จัดการแผนก",
+      "noDepts": "ยังไม่มีแผนกในระบบ",
+      "empty": "ยังไม่มีแผนก",
+      "emptyDesc": "เพิ่มแผนกแรกโดยกดปุ่มด้านบน"
+    },
+    "syncBtn": "ซิงค์ผู้ใช้จาก M365",
+    "syncBtnShort": "ซิงค์จาก M365",
+    "syncing": "กำลังซิงค์...",
+    "syncSuccess": "ซิงค์สำเร็จ —",
+    "syncCreated": "เพิ่มใหม่",
+    "syncUpdated": "อัปเดต",
+    "syncSkipped": "ข้ามแล้ว"
+  },
+  "sharepoint": {
+    "attachDesc": "แนบเอกสารประกอบคำขอ (PDF, Word, Excel, รูปภาพ)",
+    "title": "SharePoint File Browser",
+    "subtitle": "จัดการไฟล์ใน SharePoint Document Library",
+    "empty": "โฟลเดอร์นี้ว่างเปล่า",
+    "loadFail": "โหลดไม่สำเร็จ",
+    "deleteFail": "ลบไม่สำเร็จ",
+    "noPreview": "ไม่รองรับการแสดงผลในเบราว์เซอร์",
+    "openSP": "เปิดใน SharePoint",
+    "pdfFallback": "ดาวน์โหลด",
+    "confirmDelete": "ยืนยันการลบ",
+    "deleteFolder": "ต้องการลบโฟลเดอร์",
+    "deleteFile": "ต้องการลบไฟล์",
+    "deleteSuffix": "และไฟล์ทั้งหมดภายในใช่หรือไม่?",
+    "deleteFileSuffix": "ใช่หรือไม่?",
+    "colName": "ชื่อ",
+    "colType": "ประเภท",
+    "colSize": "ขนาด",
+    "colModified": "แก้ไขล่าสุด",
+    "preview": "ดูตัวอย่าง",
+    "items": "รายการ",
+    "refresh": "รีเฟรช",
+    "goBack": "ย้อนกลับ",
+    "deleteBtn": "ลบ"
+  },
+  "error": {
+    "title": "เกิดข้อผิดพลาด",
+    "retryBtn": "ลองใหม่อีกครั้ง"
+  }
+}

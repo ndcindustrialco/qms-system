@@ -1,3 +1,5 @@
+export const runtime = 'edge';
+
 import { listFiles } from "@/lib/sharepoint";
 
 export async function GET(req: Request) {

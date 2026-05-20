@@ -1,3 +1,6 @@
+export const runtime = 'edge';
+
+import { requireRole } from "@/lib/auth";
 import { deleteItem } from "@/lib/sharepoint";
 import { z } from "zod";
 
@@ -7,6 +10,7 @@ const Schema = z.object({
 
 export async function DELETE(req: Request) {
   try {
+    await requireRole("QMS", "MR", "IT");
     const { searchParams } = new URL(req.url);
     const parsed = Schema.safeParse({ itemId: searchParams.get("itemId") });
 

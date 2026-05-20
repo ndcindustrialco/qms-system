@@ -1,21 +1,33 @@
-import { ConfidentialClientApplication } from "@azure/msal-node";
 import { Client } from "@microsoft/microsoft-graph-client";
 
-const msalConfig = {
-  auth: {
-    clientId: process.env.AZURE_AD_CLIENT_ID!,
-    clientSecret: process.env.AZURE_AD_CLIENT_SECRET!,
-    authority: `https://login.microsoftonline.com/${process.env.AZURE_AD_TENANT_ID}`,
-  },
-};
-
 async function getAccessToken(): Promise<string> {
-  const cca = new ConfidentialClientApplication(msalConfig);
-  const result = await cca.acquireTokenByClientCredential({
-    scopes: ["https://graph.microsoft.com/.default"],
+  const tenantId = process.env.AZURE_AD_TENANT_ID!;
+  const clientId = process.env.AZURE_AD_CLIENT_ID!;
+  const clientSecret = process.env.AZURE_AD_CLIENT_SECRET!;
+
+  const url = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`;
+  const body = new URLSearchParams({
+    client_id: clientId,
+    client_secret: clientSecret,
+    grant_type: "client_credentials",
+    scope: "https://graph.microsoft.com/.default",
   });
-  if (!result?.accessToken) throw new Error("Failed to acquire access token");
-  return result.accessToken;
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: body.toString(),
+  });
+
+  if (!res.ok) {
+    const errorText = await res.text();
+    throw new Error(`Failed to acquire access token: ${res.status} ${errorText}`);
+  }
+
+  const data = await res.json() as { access_token: string };
+  return data.access_token;
 }
 
 export async function getGraphClient(): Promise<Client> {

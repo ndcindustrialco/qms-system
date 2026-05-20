@@ -1,0 +1,178 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred. Please try again.",
+    "errorRetry": "An error occurred. Please try again.",
+    "retry": "Try again",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "view": "View",
+    "search": "Search",
+    "filter": "Filter",
+    "noData": "No data found",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "close": "Close",
+    "success": "Success",
+    "irreversible": "This action cannot be undone.",
+    "serverError": "Could not connect to server"
+  },
+  "nav": {
+    "dar": "Document Approval Request",
+    "qmsDar": "Manage DAR",
+    "sharepoint": "SharePoint Files",
+    "users": "Manage Users",
+    "departments": "Manage Departments"
+  },
+  "roles": {
+    "USER": "User",
+    "QMS": "QMS Officer",
+    "MR": "Management Representative",
+    "IT": "IT Officer"
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signOut": "Sign Out",
+    "signInWith": "Sign in with {provider}",
+    "title": "QMS System",
+    "subtitle": "Sign in with your organization's Microsoft 365 account",
+    "notice": "This system only supports company email accounts connected to Microsoft Entra ID."
+  },
+  "unauthorized": {
+    "title": "Access Denied",
+    "noM365": "Your account is not connected to your organization's Microsoft 365 (Entra ID).",
+    "insufficientRole": "Your account does not have permission to access this section.",
+    "contactIT": "Contact IT",
+    "goHome": "Go to Home"
+  },
+  "dar": {
+    "title": "Document Approval Request",
+    "new": "New Request",
+    "status": {
+      "DRAFT": "Draft",
+      "SUBMITTED": "Pending",
+      "IN_REVIEW": "Under Review",
+      "APPROVED": "Approved",
+      "REJECTED": "Rejected",
+      "CANCELLED": "Cancelled"
+    },
+    "objective": {
+      "PREPARE_NEW": "Prepare New Document",
+      "REQUEST_COPY_CONTROLLED": "Request Controlled Copy",
+      "REQUEST_COPY_UNCONTROLLED": "Request Uncontrolled Copy",
+      "REVISE": "Revise Document",
+      "CANCEL": "Cancel Document"
+    },
+    "emptyUser": "No document requests yet",
+    "emptyUserDesc": "Create a new request to start the document management process.",
+    "emptyQms": "No document requests in the system",
+    "section": {
+      "requester": "Requester Info",
+      "objective": "Objective & Document Type",
+      "reason": "Reason for Request",
+      "items": "Document Items",
+      "distrib": "Recipient Departments",
+      "attach": "Attachments"
+    },
+    "field": {
+      "fullName": "Full Name",
+      "empId": "Employee ID",
+      "department": "Department",
+      "date": "Date",
+      "objective": "Objective",
+      "docType": "Document Type",
+      "docTypeOther": "Specify document type (Other)",
+      "docNum": "Document No.",
+      "docName": "Document Name",
+      "revision": "Revision",
+      "darNo": "DAR No.",
+      "darNoDraft": "Not assigned yet (Draft)"
+    },
+    "placeholder": {
+      "reason": "Describe the reason for this request",
+      "selectObjective": "Select objective",
+      "selectDocType": "Select document type",
+      "specifyDocType": "Specify document type",
+      "docNum": "e.g. QMS-SOP-001",
+      "docName": "Document name",
+      "revision": "00"
+    },
+    "table": {
+      "colNo": "#",
+      "colDocNum": "Doc. No.",
+      "colDocName": "Doc. Name",
+      "colRevision": "Revision",
+      "emptyItems": "Click «Add Item» to add documents.",
+      "addItem": "Add Item",
+      "emptyItemsTable": "No document items."
+    },
+    "distrib": {
+      "noDeptFound": "No departments found"
+    },
+    "action": {
+      "saveDraft": "Save Draft",
+      "saveEdits": "Save Changes",
+      "submitRequest": "Submit Request",
+      "deleteDraft": "Delete Draft",
+      "confirmDeleteDraft": "Confirm Delete Draft",
+      "deleteDraftMsg": "This request and all attachments will be permanently deleted and cannot be recovered.",
+      "confirmDelete": "Confirm Delete"
+    }
+  },
+  "it": {
+    "users": {
+      "title": "Manage Users",
+      "sync": "Sync from M365",
+      "empty": "No users in the system",
+      "emptyDesc": "Click «Sync from M365» to import users from Microsoft Entra ID."
+    },
+    "departments": {
+      "title": "Manage Departments",
+      "sync": "Sync Departments from M365",
+      "manage": "Manage Departments",
+      "noDepts": "No departments yet",
+      "empty": "No departments",
+      "emptyDesc": "Add the first department using the button above."
+    },
+    "syncBtn": "Sync Users from M365",
+    "syncBtnShort": "Sync from M365",
+    "syncing": "Syncing...",
+    "syncSuccess": "Sync complete —",
+    "syncCreated": "added",
+    "syncUpdated": "updated",
+    "syncSkipped": "skipped"
+  },
+  "sharepoint": {
+    "attachDesc": "Attach supporting documents (PDF, Word, Excel, Image)",
+    "title": "SharePoint File Browser",
+    "subtitle": "Manage files in your SharePoint Document Library.",
+    "empty": "This folder is empty.",
+    "loadFail": "Failed to load",
+    "deleteFail": "Failed to delete",
+    "noPreview": "Preview not supported in this browser.",
+    "openSP": "Open in SharePoint",
+    "pdfFallback": "Download",
+    "confirmDelete": "Confirm Delete",
+    "deleteFolder": "Delete folder",
+    "deleteFile": "Delete file",
+    "deleteSuffix": "and all its contents?",
+    "deleteFileSuffix": "?",
+    "colName": "Name",
+    "colType": "Type",
+    "colSize": "Size",
+    "colModified": "Last Modified",
+    "preview": "Preview",
+    "items": "items",
+    "refresh": "Refresh",
+    "goBack": "Go back",
+    "deleteBtn": "Delete"
+  },
+  "error": {
+    "title": "Something went wrong",
+    "retryBtn": "Try Again"
+  }
+}

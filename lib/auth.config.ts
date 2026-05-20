@@ -6,22 +6,18 @@ export const authConfig: NextAuthConfig = {
     MicrosoftEntraID({
       clientId: process.env.AZURE_AD_CLIENT_ID!,
       clientSecret: process.env.AZURE_AD_CLIENT_SECRET!,
-       issuer: `https://login.microsoftonline.com/${process.env.AZURE_AD_TENANT_ID}/v2.0`,
+      issuer: `https://login.microsoftonline.com/${process.env.AZURE_AD_TENANT_ID}/v2.0`,
       authorization: {
-        params: { scope: "openid profile email User.Read" },
+        params: {
+          scope: "openid profile email offline_access https://graph.microsoft.com/User.Read https://graph.microsoft.com/Mail.Send",
+        },
       },
     }),
   ],
+  session: { strategy: "jwt" },
   pages: {
     signIn: "/auth/login",
     error: "/auth/error",
   },
-  callbacks: {
-    authorized({ auth, request: { nextUrl } }) {
-      const isLoggedIn = !!auth?.user;
-      const isQmsRoute = nextUrl.pathname.startsWith("/qms");
-      if (isQmsRoute) return isLoggedIn;
-      return true;
-    },
-  },
+  // No `authorized` callback — all auth/routing logic lives in proxy.ts
 };

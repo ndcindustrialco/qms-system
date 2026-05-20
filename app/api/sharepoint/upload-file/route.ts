@@ -1,3 +1,5 @@
+export const runtime = 'edge';
+
 import { uploadFile } from "@/lib/sharepoint";
 
 export async function POST(req: Request) {

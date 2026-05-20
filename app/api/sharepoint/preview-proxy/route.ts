@@ -1,7 +1,11 @@
+export const runtime = 'edge';
+
+import { requireAuth } from "@/lib/auth";
 import { getFileInfo } from "@/lib/sharepoint";
 
 export async function GET(req: Request) {
   try {
+    await requireAuth();
     const { searchParams } = new URL(req.url);
     const itemId = searchParams.get("itemId");
 
