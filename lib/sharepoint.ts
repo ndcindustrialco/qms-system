@@ -92,7 +92,7 @@ export async function uploadFile(
   const res = await fetch(endpoint, {
     method: "PUT",
     headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/octet-stream" },
-    body: fileBuffer,
+    body: fileBuffer.buffer as ArrayBuffer,
   });
 
   if (!res.ok) {
