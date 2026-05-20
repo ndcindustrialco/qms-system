@@ -1,4 +1,4 @@
-export const runtime = 'nodejs';
+export const runtime = 'edge';
 
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
@@ -97,7 +97,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<ApiResponse<D
       dar = await submitDar(dar.id, session.user.id);
     }
 
-    revalidateTag("dar-list");
+    revalidateTag("dar-list", "max");
 
     return NextResponse.json({ data: dar, error: null }, { status: 201 });
   } catch (err) {
