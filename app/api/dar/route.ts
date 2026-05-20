@@ -1,4 +1,4 @@
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
@@ -104,6 +104,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<ApiResponse<D
     if (err instanceof AppError) {
       return NextResponse.json({ data: null, error: err.message }, { status: err.statusCode });
     }
+    console.error("[POST /api/dar]", err);
     return NextResponse.json({ data: null, error: "Internal server error" }, { status: 500 });
   }
 }

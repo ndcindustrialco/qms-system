@@ -152,7 +152,9 @@ export async function getAllDars(): Promise<DarSummary[]> {
 }
 
 export async function getDarsByRequesterId(requesterId: string, page: number, limit: number): Promise<{ dars: DarSummary[]; total: number }> {
-  const [raws, total] = await Promise.all([
+  // Use $transaction to batch both queries on the same connection — avoids concurrent
+  // client.query() calls which are unsupported by the pg pool adapter in dev
+  const [raws, total] = await prisma.$transaction([
     prisma.darMaster.findMany({
       where: { requesterId },
       select: { id: true, darNo: true, requestDate: true, objective: true, docType: true, status: true, _count: { select: { items: true } } },

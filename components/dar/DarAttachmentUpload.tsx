@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import type { DarAttachmentRow, TempAttachmentInput } from "@/types/dar";
 
 const ALLOWED_EXT = ".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.gif,.webp";
@@ -255,6 +255,17 @@ export default function DarAttachmentUpload(props: Props) {
   const [error, setError] = useState<string | null>(null);
   const [preview, setPreview] = useState<PreviewTarget | null>(null);
 
+  // Keep a ref to the latest callback so the effect below never goes stale
+  const onTempItemsChangeRef = useRef(props.mode === "temp" ? props.onTempItemsChange : undefined);
+  if (props.mode === "temp") onTempItemsChangeRef.current = props.onTempItemsChange;
+
+  // Notify parent whenever tempItems changes — avoids calling setState inside a state updater
+  useEffect(() => {
+    if (props.mode === "temp") {
+      onTempItemsChangeRef.current?.(tempItems.map(({ _localId: _, ...rest }) => rest));
+    }
+  }, [tempItems, props.mode]);
+
   async function handleFiles(files: FileList) {
     setError(null);
     for (const file of Array.from(files)) {
@@ -278,11 +289,7 @@ export default function DarAttachmentUpload(props: Props) {
           const json = await res.json();
           if (!res.ok || json.error) { setError(json.error ?? "อัปโหลดล้มเหลว"); return; }
           const item: TempItem = { ...json.data as TempAttachmentInput, _localId: crypto.randomUUID() };
-          setTempItems((prev) => {
-            const next = [...prev, item];
-            props.onTempItemsChange(next.map(({ _localId: _, ...rest }) => rest));
-            return next;
-          });
+          setTempItems((prev) => [...prev, item]);
         }
       }
     } finally {
@@ -306,11 +313,7 @@ export default function DarAttachmentUpload(props: Props) {
 
   function handleDeleteTemp(localId: string) {
     if (props.mode !== "temp") return;
-    setTempItems((prev) => {
-      const next = prev.filter((t) => t._localId !== localId);
-      props.onTempItemsChange(next.map(({ _localId: _, ...rest }) => rest));
-      return next;
-    });
+    setTempItems((prev) => prev.filter((t) => t._localId !== localId));
   }
 
   const canEdit = props.mode === "temp" || props.canEdit;
