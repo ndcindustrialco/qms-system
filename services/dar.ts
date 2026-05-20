@@ -290,14 +290,19 @@ export async function updateDarDraft(id: string, requesterId: string, input: Par
 // ── DAR number generation ─────────────────────────────────────────────────────
 async function generateDarNo(year: number, tx: Tx): Promise<string> {
   const counterKey = `DAR_COUNTER_${year}`;
-  const config = await tx.systemConfig.upsert({
+  // configValue is a String field — read current value, increment manually, write back
+  // This is safe because generateDarNo always runs inside a transaction
+  const existing = await tx.systemConfig.findUnique({
     where: { configKey: counterKey },
-    update: { configValue: { increment: 1 } as unknown as string },
-    create: { configKey: counterKey, configValue: "1", description: `DAR counter for ${year}` },
     select: { configValue: true },
   });
-  const seq = parseInt(config.configValue, 10);
-  return `DAR-${year}-${String(seq).padStart(4, "0")}`;
+  const nextSeq = existing ? parseInt(existing.configValue, 10) + 1 : 1;
+  await tx.systemConfig.upsert({
+    where: { configKey: counterKey },
+    update: { configValue: String(nextSeq) },
+    create: { configKey: counterKey, configValue: "1", description: `DAR counter for ${year}` },
+  });
+  return `DAR-${year}-${String(nextSeq).padStart(4, "0")}`;
 }
 
 // ── Submit (DRAFT → PENDING_REVIEW + create PREPARER approval record) ─────────
