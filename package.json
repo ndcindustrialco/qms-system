@@ -35,6 +35,12 @@
     "tailwindcss": "^4.3.0",
     "tsx": "^4.21.0",
     "typescript": "^5"
+    
+  },
+  "overrides": {
+    "next-auth": {
+      "next": "$next"
+    }
   },
   "browserslist": "> 1%"
 }
