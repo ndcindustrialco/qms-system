@@ -1,4 +1,4 @@
-export const runtime = 'nodejs';
+export const runtime = 'edge';
 
 import { getFileInfo, getOfficePreviewUrl } from "@/lib/sharepoint";
 import { z } from "zod";

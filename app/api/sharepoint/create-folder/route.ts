@@ -1,4 +1,4 @@
-export const runtime = 'nodejs';
+export const runtime = 'edge';
 
 import { createFolder } from "@/lib/sharepoint";
 import { z } from "zod";

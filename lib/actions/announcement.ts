@@ -3,7 +3,7 @@
 import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { revalidatePath } from "next/cache";
-import { DisplayType } from "@/app/generated/prisma";
+import { DisplayType } from "@/app/generated/prisma/edge";
 
 export async function createAnnouncement(formData: FormData) {
   const session = await requireAuth();
