@@ -10,7 +10,9 @@ import type { ApiResponse } from "@/types/api";
 import type { DarDetail } from "@/types/dar";
 
 const schema = z.object({
-  signatureDataUrl: z.string().min(1).startsWith("data:image/"),
+  signatureDataUrl: z.string()
+    .regex(/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/, "Invalid signature format")
+    .max(524288, "Signature image too large"),
   signatureType: z.enum(["DRAW", "TYPE", "IMAGE"]),
   saveSignature: z.boolean().default(false),
 });

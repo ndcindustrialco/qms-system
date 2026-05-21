@@ -21,10 +21,10 @@ const ROLE_LABELS_EN: Record<UserRole, string> = {
   IT:   "IT Officer",
 };
 const ROLE_BADGE: Record<UserRole, string> = {
-  USER: "inline-block px-2.5 py-0.5 text-[11px] rounded-full font-bold bg-slate-100 text-slate-500",
-  QMS:  "inline-block px-2.5 py-0.5 text-[11px] rounded-full font-bold bg-blue-100 text-blue-600",
-  MR:   "inline-block px-2.5 py-0.5 text-[11px] rounded-full font-bold bg-amber-100 text-amber-700",
-  IT:   "inline-block px-2.5 py-0.5 text-[11px] rounded-full font-bold bg-emerald-100 text-emerald-600",
+  USER: "inline-block px-2.5 py-0.5 text-[11px] rounded-full font-bold bg-base-200 text-neutral",
+  QMS:  "inline-block px-2.5 py-0.5 text-[11px] rounded-full font-bold bg-info/15 text-info",
+  MR:   "inline-block px-2.5 py-0.5 text-[11px] rounded-full font-bold bg-warning/15 text-warning",
+  IT:   "inline-block px-2.5 py-0.5 text-[11px] rounded-full font-bold bg-success/15 text-success",
 };
 
 type SortKey = "name" | "email" | "employeeId" | "role" | "department" | "createdAt";
@@ -282,7 +282,7 @@ export default function ItUserTable({ users, departments }: Props) {
 
   function thSort(label: string, colKey: SortKey) {
     return (
-      <th className="py-3.5 px-4 font-semibold cursor-pointer select-none whitespace-nowrap" onClick={() => toggleSort(colKey)}>
+      <th className="th-pro cursor-pointer" onClick={() => toggleSort(colKey)}>
         <span className="flex items-center gap-1">{label}<IconSort active={sortKey === colKey} dir={sortDir} /></span>
       </th>
     );
@@ -291,7 +291,7 @@ export default function ItUserTable({ users, departments }: Props) {
   return (
     <>
       {/* Filter bar */}
-      <div className="card-premium px-5 py-4 mb-6 border border-base-300 rounded-xl shadow-sm flex flex-wrap gap-3 items-end">
+      <div className="card-premium px-5 py-4 mb-4 flex flex-wrap gap-3 items-end">
         <div className="flex-1 min-w-44">
           <label className="text-[11px] text-gray-500 mb-1 block">{t.searchLabel}</label>
           <div className="relative">
@@ -360,8 +360,8 @@ export default function ItUserTable({ users, departments }: Props) {
       <div className="hidden md:block card-premium overflow-x-auto border border-base-300 rounded-xl shadow-sm">
         <table className="table w-full">
           <thead>
-            <tr className="bg-base-200 text-xs text-gray-500 border-b border-base-200">
-              <th className="py-3.5 px-3 w-10">
+            <tr className="border-b border-base-200">
+              <th className="th-pro w-10">
                 <input
                   type="checkbox"
                   className="checkbox checkbox-sm checkbox-primary"
@@ -374,11 +374,11 @@ export default function ItUserTable({ users, departments }: Props) {
               {thSort(t.colName, "name")}
               {thSort(t.colEmail, "email")}
               {thSort(t.colEmpId, "employeeId")}
-              <th className="py-3.5 px-4 font-semibold whitespace-nowrap">{t.colM365}</th>
+              <th className="th-pro">{t.colM365}</th>
               {thSort(t.colRole, "role")}
-              <th className="py-3.5 px-4 font-semibold whitespace-nowrap">{t.colChangeRole}</th>
+              <th className="th-pro">{t.colChangeRole}</th>
               {thSort(t.colDept, "department")}
-              <th className="py-3.5 px-4 font-semibold text-center whitespace-nowrap">{t.colUpdateM365}</th>
+              <th className="th-pro text-center">{t.colUpdateM365}</th>
             </tr>
           </thead>
           <tbody>
@@ -429,8 +429,8 @@ export default function ItUserTable({ users, departments }: Props) {
                 {/* M365 status */}
                 <td className="py-3.5 px-4">
                   {user.msUserId
-                    ? <span className="inline-flex items-center gap-1 px-2.5 py-0.5 text-[11px] rounded-full font-bold bg-emerald-100 text-emerald-600"><IconCheck className="w-3 h-3" />{t.linked}</span>
-                    : <span className="inline-block px-2.5 py-0.5 text-[11px] rounded-full font-bold bg-slate-100 text-slate-500">{t.unlinked}</span>}
+                    ? <span className="inline-flex items-center gap-1 px-2.5 py-0.5 text-[11px] rounded-full font-bold bg-success/15 text-success"><IconCheck className="w-3 h-3" />{t.linked}</span>
+                    : <span className="inline-block px-2.5 py-0.5 text-[11px] rounded-full font-bold bg-base-200 text-neutral">{t.unlinked}</span>}
                 </td>
 
                 {/* Role badge */}

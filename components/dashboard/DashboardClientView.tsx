@@ -58,11 +58,11 @@ export default function DashboardClientView({
   };
 
   return (
-    <div className="max-w-350 mx-auto w-full flex flex-col gap-4 animate-in fade-in duration-500 pb-10">
+    <div className="max-w-350 mx-auto w-full flex flex-col gap-4 animate-slide-up pb-10">
 
       {/* ── 1. Ticker ── */}
       {tickerAnnouncements.length > 0 && (
-        <div className="bg-primary/5 border border-primary/20 text-base-content text-[13px] py-1.5 px-3 rounded-lg flex items-center gap-3 overflow-hidden shadow-sm">
+        <div className="bg-primary/8 border border-primary/25 text-base-content text-[13px] py-2 px-4 rounded-xl flex items-center gap-3 overflow-hidden">
           <span className="font-bold whitespace-nowrap bg-primary text-primary-content px-2 py-0.5 rounded text-[11px] uppercase shadow-sm shrink-0">
             {text.tickerLabel}
           </span>
@@ -94,7 +94,7 @@ export default function DashboardClientView({
           {/* Announcements List */}
           <div className="card-premium">
             <div className="flex items-center justify-between px-5 py-4 border-b border-base-200">
-              <h2 className="text-sm md:text-base font-bold text-primary flex items-center gap-2">
+              <h2 className="text-sm md:text-base font-bold text-primary card-section-title">
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-primary" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                 </svg>
@@ -117,7 +117,7 @@ export default function DashboardClientView({
 
             <div className="p-5 flex flex-col gap-4">
               {announcements.length > 0 ? announcements.map(a => (
-                <div key={a.id} className="flex gap-4 group hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+                <div key={a.id} className="flex gap-4 group transition-all duration-200">
                   <div className="w-12 h-12 rounded-xl bg-base-200 flex items-center justify-center shrink-0 border border-base-300 group-hover:border-primary transition-colors">
                     {a.spItemId ? (
                       <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-info" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -133,10 +133,10 @@ export default function DashboardClientView({
                     <h3 className="text-sm font-semibold text-neutral group-hover:text-primary transition-colors truncate">
                       {a.title}
                     </h3>
-                    <p className="text-xs text-gray-500 line-clamp-2 mt-0.5">{a.content}</p>
+                    <p className="text-xs text-neutral line-clamp-2 mt-0.5">{a.content}</p>
                     <div className="flex items-center gap-2 mt-1.5 text-xs font-medium">
-                      <span className="bg-base-200 px-2 py-0.5 rounded text-gray-500">{a.sourceSystem}</span>
-                      <span className="text-gray-500/70">
+                      <span className="bg-base-200 px-2 py-0.5 rounded text-neutral">{a.sourceSystem}</span>
+                      <span className="text-neutral/70">
                         {new Date(a.createdAt).toLocaleDateString(isTh ? "th-TH" : "en-US", { day: "2-digit", month: "2-digit", year: "numeric" })}
                       </span>
                     </div>
@@ -150,7 +150,7 @@ export default function DashboardClientView({
                   )}
                 </div>
               )) : (
-                <div className="py-8 text-center text-gray-500 text-sm">{text.noAnnouncements}</div>
+                <div className="py-8 text-center text-neutral text-sm">{text.noAnnouncements}</div>
               )}
             </div>
           </div>
@@ -158,7 +158,7 @@ export default function DashboardClientView({
           {/* Document Changes List */}
           <div className="card-premium">
             <div className="flex items-center justify-between px-5 py-4 border-b border-base-200">
-              <h2 className="text-sm md:text-base font-bold text-primary flex items-center gap-2">
+              <h2 className="text-sm md:text-base font-bold text-primary card-section-title">
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-warning" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clipRule="evenodd" />
                 </svg>
@@ -185,15 +185,15 @@ export default function DashboardClientView({
                       <a href={doc.spWebUrl} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-neutral hover:text-primary transition-colors">
                         {doc.docNumber} - {doc.docName}
                       </a>
-                      <div className="text-xs text-gray-500 mt-0.5">
+                      <div className="text-xs text-neutral mt-0.5">
                         Rev.{doc.revision} • {new Date(doc.publishedDate).toLocaleDateString(isTh ? "th-TH" : "en-US")}
                       </div>
                     </div>
                   </div>
-                  <span className="bg-emerald-100 text-emerald-600 rounded-full font-bold text-[10px] px-2 py-0.5 uppercase">{text.newLabel}</span>
+                  <span className="bg-success/15 text-success rounded-full font-bold text-[10px] px-2 py-0.5 uppercase">{text.newLabel}</span>
                 </div>
               )) : (
-                <div className="py-8 text-center text-gray-500 text-sm">{text.noRecentDocs}</div>
+                <div className="py-8 text-center text-neutral text-sm">{text.noRecentDocs}</div>
               )}
             </div>
           </div>
@@ -205,29 +205,29 @@ export default function DashboardClientView({
           {/* KPI Monthly */}
           <div className="card-premium">
             <div className="flex items-center justify-between px-5 py-4 border-b border-base-200">
-              <h2 className="text-base font-bold text-primary flex items-center gap-2">
+              <h2 className="text-base font-bold text-primary card-section-title">
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
                 {text.kpiMonthly}
               </h2>
-              <span className="text-[11px] font-medium text-gray-400">{isTh ? `ทั้งหมด ${kpiTotal} ตัวชี้วัด` : `${kpiTotal} indicators`}</span>
+              <span className="text-[11px] font-medium text-neutral/60">{isTh ? `ทั้งหมด ${kpiTotal} ตัวชี้วัด` : `${kpiTotal} indicators`}</span>
             </div>
             {kpiTotal === 0 ? (
-              <div className="p-5 text-center text-sm text-gray-400">{text.kpiNoData}</div>
+              <div className="p-5 text-center text-sm text-neutral/60">{text.kpiNoData}</div>
             ) : (
-              <div className="p-5 grid grid-cols-3 gap-3 text-center">
-                <div className="flex flex-col items-center gap-1">
+              <div className="p-5 grid grid-cols-3 gap-3">
+                <div className="flex flex-col items-center gap-1.5 bg-success/8 rounded-xl py-3 border border-success/20">
                   <p className="text-2xl font-bold text-success">{kpiOk}</p>
-                  <p className="text-xs text-gray-500">OK</p>
+                  <p className="text-[11px] font-semibold uppercase tracking-wider text-success/70">OK</p>
                 </div>
-                <div className="flex flex-col items-center gap-1">
+                <div className="flex flex-col items-center gap-1.5 bg-error/8 rounded-xl py-3 border border-error/20">
                   <p className="text-2xl font-bold text-error">{kpiNg}</p>
-                  <p className="text-xs text-gray-500">NG</p>
+                  <p className="text-[11px] font-semibold uppercase tracking-wider text-error/70">NG</p>
                 </div>
-                <div className="flex flex-col items-center gap-1">
+                <div className="flex flex-col items-center gap-1.5 bg-warning/8 rounded-xl py-3 border border-warning/20">
                   <p className="text-2xl font-bold text-warning">{kpiPending}</p>
-                  <p className="text-xs text-gray-500">{isTh ? "รอดำเนินการ" : "Pending"}</p>
+                  <p className="text-[11px] font-semibold uppercase tracking-wider text-warning/70">{isTh ? "รอ" : "Wait"}</p>
                 </div>
               </div>
             )}
@@ -236,7 +236,7 @@ export default function DashboardClientView({
           {/* CAR — Corrective Action Requests (mockup) */}
           <div className="card-premium">
             <div className="flex items-center justify-between px-5 py-4 border-b border-base-200">
-              <h2 className="text-base font-bold text-primary flex items-center gap-2">
+              <h2 className="text-base font-bold text-primary card-section-title">
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-warning" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
                 </svg>
@@ -251,21 +251,21 @@ export default function DashboardClientView({
                 <div key={i} className="flex items-center justify-between py-2 border-b border-base-200 last:border-0">
                   <div>
                     <p className="text-sm font-medium text-neutral">{item.dept}</p>
-                    <p className="text-xs text-gray-400 mt-0.5">{isTh ? "ครบกำหนด" : "Due"}: {item.due}</p>
+                    <p className="text-xs text-neutral/60 mt-0.5">{isTh ? "ครบกำหนด" : "Due"}: {item.due}</p>
                   </div>
                   <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-warning/10 text-warning">
                     {isTh ? "รอแก้ไข" : "Open"}
                   </span>
                 </div>
               ))}
-              <p className="text-[11px] text-gray-400 text-center pt-1">{text.carComingSoon}</p>
+              <p className="text-[11px] text-neutral/60 text-center pt-1">{text.carComingSoon}</p>
             </div>
           </div>
 
           {/* Recent Docs List */}
           <div className="card-premium">
             <div className="flex items-center justify-between px-5 py-4 border-b border-base-200">
-              <h2 className="text-sm md:text-base font-bold text-primary flex items-center gap-2">
+              <h2 className="text-sm md:text-base font-bold text-primary card-section-title">
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-neutral" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
@@ -286,11 +286,11 @@ export default function DashboardClientView({
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-semibold text-neutral group-hover:text-primary transition-colors leading-snug line-clamp-2">{doc.fileName}</p>
-                    <p className="text-xs text-gray-500 mt-0.5">{new Date(doc.createdAt).toLocaleDateString(isTh ? "th-TH" : "en-US")} • {'QMS'}</p>
+                    <p className="text-xs text-neutral mt-0.5">{new Date(doc.createdAt).toLocaleDateString(isTh ? "th-TH" : "en-US")} • {'QMS'}</p>
                   </div>
                 </a>
               )) : (
-                <div className="text-xs text-gray-500 text-center py-4">{text.noRecentAttachments}</div>
+                <div className="text-xs text-neutral text-center py-4">{text.noRecentAttachments}</div>
               )}
             </div>
           </div>

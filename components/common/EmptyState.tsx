@@ -32,7 +32,7 @@ export default function EmptyState({ title, description, ctaLabel, ctaHref }: Pr
       <div className="flex flex-col gap-1">
         <p className="text-sm md:text-base font-semibold text-primary">{title}</p>
         {description && (
-          <p className="text-xs md:text-sm text-gray-500">{description}</p>
+          <p className="text-xs md:text-sm text-neutral">{description}</p>
         )}
       </div>
 

@@ -14,13 +14,13 @@ export default function DarTableSkeleton() {
       <div className="hidden md:block card-premium overflow-hidden">
         <table className="table w-full">
           <thead>
-            <tr className="bg-base-200 border-b border-base-300">
-              <th className="py-3.5 px-4 text-xs font-semibold text-gray-500">{t("fieldDarNo")}</th>
-              <th className="py-3.5 px-4 text-xs font-semibold text-gray-500">{t("fieldDate")}</th>
-              <th className="py-3.5 px-4 text-xs font-semibold text-gray-500">{t("fieldObjective")}</th>
-              <th className="py-3.5 px-4 text-xs font-semibold text-gray-500">{t("fieldDocType")}</th>
-              <th className="py-3.5 px-4 text-xs font-semibold text-gray-500">{t("sectionItems")}</th>
-              <th className="py-3.5 px-4 text-xs font-semibold text-gray-500">Status</th>
+            <tr className="border-b border-base-200">
+              <th className="th-pro">{t("fieldDarNo")}</th>
+              <th className="th-pro">{t("fieldDate")}</th>
+              <th className="th-pro">{t("fieldObjective")}</th>
+              <th className="th-pro">{t("fieldDocType")}</th>
+              <th className="th-pro">{t("sectionItems")}</th>
+              <th className="th-pro">Status</th>
               <th className="py-3.5 px-4" />
             </tr>
           </thead>

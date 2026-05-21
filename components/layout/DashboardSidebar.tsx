@@ -153,7 +153,7 @@ export default function DashboardSidebar({ role, name, email, isOpen, onClose, l
         {sections.map((section) => (
           <div key={section.label} className="flex flex-col gap-0.5">
             {/* Section label */}
-            <p className="px-3 mb-1 text-[11px] font-bold uppercase tracking-widest mt-2" style={{ color: "var(--sidebar-text-muted)" }}>
+            <p className="px-3 mb-1.5 text-[10px] font-bold uppercase tracking-[0.12em] mt-3 flex items-center gap-2" style={{ color: "var(--sidebar-text-muted)" }}>
               {section.label}
             </p>
 
@@ -196,7 +196,7 @@ export default function DashboardSidebar({ role, name, email, isOpen, onClose, l
         <div className="flex items-center gap-3 px-1 min-w-0">
           <div
             className="w-9 h-9 rounded-full flex items-center justify-center text-[13px] font-bold shrink-0 ring-2 ring-base-content/10"
-            style={{ background: "oklch(34% 0.16 264)", color: "var(--sidebar-text-active)" }}
+            style={{ background: "linear-gradient(135deg, oklch(36% 0.16 264), oklch(28% 0.13 264))", color: "var(--sidebar-text-active)" }}
           >
             {name.charAt(0).toUpperCase()}
           </div>

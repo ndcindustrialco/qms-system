@@ -89,9 +89,9 @@ body {
 
 /* ── Card surface ─────────────────────────────────────────── */
 .card-premium {
-  background: #ffffff;
+  background: var(--color-base-100);
   border-radius: 0.75rem;
-  border: 1px solid #E2E4EF;
+  border: 1px solid var(--color-base-300);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.03);
   transition: all 0.2s ease;
 }
@@ -117,9 +117,12 @@ body {
 
 /* ── Sidebar utility classes ──────────────────────────────── */
 .sidebar-surface {
-  background: linear-gradient(165deg, var(--sidebar-bg-from), var(--sidebar-bg-to));
+  background: linear-gradient(170deg,
+    var(--sidebar-bg-from) 0%,
+    oklch(19% 0.115 264) 60%,
+    oklch(17% 0.10 264) 100%);
   border-right: 1px solid var(--sidebar-border);
-  box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
 }
 
 .sidebar-item {
@@ -166,9 +169,12 @@ body {
 
 /* ── Top-bar ─────────────────────────────────────────────── */
 .topbar-surface {
-  background: #0f1059;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  background:
+    radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px),
+    linear-gradient(135deg, var(--sidebar-bg-from) 0%, oklch(19% 0.115 264) 100%);
+  background-size: 24px 24px, 100% 100%;
+  border-bottom: 1px solid var(--sidebar-border);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
 }
 
 /* ── Scrollbar ───────────────────────────────────────────── */
@@ -179,3 +185,54 @@ body {
   border-radius: 99px;
 }
 ::-webkit-scrollbar-thumb:hover { background: oklch(70% 0.012 264); }
+
+/* ── Slide-up page entry ────────────────────────────────── */
+@theme {
+  --animate-slide-up: slideUp 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+}
+
+/* ── Card section header with left accent bar ──────────── */
+.card-section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+  padding-left: 0.625rem;
+}
+.card-section-title::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 0.875rem;
+  background: linear-gradient(to bottom, var(--color-primary), var(--color-secondary));
+  border-radius: 9px;
+}
+
+/* ── Table header pro ───────────────────────────────────── */
+.th-pro {
+  padding: 0.875rem 1rem !important;
+  font-size: 0.6875rem !important;
+  font-weight: 700 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-neutral) !important;
+  white-space: nowrap;
+  user-select: none;
+  background: linear-gradient(to right, oklch(97.5% 0.012 264), var(--color-base-200)) !important;
+}
+
+/* ── Hover lift card ────────────────────────────────────── */
+.hover-lift {
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(15, 16, 89, 0.09), 0 2px 6px rgba(15, 16, 89, 0.05) !important;
+}

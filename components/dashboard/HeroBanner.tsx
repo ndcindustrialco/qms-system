@@ -21,7 +21,7 @@ export default function HeroBanner({ announcements }: HeroBannerProps) {
       tag: a.sourceSystem || (isTh ? "ประกาศ" : "Announcement"),
       title: a.title,
       content: a.content,
-      bgClass: "from-[oklch(35%_0.12_264)] to-[oklch(20%_0.12_264)]",
+      bgClass: "from-[oklch(34%_0.13_264)] via-[oklch(26%_0.12_264)] to-[oklch(18%_0.10_264)]",
       link: a.spWebUrl,
     })),
   ];
@@ -54,9 +54,9 @@ export default function HeroBanner({ announcements }: HeroBannerProps) {
         {slides.map((slide, idx) => (
           <div 
             key={idx} 
-            className={`w-full shrink-0 min-h-55 bg-linear-to-r ${slide.bgClass} p-10 lg:p-14 text-white relative flex flex-col justify-center`}
+            className={`w-full shrink-0 min-h-55 bg-linear-to-br ${slide.bgClass} p-10 lg:p-14 text-white relative flex flex-col justify-center`}
           >
-            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
+            <div className="absolute inset-0 opacity-8" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='1' fill-rule='evenodd'%3E%3Ccircle cx='4' cy='4' r='1.5'/%3E%3Ccircle cx='20' cy='4' r='1.5'/%3E%3Ccircle cx='36' cy='4' r='1.5'/%3E%3Ccircle cx='4' cy='20' r='1.5'/%3E%3Ccircle cx='20' cy='20' r='1.5'/%3E%3Ccircle cx='36' cy='20' r='1.5'/%3E%3Ccircle cx='4' cy='36' r='1.5'/%3E%3Ccircle cx='20' cy='36' r='1.5'/%3E%3Ccircle cx='36' cy='36' r='1.5'/%3E%3C/g%3E%3C/svg%3E\")" }}></div>
             
             <div className="relative z-10 max-w-3xl">
               <span className="inline-block px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-[11px] font-bold tracking-wider mb-4 border border-white/10 uppercase">

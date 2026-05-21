@@ -104,8 +104,8 @@ export default function DashboardNavbar({ role, name, email, image, locale, onLo
                 href={item.href}
                 className={`px-3.5 py-2 rounded-[10px] text-[13px] font-medium transition-colors duration-200 ${
                   isActive
-                    ? "bg-white/20 text-white shadow-sm"
-                    : "text-white/70 hover:bg-white/10 hover:text-white"
+                    ? "text-white font-semibold bg-white/15 border border-white/10 shadow-sm"
+                    : "text-white/65 hover:text-white hover:bg-white/8 border border-transparent"
                 }`}
               >
                 {label}
@@ -125,7 +125,7 @@ export default function DashboardNavbar({ role, name, email, image, locale, onLo
               onClick={() => onLocaleChange(l)}
               className={`text-[11px] font-semibold px-2 py-0.5 rounded-md transition-colors duration-150 ${
                 locale === l
-                  ? "bg-white text-[#0f1059]"
+                  ? "bg-white text-primary font-bold tracking-wide"
                   : "text-white/70 hover:text-white"
               }`}
             >
@@ -159,7 +159,7 @@ export default function DashboardNavbar({ role, name, email, image, locale, onLo
           {/* Dropdown panel */}
           <div tabIndex={0} className="dropdown-content z-50 mt-1.5 w-64 bg-base-100 rounded-xl border border-base-300 shadow-lg overflow-hidden">
             {/* User block */}
-            <div className="px-4 py-3.5 flex items-center gap-3" style={{ borderBottom: "1px solid oklch(91% 0.008 264)" }}>
+            <div className="px-4 py-3.5 flex items-center gap-3 border-b border-base-300">
               {image ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={image} alt={name} className="w-10 h-10 rounded-full object-cover shrink-0 ring-2 ring-base-300" />
@@ -195,7 +195,7 @@ export default function DashboardNavbar({ role, name, email, image, locale, onLo
               onClick={() => onLocaleChange(l)}
               className={`text-[11px] font-semibold px-2 py-0.5 rounded-md transition-colors duration-150 ${
                 locale === l
-                  ? "bg-white text-[#0f1059]"
+                  ? "bg-white text-primary"
                   : "text-white/70 hover:text-white"
               }`}
             >
@@ -220,7 +220,7 @@ export default function DashboardNavbar({ role, name, email, image, locale, onLo
             )}
           </button>
           <div tabIndex={0} className="dropdown-content z-50 mt-1.5 w-56 bg-base-100 rounded-xl border border-base-300 shadow-lg overflow-hidden">
-            <div className="px-4 py-3 flex items-center gap-3" style={{ borderBottom: "1px solid oklch(91% 0.008 264)" }}>
+            <div className="px-4 py-3 flex items-center gap-3 border-b border-base-300">
               {image ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={image} alt={name} className="w-9 h-9 rounded-full object-cover shrink-0 ring-2 ring-base-300" />

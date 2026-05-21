@@ -20,6 +20,32 @@ const ALLOWED_MIME = new Set([
   "image/png", "image/jpeg", "image/gif", "image/webp",
 ]);
 
+function hasValidMagicBytes(buffer: Uint8Array, mimeType: string): boolean {
+  if (buffer.length < 12) return false;
+  const b = buffer;
+  switch (mimeType) {
+    case "application/pdf":
+      return b[0] === 0x25 && b[1] === 0x50 && b[2] === 0x44 && b[3] === 0x46; // %PDF
+    case "image/png":
+      return b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4E && b[3] === 0x47;
+    case "image/jpeg":
+      return b[0] === 0xFF && b[1] === 0xD8 && b[2] === 0xFF;
+    case "image/gif":
+      return b[0] === 0x47 && b[1] === 0x49 && b[2] === 0x46 && b[3] === 0x38; // GIF8
+    case "image/webp":
+      return b[0] === 0x52 && b[1] === 0x49 && b[2] === 0x46 && b[3] === 0x46 && // RIFF
+             b[8] === 0x57 && b[9] === 0x45 && b[10] === 0x42 && b[11] === 0x50; // WEBP
+    case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+    case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+      return b[0] === 0x50 && b[1] === 0x4B; // PK (ZIP/OOXML)
+    case "application/msword":
+    case "application/vnd.ms-excel":
+      return b[0] === 0xD0 && b[1] === 0xCF && b[2] === 0x11 && b[3] === 0xE0; // OLE2
+    default:
+      return false;
+  }
+}
+
 type Params = { params: Promise<{ id: string }> };
 
 export async function POST(req: NextRequest, { params }: Params): Promise<NextResponse<ApiResponse<DarAttachmentRow>>> {
@@ -68,6 +94,9 @@ export async function POST(req: NextRequest, { params }: Params): Promise<NextRe
 
     const darNo = dar.darNo ?? darId;
     const buffer = new Uint8Array(await file.arrayBuffer());
+    if (!hasValidMagicBytes(buffer, file.type)) {
+      return NextResponse.json({ data: null, error: "เนื้อหาไฟล์ไม่ตรงกับประเภทที่ระบุ" }, { status: 400 });
+    }
 
     const sp = await uploadFileToDar({
       fileBuffer: buffer,

@@ -2,14 +2,13 @@ import {
   pgTable,
   pgEnum,
   text,
-  varchar,
   boolean,
   integer,
   timestamp,
-  uniqueIndex,
   unique,
   numeric,
   date,
+  index,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
@@ -81,7 +80,10 @@ export const users = pgTable("User", {
   departmentId: text("departmentId").references(() => departments.id, { onDelete: "set null" }),
   createdAt: timestamp("createdAt", { mode: "date" }).notNull().defaultNow(),
   updatedAt: timestamp("updatedAt", { mode: "date" }).notNull().$onUpdateFn(() => new Date()),
-});
+}, (t) => [
+  index("idx_users_role").on(t.role),
+  index("idx_users_department_id").on(t.departmentId),
+]);
 
 export const systemConfig = pgTable("SystemConfig", {
   configKey: text("configKey").primaryKey(),
@@ -128,7 +130,11 @@ export const darMasters = pgTable("DarMaster", {
   departmentId: text("departmentId").notNull().references(() => departments.id),
   createdAt: timestamp("createdAt", { mode: "date" }).notNull().defaultNow(),
   updatedAt: timestamp("updatedAt", { mode: "date" }).notNull().$onUpdateFn(() => new Date()),
-});
+}, (t) => [
+  index("idx_dar_masters_status").on(t.status),
+  index("idx_dar_masters_requester_id").on(t.requesterId),
+  index("idx_dar_masters_department_id").on(t.departmentId),
+]);
 
 export const darItems = pgTable("DarItem", {
   id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
@@ -157,7 +163,10 @@ export const darAttachments = pgTable("DarAttachment", {
   darMasterId: text("darMasterId").notNull().references(() => darMasters.id, { onDelete: "cascade" }),
   uploadedById: text("uploadedById").notNull().references(() => users.id),
   createdAt: timestamp("createdAt", { mode: "date" }).notNull().defaultNow(),
-});
+}, (t) => [
+  index("idx_dar_attachments_dar_master_id").on(t.darMasterId),
+  index("idx_dar_attachments_sp_item_id").on(t.spItemId),
+]);
 
 export const darApprovals = pgTable("DarApproval", {
   id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
@@ -168,7 +177,10 @@ export const darApprovals = pgTable("DarApproval", {
   signatureTypeUsed: signatureTypeEnum("signatureTypeUsed"),
   darMasterId: text("darMasterId").notNull().references(() => darMasters.id, { onDelete: "cascade" }),
   assignedUserId: text("assignedUserId").notNull().references(() => users.id),
-});
+}, (t) => [
+  index("idx_dar_approvals_dar_master_id").on(t.darMasterId),
+  index("idx_dar_approvals_assigned_user_id").on(t.assignedUserId),
+]);
 
 export const qmsProcessings = pgTable("QmsProcessing", {
   id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),

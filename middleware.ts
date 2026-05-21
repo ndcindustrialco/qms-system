@@ -46,7 +46,12 @@ export default auth(async (req) => {
   // ── Rate limit API routes ──────────────────────────────────────────────────
   if (path.startsWith("/api/")) {
     const config = path.startsWith("/api/auth") ? AUTH_LIMIT : API_LIMIT;
-    const result = rateLimit(`api:${ip}:${path}`, config);
+    let rateLimitKey = `api:ip:${ip}:${path}`;
+    if (!path.startsWith("/api/auth")) {
+      const token = await getToken({ req, secret: process.env.AUTH_SECRET! });
+      if (token?.sub) rateLimitKey = `api:user:${token.sub}:${path}`;
+    }
+    const result = rateLimit(rateLimitKey, config);
     if (!result.allowed) return tooManyRequests(result.resetAt);
 
     const res = NextResponse.next();

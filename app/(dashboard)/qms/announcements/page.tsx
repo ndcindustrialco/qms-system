@@ -30,9 +30,9 @@ export default async function ManageAnnouncementsPage() {
     .orderBy(desc(announcements.createdAt));
 
   return (
-    <div className="max-w-350 mx-auto px-4 md:px-8 flex flex-col gap-4">
-      <div className="flex items-center justify-between">
-        <div>
+    <div className="max-w-350 mx-auto px-4 md:px-8 flex flex-col gap-4 animate-slide-up">
+      <div className="flex items-start justify-between gap-4">
+        <div className="min-w-0">
           <h1 className="text-xl md:text-2xl font-bold text-primary">Manage Announcements</h1>
           <p className="text-xs md:text-sm text-gray-500 mt-0.5">Create and manage company-wide announcements</p>
         </div>
@@ -46,25 +46,25 @@ export default async function ManageAnnouncementsPage() {
 
       <div className="card-premium overflow-hidden border border-base-300 rounded-xl shadow-sm">
         <div className="px-5 py-4 border-b border-base-200">
-          <h2 className="text-sm md:text-base font-bold text-primary">All Announcements</h2>
+          <h2 className="text-sm md:text-base font-bold text-primary card-section-title">All Announcements</h2>
         </div>
         <div className="overflow-x-auto">
           <table className="table w-full">
             <thead>
-              <tr className="bg-base-200 text-xs text-gray-500 border-b border-base-200">
-                <th className="py-3.5 px-4 font-semibold">Title</th>
-                <th className="py-3.5 px-4 font-semibold">System</th>
-                <th className="py-3.5 px-4 font-semibold">Type</th>
-                <th className="py-3.5 px-4 font-semibold">Date Range</th>
-                <th className="py-3.5 px-4 font-semibold">Attachment</th>
-                <th className="py-3.5 px-4 font-semibold">Created By</th>
-                <th className="py-3.5 px-4 font-semibold">Status</th>
+              <tr className="border-b border-base-200">
+                <th className="th-pro">Title</th>
+                <th className="th-pro">System</th>
+                <th className="th-pro">Type</th>
+                <th className="th-pro">Date Range</th>
+                <th className="th-pro">Attachment</th>
+                <th className="th-pro">Created By</th>
+                <th className="th-pro">Status</th>
               </tr>
             </thead>
             <tbody>
               {rows.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="text-center py-8 text-[11px] md:text-xs text-gray-500">No announcements found.</td>
+                  <td colSpan={7} className="text-center py-8 text-[11px] md:text-xs text-neutral">No announcements found.</td>
                 </tr>
               ) : rows.map((a) => {
                 const isActive = (!a.startDate || new Date() >= a.startDate) && (!a.endDate || new Date() <= a.endDate);
@@ -75,11 +75,11 @@ export default async function ManageAnnouncementsPage() {
                       <span className="inline-block px-2.5 py-0.5 text-[11px] rounded-full font-bold bg-primary/10 text-primary">{a.sourceSystem}</span>
                     </td>
                     <td className="py-3.5 px-4">
-                      <span className={`inline-block px-2.5 py-0.5 text-[11px] rounded-full font-bold ${a.displayType === 'SCROLLING' ? 'bg-blue-100 text-blue-600' : 'bg-slate-100 text-slate-500'}`}>
+                      <span className={`inline-block px-2.5 py-0.5 text-[11px] rounded-full font-bold ${a.displayType === 'SCROLLING' ? 'bg-info/15 text-info' : 'bg-base-200 text-neutral'}`}>
                         {a.displayType}
                       </span>
                     </td>
-                    <td className="py-3.5 px-4 text-[11px] md:text-xs text-gray-500">
+                    <td className="py-3.5 px-4 text-[11px] md:text-xs text-neutral">
                       {a.startDate ? new Date(a.startDate).toLocaleDateString() : 'Always'} — {a.endDate ? new Date(a.endDate).toLocaleDateString() : 'No End'}
                     </td>
                     <td className="py-3.5 px-4">
@@ -89,15 +89,15 @@ export default async function ManageAnnouncementsPage() {
                           {a.fileName.substring(0, 15)}...
                         </a>
                       ) : (
-                        <span className="text-gray-500/50 text-[11px]">—</span>
+                        <span className="text-neutral/50 text-[11px]">—</span>
                       )}
                     </td>
-                    <td className="py-3.5 px-4 text-[11px] md:text-xs text-gray-500">{a.createdByName}</td>
+                    <td className="py-3.5 px-4 text-[11px] md:text-xs text-neutral">{a.createdByName}</td>
                     <td className="py-3.5 px-4">
                       {isActive ? (
-                        <span className="inline-block px-2.5 py-0.5 text-[11px] rounded-full font-bold bg-emerald-100 text-emerald-600">Active</span>
+                        <span className="inline-block px-2.5 py-0.5 text-[11px] rounded-full font-bold bg-success/15 text-success">Active</span>
                       ) : (
-                        <span className="inline-block px-2.5 py-0.5 text-[11px] rounded-full font-bold bg-slate-100 text-slate-500">Inactive</span>
+                        <span className="inline-block px-2.5 py-0.5 text-[11px] rounded-full font-bold bg-base-200 text-neutral">Inactive</span>
                       )}
                     </td>
                   </tr>

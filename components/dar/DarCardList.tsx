@@ -70,7 +70,7 @@ export default function DarCardList({ dars }: { dars: DarSummary[] }) {
           <div className="flex items-start justify-between gap-2 mb-3">
             <div>
               {dar.darNo ? (
-                <p className="text-sm font-bold text-[#0F1059]">{dar.darNo}</p>
+                <p className="text-sm font-bold text-primary">{dar.darNo}</p>
               ) : (
                 <span className="inline-block px-2 py-0.5 text-[11px] rounded-md bg-base-200 text-gray-400 font-medium">
                   {t.noDarNo}
@@ -103,7 +103,7 @@ export default function DarCardList({ dars }: { dars: DarSummary[] }) {
           <div className="flex gap-2 mt-4 justify-end">
             <Link
               href={`/dar/${dar.id}`}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold text-[#1D6A8A] border border-[#1D6A8A]/30 hover:bg-[#1D6A8A]/10 transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold text-secondary border border-secondary/30 hover:bg-secondary/10 transition-colors"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -115,7 +115,7 @@ export default function DarCardList({ dars }: { dars: DarSummary[] }) {
             {dar.status === "DRAFT" && (
               <Link
                 href={`/dar/${dar.id}/edit`}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold text-white bg-[#0F1059] hover:bg-[#0F1059]/90 transition-colors"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold text-primary-content bg-primary hover:bg-primary/90 transition-colors"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />

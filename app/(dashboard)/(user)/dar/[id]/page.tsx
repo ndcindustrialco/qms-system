@@ -20,7 +20,7 @@ export default async function DarDetailPage({ params }: Props) {
 
     return (
       <div className="max-w-[1400px] mx-auto px-4 md:px-8">
-        <div className="flex items-center gap-2 text-[11px] md:text-xs text-gray-500 mb-4">
+        <div className="flex items-center gap-2 text-[11px] md:text-xs text-neutral mb-4">
           <Link href="/dar" className="hover:text-neutral transition-colors">คำขอเอกสาร</Link>
           <span>/</span>
           <span className="text-neutral font-medium">{dar.darNo ?? "ฉบับร่าง"}</span>

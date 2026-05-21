@@ -1,4 +1,4 @@
-import { eq, desc, inArray } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { users, departments } from "@/db/schema";
 import type { UserWithDept } from "@/types/user";
@@ -14,16 +14,12 @@ export async function getAllUsers(): Promise<UserWithDept[]> {
       role: users.role,
       msUserId: users.msUserId,
       departmentId: users.departmentId,
+      deptName: departments.name,
       createdAt: users.createdAt,
     })
     .from(users)
+    .leftJoin(departments, eq(users.departmentId, departments.id))
     .orderBy(desc(users.createdAt));
-
-  const deptIds = [...new Set(rows.map((u) => u.departmentId).filter(Boolean))] as string[];
-  const depts = deptIds.length > 0
-    ? await db.select({ id: departments.id, name: departments.name }).from(departments).where(inArray(departments.id, deptIds))
-    : [];
-  const deptMap = Object.fromEntries(depts.map((d) => [d.id, d]));
 
   return rows.map((u) => ({
     id: u.id,
@@ -32,7 +28,7 @@ export async function getAllUsers(): Promise<UserWithDept[]> {
     employeeId: u.employeeId,
     role: u.role,
     msUserId: u.msUserId,
-    department: u.departmentId ? (deptMap[u.departmentId] ?? null) : null,
+    department: u.departmentId && u.deptName ? { id: u.departmentId, name: u.deptName } : null,
     createdAt: u.createdAt.toISOString(),
   }));
 }

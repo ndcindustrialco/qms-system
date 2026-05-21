@@ -160,9 +160,9 @@ export default function DepartmentTable({ departments }: Props) {
                 </td>
                 <td className="py-3.5 px-4">
                   {dept.isActive ? (
-                    <span className="inline-block px-2.5 py-0.5 text-[11px] rounded-full font-bold bg-emerald-100 text-emerald-600">{t.active}</span>
+                    <span className="inline-block px-2.5 py-0.5 text-[11px] rounded-full font-bold bg-success/15 text-success">{t.active}</span>
                   ) : (
-                    <span className="inline-block px-2.5 py-0.5 text-[11px] rounded-full font-bold bg-slate-100 text-slate-500">{t.inactive}</span>
+                    <span className="inline-block px-2.5 py-0.5 text-[11px] rounded-full font-bold bg-base-200 text-neutral">{t.inactive}</span>
                   )}
                 </td>
                 <td className="py-3.5 px-4">
@@ -211,9 +211,9 @@ export default function DepartmentTable({ departments }: Props) {
                 )}
               </div>
               {dept.isActive ? (
-                <span className="inline-block px-2.5 py-0.5 text-[11px] rounded-full font-bold bg-emerald-100 text-emerald-600 shrink-0">{t.active}</span>
+                <span className="inline-block px-2.5 py-0.5 text-[11px] rounded-full font-bold bg-success/15 text-success shrink-0">{t.active}</span>
               ) : (
-                <span className="inline-block px-2.5 py-0.5 text-[11px] rounded-full font-bold bg-slate-100 text-slate-500 shrink-0">{t.inactive}</span>
+                <span className="inline-block px-2.5 py-0.5 text-[11px] rounded-full font-bold bg-base-200 text-neutral shrink-0">{t.inactive}</span>
               )}
             </div>
             <Link href={`/it/departments/${dept.id}`} className="text-[11px] md:text-xs text-gray-500 hover:text-primary transition-colors mb-3 block">

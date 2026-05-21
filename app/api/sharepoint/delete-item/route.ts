@@ -22,7 +22,7 @@ export async function DELETE(req: Request) {
 
     return Response.json({ data: { deleted: true }, error: null });
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Internal server error";
-    return Response.json({ data: null, error: message }, { status: 500 });
+    console.error("[DELETE /api/sharepoint/delete-item]", err);
+    return Response.json({ data: null, error: "Failed to delete item" }, { status: 500 });
   }
 }

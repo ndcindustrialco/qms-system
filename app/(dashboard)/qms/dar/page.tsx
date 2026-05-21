@@ -28,14 +28,14 @@ export default async function QmsDarPage() {
   }, {});
 
   return (
-    <div className="max-w-350 mx-auto px-4 md:px-8">
+    <div className="max-w-350 mx-auto px-4 md:px-8 animate-slide-up">
       <QmsDarPageHeader />
 
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
         {ORDERED_STATUSES.map((s) => (
-          <div key={s} className="card-premium px-5 py-4 flex flex-row items-center gap-3 border border-base-300 rounded-xl shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+          <div key={s} className="card-premium px-4 py-4 flex flex-col gap-2 hover-lift">
+            <span className="text-2xl font-bold text-primary leading-none">{counts[s] ?? 0}</span>
             <DarStatusBadge status={s} />
-            <span className="text-xl font-bold text-primary">{counts[s] ?? 0}</span>
           </div>
         ))}
       </div>

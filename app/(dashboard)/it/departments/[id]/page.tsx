@@ -14,10 +14,10 @@ const ROLE_LABELS = {
 } as const;
 
 const ROLE_BADGE = {
-  USER: "inline-block px-2.5 py-0.5 text-[11px] rounded-full font-bold bg-slate-100 text-slate-500",
-  QMS:  "inline-block px-2.5 py-0.5 text-[11px] rounded-full font-bold bg-blue-100 text-blue-600",
-  MR:   "inline-block px-2.5 py-0.5 text-[11px] rounded-full font-bold bg-amber-100 text-amber-700",
-  IT:   "inline-block px-2.5 py-0.5 text-[11px] rounded-full font-bold bg-emerald-100 text-emerald-600",
+  USER: "inline-block px-2.5 py-0.5 text-[11px] rounded-full font-bold bg-base-200 text-neutral",
+  QMS:  "inline-block px-2.5 py-0.5 text-[11px] rounded-full font-bold bg-info/15 text-info",
+  MR:   "inline-block px-2.5 py-0.5 text-[11px] rounded-full font-bold bg-warning/15 text-warning",
+  IT:   "inline-block px-2.5 py-0.5 text-[11px] rounded-full font-bold bg-success/15 text-success",
 } as const;
 
 type Props = { params: Promise<{ id: string }> };
@@ -34,7 +34,7 @@ export default async function DepartmentDetailPage({ params }: Props) {
       <div className="flex items-start justify-between gap-4 mb-6">
         <div>
           {/* Breadcrumb */}
-          <div className="flex items-center gap-1.5 text-xs md:text-sm text-gray-500 mb-1">
+          <div className="flex items-center gap-1.5 text-xs md:text-sm text-neutral mb-1">
             <Link href="/it/departments" className="hover:text-primary transition-colors">
               จัดการแผนก
             </Link>
@@ -46,15 +46,15 @@ export default async function DepartmentDetailPage({ params }: Props) {
           <h1 className="text-xl md:text-2xl font-bold text-primary">{dept.name}</h1>
           <div className="flex items-center gap-3 mt-1 flex-wrap">
             {dept.emailGroup ? (
-              <span className="text-[11px] md:text-xs text-gray-500 font-mono">{dept.emailGroup}</span>
+              <span className="text-[11px] md:text-xs text-neutral font-mono">{dept.emailGroup}</span>
             ) : (
-              <span className="text-[11px] md:text-xs text-gray-500 opacity-50">ไม่มีอีเมลกลุ่ม</span>
+              <span className="text-[11px] md:text-xs text-neutral opacity-50">ไม่มีอีเมลกลุ่ม</span>
             )}
-            <span className="text-gray-500 opacity-30">·</span>
+            <span className="text-neutral opacity-30">·</span>
             {dept.isActive ? (
-              <span className="inline-block px-2.5 py-0.5 text-[11px] rounded-full font-bold bg-emerald-100 text-emerald-600">ใช้งาน</span>
+              <span className="inline-block px-2.5 py-0.5 text-[11px] rounded-full font-bold bg-success/15 text-success">ใช้งาน</span>
             ) : (
-              <span className="inline-block px-2.5 py-0.5 text-[11px] rounded-full font-bold bg-slate-100 text-slate-500">ปิดใช้งาน</span>
+              <span className="inline-block px-2.5 py-0.5 text-[11px] rounded-full font-bold bg-base-200 text-neutral">ปิดใช้งาน</span>
             )}
           </div>
         </div>
@@ -93,7 +93,7 @@ export default async function DepartmentDetailPage({ params }: Props) {
           <p className="text-[24px] font-semibold text-base-content">
             {dept.members.filter((m) => m.role !== "USER").length}
           </p>
-          <p className="text-[11px] md:text-xs text-gray-500">คน (QMS / MR / IT)</p>
+          <p className="text-[11px] md:text-xs text-neutral">คน (QMS / MR / IT)</p>
         </div>
       </div>
 
@@ -111,22 +111,22 @@ export default async function DepartmentDetailPage({ params }: Props) {
           <div className="hidden md:block card-premium overflow-hidden">
             <table className="table w-full">
               <thead>
-                <tr className="bg-base-200 text-xs text-gray-500 border-b border-base-200">
-                  <th className="py-3.5 px-4 font-semibold">#</th>
-                  <th className="py-3.5 px-4 font-semibold">ชื่อ</th>
-                  <th className="py-3.5 px-4 font-semibold">อีเมล</th>
-                  <th className="py-3.5 px-4 font-semibold">รหัสพนักงาน</th>
-                  <th className="py-3.5 px-4 font-semibold">Role</th>
-                  <th className="py-3.5 px-4 font-semibold">M365</th>
+                <tr className="border-b border-base-200">
+                  <th className="th-pro">#</th>
+                  <th className="th-pro">ชื่อ</th>
+                  <th className="th-pro">อีเมล</th>
+                  <th className="th-pro">รหัสพนักงาน</th>
+                  <th className="th-pro">Role</th>
+                  <th className="th-pro">M365</th>
                 </tr>
               </thead>
               <tbody>
                 {dept.members.map((member, idx) => (
                   <tr key={member.id} className="border-b border-base-200 hover:bg-base-200 transition-colors duration-100">
-                    <td className="py-3.5 px-4 text-[11px] md:text-xs text-gray-500">{idx + 1}</td>
+                    <td className="py-3.5 px-4 text-[11px] md:text-xs text-neutral">{idx + 1}</td>
                     <td className="py-3.5 px-4 text-xs md:text-sm font-semibold text-neutral">{member.name ?? "—"}</td>
-                    <td className="py-3.5 px-4 text-[11px] md:text-xs text-gray-500">{member.email}</td>
-                    <td className="py-3.5 px-4 text-[11px] md:text-xs text-gray-500">
+                    <td className="py-3.5 px-4 text-[11px] md:text-xs text-neutral">{member.email}</td>
+                    <td className="py-3.5 px-4 text-[11px] md:text-xs text-neutral">
                       {member.employeeId ?? <span className="opacity-40">—</span>}
                     </td>
                     <td className="py-3.5 px-4">
@@ -136,14 +136,14 @@ export default async function DepartmentDetailPage({ params }: Props) {
                     </td>
                     <td className="py-3.5 px-4">
                       {member.msUserId ? (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 text-[11px] rounded-full font-bold bg-emerald-100 text-emerald-600">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 text-[11px] rounded-full font-bold bg-success/15 text-success">
                           <svg xmlns="http://www.w3.org/2000/svg" className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
                             <polyline points="20 6 9 17 4 12" />
                           </svg>
                           เชื่อม
                         </span>
                       ) : (
-                        <span className="inline-block px-2.5 py-0.5 text-[11px] rounded-full font-bold bg-slate-100 text-slate-500">—</span>
+                        <span className="inline-block px-2.5 py-0.5 text-[11px] rounded-full font-bold bg-base-200 text-neutral">—</span>
                       )}
                     </td>
                   </tr>

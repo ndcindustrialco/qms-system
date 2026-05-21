@@ -1,4 +1,4 @@
-import { eq, and, desc, asc, sql, count, inArray } from "drizzle-orm";
+import { eq, and, desc, asc, sql, count, isNotNull } from "drizzle-orm";
 import { db } from "@/lib/db";
 import {
   darMasters, darItems, darDistributions, darApprovals, darAttachments,
@@ -33,95 +33,24 @@ function mapApproval(a: {
 // ── Fetch helpers ─────────────────────────────────────────────────────────────
 
 async function fetchDarDetail(id: string): Promise<DarDetail | null> {
-  const [master] = await db
-    .select({
-      id: darMasters.id,
-      darNo: darMasters.darNo,
-      requestDate: darMasters.requestDate,
-      objective: darMasters.objective,
-      docType: darMasters.docType,
-      docTypeOther: darMasters.docTypeOther,
-      reason: darMasters.reason,
-      status: darMasters.status,
-      requesterId: darMasters.requesterId,
-    })
-    .from(darMasters)
-    .where(eq(darMasters.id, id))
-    .limit(1);
+  const master = await db.query.darMasters.findFirst({
+    where: eq(darMasters.id, id),
+    with: {
+      requester: { with: { department: true } },
+      items: { orderBy: asc(darItems.itemNo) },
+      distributions: { with: { department: true } },
+      approvals: {
+        orderBy: asc(darApprovals.id),
+        with: { assignedUser: { with: { department: true } } },
+      },
+      attachments: {
+        orderBy: asc(darAttachments.createdAt),
+        with: { uploadedBy: true },
+      },
+    },
+  });
 
   if (!master) return null;
-
-  const [requesterRow] = await db
-    .select({
-      id: users.id,
-      name: users.name,
-      employeeId: users.employeeId,
-      departmentId: users.departmentId,
-    })
-    .from(users)
-    .where(eq(users.id, master.requesterId))
-    .limit(1);
-
-  const requesterDept = requesterRow.departmentId
-    ? await db.select({ id: departments.id, name: departments.name }).from(departments).where(eq(departments.id, requesterRow.departmentId)).limit(1)
-    : [];
-
-  const [items, distributions, approvalsRaw, attachmentsRaw] = await Promise.all([
-    db.select({ itemNo: darItems.itemNo, docNumber: darItems.docNumber, docName: darItems.docName, revision: darItems.revision })
-      .from(darItems).where(eq(darItems.darMasterId, id)).orderBy(asc(darItems.itemNo)),
-
-    db.select({ departmentId: darDistributions.departmentId, deptName: departments.name, deptId: departments.id })
-      .from(darDistributions)
-      .innerJoin(departments, eq(darDistributions.departmentId, departments.id))
-      .where(eq(darDistributions.darMasterId, id)),
-
-    db.select({
-      id: darApprovals.id,
-      stepRole: darApprovals.stepRole,
-      action: darApprovals.action,
-      actionDate: darApprovals.actionDate,
-      signatureUsedUrl: darApprovals.signatureUsedUrl,
-      signatureTypeUsed: darApprovals.signatureTypeUsed,
-      assignedUserId: darApprovals.assignedUserId,
-    }).from(darApprovals).where(eq(darApprovals.darMasterId, id)).orderBy(asc(darApprovals.id)),
-
-    db.select({
-      id: darAttachments.id,
-      fileName: darAttachments.fileName,
-      fileSize: darAttachments.fileSize,
-      mimeType: darAttachments.mimeType,
-      spItemId: darAttachments.spItemId,
-      spWebUrl: darAttachments.spWebUrl,
-      spDownloadUrl: darAttachments.spDownloadUrl,
-      folderPath: darAttachments.folderPath,
-      createdAt: darAttachments.createdAt,
-      uploadedById: darAttachments.uploadedById,
-    }).from(darAttachments).where(eq(darAttachments.darMasterId, id)).orderBy(asc(darAttachments.createdAt)),
-  ]);
-
-  // Fetch assignedUser for each approval
-  const approverIds = [...new Set(approvalsRaw.map((a) => a.assignedUserId))];
-  const approverUsers = approverIds.length > 0
-    ? await db.select({ id: users.id, name: users.name, employeeId: users.employeeId, departmentId: users.departmentId })
-        .from(users).where(inArray(users.id, approverIds))
-    : [];
-
-  const approverDeptIds = [...new Set(approverUsers.map((u) => u.departmentId).filter(Boolean))] as string[];
-  const approverDepts = approverDeptIds.length > 0
-    ? await db.select({ id: departments.id, name: departments.name }).from(departments).where(inArray(departments.id, approverDeptIds))
-    : [];
-
-  const approverDeptMap = Object.fromEntries(approverDepts.map((d) => [d.id, d]));
-  const approverUserMap = Object.fromEntries(
-    approverUsers.map((u) => [u.id, { ...u, department: u.departmentId ? (approverDeptMap[u.departmentId] ?? null) : null }]),
-  );
-
-  // Fetch uploadedBy for each attachment
-  const uploaderIds = [...new Set(attachmentsRaw.map((a) => a.uploadedById))];
-  const uploaders = uploaderIds.length > 0
-    ? await db.select({ id: users.id, name: users.name }).from(users).where(inArray(users.id, uploaderIds))
-    : [];
-  const uploaderMap = Object.fromEntries(uploaders.map((u) => [u.id, u]));
 
   return {
     id: master.id,
@@ -133,15 +62,36 @@ async function fetchDarDetail(id: string): Promise<DarDetail | null> {
     reason: master.reason,
     status: master.status,
     requester: {
-      id: requesterRow.id,
-      name: requesterRow.name,
-      employeeId: requesterRow.employeeId,
-      department: requesterDept[0] ?? null,
+      id: master.requester.id,
+      name: master.requester.name,
+      employeeId: master.requester.employeeId,
+      department: master.requester.department ?? null,
     },
-    items: items.map((i) => ({ itemNo: i.itemNo, docNumber: i.docNumber, docName: i.docName, revision: i.revision })),
-    distributions: distributions.map((d) => ({ departmentId: d.departmentId, department: { id: d.deptId, name: d.deptName } })),
-    approvals: approvalsRaw.map((a) => mapApproval({ ...a, assignedUser: approverUserMap[a.assignedUserId] ?? { id: a.assignedUserId, name: null, employeeId: null, department: null } })),
-    attachments: attachmentsRaw.map((a): DarAttachmentRow => ({
+    items: master.items.map((i) => ({
+      itemNo: i.itemNo,
+      docNumber: i.docNumber,
+      docName: i.docName,
+      revision: i.revision,
+    })),
+    distributions: master.distributions.map((d) => ({
+      departmentId: d.departmentId,
+      department: { id: d.department.id, name: d.department.name },
+    })),
+    approvals: master.approvals.map((a) => mapApproval({
+      id: a.id,
+      stepRole: a.stepRole,
+      action: a.action,
+      actionDate: a.actionDate,
+      signatureUsedUrl: a.signatureUsedUrl,
+      signatureTypeUsed: a.signatureTypeUsed,
+      assignedUser: {
+        id: a.assignedUser.id,
+        name: a.assignedUser.name,
+        employeeId: a.assignedUser.employeeId,
+        department: a.assignedUser.department ?? null,
+      },
+    })),
+    attachments: master.attachments.map((a): DarAttachmentRow => ({
       id: a.id,
       fileName: a.fileName,
       fileSize: a.fileSize,
@@ -151,7 +101,7 @@ async function fetchDarDetail(id: string): Promise<DarDetail | null> {
       spDownloadUrl: a.spDownloadUrl,
       folderPath: a.folderPath,
       createdAt: a.createdAt.toISOString(),
-      uploadedBy: uploaderMap[a.uploadedById] ?? { id: a.uploadedById, name: null },
+      uploadedBy: { id: a.uploadedBy.id, name: a.uploadedBy.name },
     })),
   };
 }
@@ -513,16 +463,12 @@ export async function getReviewerCandidates(): Promise<ReviewerCandidate[]> {
       employeeId: users.employeeId,
       msUserId: users.msUserId,
       departmentId: users.departmentId,
+      deptName: departments.name,
     })
     .from(users)
-    .where(sql`${users.msUserId} is not null`)
+    .leftJoin(departments, eq(users.departmentId, departments.id))
+    .where(isNotNull(users.msUserId))
     .orderBy(asc(users.name));
-
-  const deptIds = [...new Set(result.map((u) => u.departmentId).filter(Boolean))] as string[];
-  const depts = deptIds.length > 0
-    ? await db.select({ id: departments.id, name: departments.name }).from(departments).where(inArray(departments.id, deptIds))
-    : [];
-  const deptMap = Object.fromEntries(depts.map((d) => [d.id, d]));
 
   return result.map((u) => ({
     id: u.id,
@@ -530,7 +476,7 @@ export async function getReviewerCandidates(): Promise<ReviewerCandidate[]> {
     email: u.email,
     employeeId: u.employeeId,
     msUserId: u.msUserId,
-    department: u.departmentId ? (deptMap[u.departmentId] ?? null) : null,
+    department: u.departmentId && u.deptName ? { id: u.departmentId, name: u.deptName } : null,
   })) as ReviewerCandidate[];
 }
 

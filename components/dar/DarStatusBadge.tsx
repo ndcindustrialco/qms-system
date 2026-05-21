@@ -2,12 +2,12 @@ import type { DarStatus } from "@/db/schema";
 import { DAR_STATUS_LABELS } from "@/types/dar";
 
 const STATUS_CLASS: Record<DarStatus, string> = {
-  DRAFT:            "bg-slate-100 text-slate-500 rounded-full font-bold",
-  PENDING_REVIEW:   "bg-blue-100 text-blue-600 rounded-full font-bold",
-  PENDING_APPROVE:  "bg-blue-100 text-blue-600 rounded-full font-bold",
-  QMS_PROCESSING:   "bg-amber-100 text-amber-700 rounded-full font-bold",
-  COMPLETED:        "bg-emerald-100 text-emerald-600 rounded-full font-bold",
-  CANCELLED:        "bg-slate-100 text-slate-400 rounded-full font-bold line-through",
+  DRAFT:            "bg-base-200 text-neutral rounded-full font-bold",
+  PENDING_REVIEW:   "bg-info/15 text-info rounded-full font-bold",
+  PENDING_APPROVE:  "bg-info/15 text-info rounded-full font-bold",
+  QMS_PROCESSING:   "bg-warning/15 text-warning rounded-full font-bold",
+  COMPLETED:        "bg-success/15 text-success rounded-full font-bold",
+  CANCELLED:        "bg-base-200 text-neutral/50 rounded-full font-bold line-through",
 };
 
 export default function DarStatusBadge({ status }: { status: DarStatus }) {

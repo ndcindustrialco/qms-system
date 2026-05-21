@@ -50,7 +50,7 @@ export default function DarListClient({ dars, requesterInfo }: Props) {
           </div>
           <div className="flex flex-col gap-1">
             <p className="text-sm md:text-base font-semibold text-primary">{t("emptyDarUser")}</p>
-            <p className="text-xs md:text-sm text-gray-500">{t("emptyDarUserDesc")}</p>
+            <p className="text-xs md:text-sm text-neutral">{t("emptyDarUserDesc")}</p>
           </div>
           <button
             onClick={() => setDrawerOpen(true)}

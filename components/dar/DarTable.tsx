@@ -64,14 +64,14 @@ export default function DarTable({ dars }: { dars: DarSummary[] }) {
     <div className="hidden md:block card-premium overflow-hidden border border-base-300 rounded-xl shadow-sm">
       <table className="table w-full">
         <thead>
-          <tr className="bg-base-200 border-b border-base-200">
-            <th className="py-3.5 px-4 text-xs font-semibold text-gray-500 whitespace-nowrap">{t.darNo}</th>
-            <th className="py-3.5 px-4 text-xs font-semibold text-gray-500 whitespace-nowrap">{t.date}</th>
-            <th className="py-3.5 px-4 text-xs font-semibold text-gray-500">{t.objective}</th>
-            <th className="py-3.5 px-4 text-xs font-semibold text-gray-500">{t.docType}</th>
-            <th className="py-3.5 px-4 text-xs font-semibold text-gray-500 text-center">{t.items}</th>
-            <th className="py-3.5 px-4 text-xs font-semibold text-gray-500">{t.status}</th>
-            <th className="py-3.5 px-4" />
+          <tr className="border-b border-base-200">
+            <th className="th-pro">{t.darNo}</th>
+            <th className="th-pro">{t.date}</th>
+            <th className="th-pro">{t.objective}</th>
+            <th className="th-pro">{t.docType}</th>
+            <th className="th-pro text-center">{t.items}</th>
+            <th className="th-pro">{t.status}</th>
+            <th className="th-pro" />
           </tr>
         </thead>
         <tbody>
@@ -83,7 +83,7 @@ export default function DarTable({ dars }: { dars: DarSummary[] }) {
               {/* DAR No. */}
               <td className="py-3.5 px-4">
                 {dar.darNo ? (
-                  <span className="text-xs md:text-sm font-semibold text-[#0F1059]">{dar.darNo}</span>
+                  <span className="text-xs md:text-sm font-semibold text-primary">{dar.darNo}</span>
                 ) : (
                   <span className="inline-block px-2 py-0.5 text-[11px] rounded-md bg-base-200 text-gray-400 font-medium">
                     {t.draft}
@@ -123,7 +123,7 @@ export default function DarTable({ dars }: { dars: DarSummary[] }) {
                 <div className="flex items-center gap-2 justify-end">
                   <Link
                     href={`/dar/${dar.id}`}
-                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-[11px] font-semibold text-[#1D6A8A] border border-[#1D6A8A]/30 hover:bg-[#1D6A8A]/10 transition-colors"
+                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-[11px] font-semibold text-secondary border border-secondary/30 hover:bg-secondary/10 transition-colors"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />

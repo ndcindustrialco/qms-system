@@ -1,0 +1,28 @@
+# Dependency directories
+node_modules/
+
+# Next.js build and cache output
+.next/
+out/
+.open-next/
+
+# Environment variables and sensitive data
+.env
+.env.*
+!.env.example
+
+# Local configuration & AI caches
+.claude/
+scratch/
+settings.local.json
+
+# Standard build outputs & logs
+build/
+dist/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Multimedia / Public assets (ไม่ต้องให้ Claude อ่านรูปภาพ/ฟอนต์)
+public/

@@ -49,13 +49,13 @@ function formatDate(iso: string): string {
 }
 
 function FileTypeBadge({ mime }: { mime: string }) {
-  if (isPdf(mime)) return <span className="inline-block px-2 py-0.5 text-[10px] rounded-full font-bold bg-red-100 text-red-600">PDF</span>;
-  if (isImage(mime)) return <span className="inline-block px-2 py-0.5 text-[10px] rounded-full font-bold bg-emerald-100 text-emerald-600">IMG</span>;
-  if (mime.includes("word")) return <span className="inline-block px-2 py-0.5 text-[10px] rounded-full font-bold bg-blue-100 text-blue-600">DOC</span>;
-  if (mime.includes("excel") || mime.includes("spreadsheet")) return <span className="inline-block px-2 py-0.5 text-[10px] rounded-full font-bold bg-emerald-100 text-emerald-600">XLS</span>;
-  if (mime.includes("powerpoint") || mime.includes("presentation")) return <span className="inline-block px-2 py-0.5 text-[10px] rounded-full font-bold bg-amber-100 text-amber-700">PPT</span>;
-  if (!mime) return <span className="inline-block px-2 py-0.5 text-[10px] rounded-full font-bold bg-slate-100 text-slate-500">DIR</span>;
-  return <span className="inline-block px-2 py-0.5 text-[10px] rounded-full font-bold bg-slate-100 text-slate-500">FILE</span>;
+  if (isPdf(mime)) return <span className="inline-block px-2 py-0.5 text-[10px] rounded-full font-bold bg-error/15 text-error">PDF</span>;
+  if (isImage(mime)) return <span className="inline-block px-2 py-0.5 text-[10px] rounded-full font-bold bg-success/15 text-success">IMG</span>;
+  if (mime.includes("word")) return <span className="inline-block px-2 py-0.5 text-[10px] rounded-full font-bold bg-info/15 text-info">DOC</span>;
+  if (mime.includes("excel") || mime.includes("spreadsheet")) return <span className="inline-block px-2 py-0.5 text-[10px] rounded-full font-bold bg-success/15 text-success">XLS</span>;
+  if (mime.includes("powerpoint") || mime.includes("presentation")) return <span className="inline-block px-2 py-0.5 text-[10px] rounded-full font-bold bg-warning/15 text-warning">PPT</span>;
+  if (!mime) return <span className="inline-block px-2 py-0.5 text-[10px] rounded-full font-bold bg-base-200 text-neutral">DIR</span>;
+  return <span className="inline-block px-2 py-0.5 text-[10px] rounded-full font-bold bg-base-200 text-neutral">FILE</span>;
 }
 
 function FolderIcon() {
@@ -182,7 +182,7 @@ function PreviewModal({
             <FileTypeBadge mime={mimeOf(file)} />
             <span className="text-xs md:text-sm font-semibold text-neutral truncate">{file.name}</span>
             {file.size > 0 && (
-              <span className="text-[11px] md:text-xs text-gray-500 shrink-0">{formatBytes(file.size)}</span>
+              <span className="text-[11px] md:text-xs text-neutral shrink-0">{formatBytes(file.size)}</span>
             )}
           </div>
           <div className="flex items-center gap-2 shrink-0">
@@ -405,7 +405,7 @@ export default function SharePointBrowserPage() {
   const hasPreview = preview.kind !== "none";
 
   return (
-    <div className="max-w-[1400px] mx-auto px-4 md:px-8 flex flex-col gap-4">
+    <div className="max-w-350 mx-auto px-4 md:px-8 flex flex-col gap-4 animate-slide-up">
       {/* Page header */}
       <div>
         <h1 className="text-xl md:text-2xl font-bold text-primary">{t("spTitle")}</h1>
@@ -469,13 +469,13 @@ export default function SharePointBrowserPage() {
             <div className="hidden md:block">
               <table className="table w-full">
                 <thead>
-                  <tr className="bg-base-200 text-xs text-gray-500 border-b border-base-200">
-                    <th className="py-3.5 px-4 font-semibold w-12"></th>
-                    <th className="py-3.5 px-4 font-semibold">{t("spColName")}</th>
-                    <th className="py-3.5 px-4 font-semibold w-24">{t("spColType")}</th>
-                    <th className="py-3.5 px-4 font-semibold w-28">{t("spColSize")}</th>
-                    <th className="py-3.5 px-4 font-semibold w-36">{t("spColModified")}</th>
-                    <th className="py-3.5 px-4 font-semibold w-24"></th>
+                  <tr className="border-b border-base-200">
+                    <th className="th-pro w-12"></th>
+                    <th className="th-pro">{t("spColName")}</th>
+                    <th className="th-pro w-24">{t("spColType")}</th>
+                    <th className="th-pro w-28">{t("spColSize")}</th>
+                    <th className="th-pro w-36">{t("spColModified")}</th>
+                    <th className="th-pro w-24"></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -498,13 +498,13 @@ export default function SharePointBrowserPage() {
                         </td>
                         <td className="py-3.5 px-4">
                           {isDir
-                            ? <span className="text-[11px] md:text-xs text-gray-500">{file.folder?.childCount ?? 0} {t("spItems")}</span>
+                            ? <span className="text-[11px] md:text-xs text-neutral">{file.folder?.childCount ?? 0} {t("spItems")}</span>
                             : <FileTypeBadge mime={mime} />}
                         </td>
-                        <td className="py-3 px-4 text-[11px] md:text-xs text-gray-500">
+                        <td className="py-3 px-4 text-[11px] md:text-xs text-neutral">
                           {isDir ? "—" : formatBytes(file.size)}
                         </td>
-                        <td className="py-3 px-4 text-[11px] md:text-xs text-gray-500">
+                        <td className="py-3 px-4 text-[11px] md:text-xs text-neutral">
                           {formatDate(file.lastModifiedDateTime)}
                         </td>
                         <td className="py-3.5 px-4">
@@ -568,7 +568,7 @@ export default function SharePointBrowserPage() {
                       >
                         {file.name}
                       </button>
-                      <p className="text-[11px] md:text-xs text-gray-500">
+                      <p className="text-[11px] md:text-xs text-neutral">
                         {isDir
                           ? `${file.folder?.childCount ?? 0} ${t("spItems")}`
                           : `${formatBytes(file.size)} · ${formatDate(file.lastModifiedDateTime)}`}
