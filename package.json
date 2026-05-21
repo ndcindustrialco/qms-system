@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "node scratch/set-runtime.js nodejs && next dev",
     "build": "node scratch/set-runtime.js nodejs && next build",
-    "build:cloudflare": "node scratch/set-runtime.js nodejs && npx @opennextjs/cloudflare build",
+    "build:cloudflare": "node scratch/set-runtime.js edge && npx @opennextjs/cloudflare build",
     "start": "next start",
     "lint": "eslint"
   },

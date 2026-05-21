@@ -3,12 +3,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { UserRole } from "@/db/schema";
+import SignOutButton from "./SignOutButton";
 
 type NavItem = { labelTh: string; labelEn: string; href: string; icon: React.ReactNode };
 type Props = {
   role: UserRole;
   name: string;
   email: string;
+  image?: string | null;
   isOpen: boolean;
   onClose: () => void;
   locale: "th" | "en";
@@ -56,7 +58,6 @@ function BuildingIcon() {
   );
 }
 
-
 function HomeIcon() {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" className="h-4.5 w-4.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -72,7 +73,6 @@ function MegaphoneIcon() {
     </svg>
   );
 }
-
 
 function getSections(role: UserRole, locale: "th" | "en"): { label: string; items: NavItem[] }[] {
   const userItems: NavItem[] = [
@@ -94,7 +94,7 @@ function getSections(role: UserRole, locale: "th" | "en"): { label: string; item
   ];
 
   if (role === "QMS" || role === "MR" || role === "IT") {
-    sections.push({ label: locale === "th" ? "QMS" : "QMS", items: qmsItems });
+    sections.push({ label: "QMS", items: qmsItems });
   }
   if (role === "IT") {
     sections.push({ label: locale === "th" ? "ระบบ IT" : "IT Admin", items: itItems });
@@ -105,112 +105,136 @@ function getSections(role: UserRole, locale: "th" | "en"): { label: string; item
 
 /* ── Component ───────────────────────────────────────────────── */
 
-export default function DashboardSidebar({ role, name, email, isOpen, onClose, locale }: Props) {
+export default function DashboardSidebar({ role, name, email, image, isOpen, onClose, locale }: Props) {
   const pathname = usePathname();
   const sections = getSections(role, locale);
+  const signOutLabel = locale === "th" ? "ออกจากระบบ" : "Sign Out";
 
   return (
     <>
       {/* Mobile Overlay */}
       {isOpen && (
-        <div 
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden transition-opacity"
+        <div
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"
           onClick={onClose}
         />
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex flex-col shrink-0 h-screen w-65 overflow-hidden sidebar-surface transform transition-transform duration-300 ease-out md:hidden ${
+        className={`fixed md:static inset-y-0 left-0 z-50 md:z-auto flex flex-col shrink-0 h-screen w-60 overflow-hidden sidebar-surface transform transition-transform duration-300 ease-out md:translate-x-0 ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         {/* ── Brand ── */}
-      <div
-        className="flex items-center justify-between h-20 px-4 shrink-0"
-        style={{ borderBottom: "1px solid var(--sidebar-border)" }}
-      >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/logo/logo.webp"
-          alt="NDC Industrial"
-          className="h-10 w-auto brightness-0 invert object-contain"
-        />
-
-        <button
-          onClick={onClose}
-          className="shrink-0 w-8 h-8 rounded-md flex items-center justify-center transition-colors duration-150 hover:bg-white/10"
-          style={{ color: "var(--sidebar-text-muted)" }}
-          aria-label={locale === "en" ? "Close sidebar" : "ปิดเมนู"}
+        <div
+          className="flex items-center justify-between h-16 px-4 shrink-0"
+          style={{ borderBottom: "1px solid var(--sidebar-border)" }}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
+          <Link href="/" className="hover:opacity-80 transition-opacity">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/logo/logo.webp"
+              alt="NDC Industrial"
+              className="h-8 w-auto brightness-0 invert object-contain"
+            />
+          </Link>
 
-      {/* ── Navigation ── */}
-      <nav className="flex-1 overflow-y-auto px-2 py-3 flex flex-col gap-4">
-        {sections.map((section) => (
-          <div key={section.label} className="flex flex-col gap-0.5">
-            {/* Section label */}
-            <p className="px-3 mb-1.5 text-[10px] font-bold uppercase tracking-[0.12em] mt-3 flex items-center gap-2" style={{ color: "var(--sidebar-text-muted)" }}>
-              {section.label}
-            </p>
-
-            {section.items.map((item) => {
-              const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
-              const label = locale === "en" ? item.labelEn : item.labelTh;
-
-              return (
-                <div key={item.href} className="relative group">
-                  <Link
-                    href={item.href}
-                    onClick={onClose}
-                    className={`flex items-center gap-3 px-3 py-2.5 text-[14px] font-medium ${
-                      isActive ? "sidebar-item-active" : "sidebar-item"
-                    }`}
-                  >
-                    <span style={{ color: isActive ? "var(--sidebar-icon-active)" : "var(--sidebar-text-muted)" }}>
-                      {item.icon}
-                    </span>
-                    <span className="truncate" style={{ color: isActive ? "var(--sidebar-text-active)" : "var(--sidebar-text)" }}>
-                      {label}
-                    </span>
-                    {/* Active indicator bar */}
-                    {isActive && (
-                      <span className="ml-auto w-1 h-5 rounded-full shrink-0" style={{ background: "var(--sidebar-icon-active)" }} />
-                    )}
-                  </Link>
-                </div>
-              );
-            })}
-          </div>
-        ))}
-      </nav>
-
-      {/* ── Footer: user info ── */}
-      <div
-        className="px-4 py-4 mt-auto"
-        style={{ borderTop: "1px solid var(--sidebar-border)" }}
-      >
-        <div className="flex items-center gap-3 px-1 min-w-0">
-          <div
-            className="w-9 h-9 rounded-full flex items-center justify-center text-[13px] font-bold shrink-0 ring-2 ring-base-content/10"
-            style={{ background: "linear-gradient(135deg, oklch(36% 0.16 264), oklch(28% 0.13 264))", color: "var(--sidebar-text-active)" }}
+          {/* Close button — mobile only */}
+          <button
+            onClick={onClose}
+            className="md:hidden shrink-0 w-8 h-8 rounded-md flex items-center justify-center transition-colors duration-150 hover:bg-white/10"
+            style={{ color: "var(--sidebar-text-muted)" }}
+            aria-label={locale === "en" ? "Close sidebar" : "ปิดเมนู"}
           >
-            {name.charAt(0).toUpperCase()}
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="text-[14px] font-medium truncate leading-tight" style={{ color: "var(--sidebar-text-active)" }}>
-              {name}
-            </p>
-            <p className="text-[12px] truncate leading-tight mt-0.5" style={{ color: "var(--sidebar-text-muted)" }}>
-              {email}
-            </p>
-          </div>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
-      </div>
-    </aside>
+
+        {/* ── Navigation ── */}
+        <nav className="flex-1 overflow-y-auto px-2 py-3 flex flex-col gap-4">
+          {sections.map((section) => (
+            <div key={section.label} className="flex flex-col gap-0.5">
+              <p
+                className="px-3 mb-1.5 text-[10px] font-bold uppercase tracking-[0.12em] mt-3 flex items-center gap-2"
+                style={{ color: "var(--sidebar-text-muted)" }}
+              >
+                {section.label}
+              </p>
+
+              {section.items.map((item) => {
+                const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+                const label = locale === "en" ? item.labelEn : item.labelTh;
+
+                return (
+                  <div key={item.href} className="relative group">
+                    <Link
+                      href={item.href}
+                      onClick={onClose}
+                      className={`flex items-center gap-3 px-3 py-2.5 text-[14px] font-medium ${
+                        isActive ? "sidebar-item-active" : "sidebar-item"
+                      }`}
+                    >
+                      <span style={{ color: isActive ? "var(--sidebar-icon-active)" : "var(--sidebar-text-muted)" }}>
+                        {item.icon}
+                      </span>
+                      <span
+                        className="truncate"
+                        style={{ color: isActive ? "var(--sidebar-text-active)" : "var(--sidebar-text)" }}
+                      >
+                        {label}
+                      </span>
+                      {isActive && (
+                        <span
+                          className="ml-auto w-1 h-5 rounded-full shrink-0"
+                          style={{ background: "var(--sidebar-icon-active)" }}
+                        />
+                      )}
+                    </Link>
+                  </div>
+                );
+              })}
+            </div>
+          ))}
+        </nav>
+
+        {/* ── Footer: user info + sign out ── */}
+        <div
+          className="px-3 py-4 mt-auto shrink-0"
+          style={{ borderTop: "1px solid var(--sidebar-border)" }}
+        >
+          <div className="flex items-center gap-3 px-1 min-w-0 mb-3">
+            {image ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={image}
+                alt={name}
+                className="w-8 h-8 rounded-full object-cover shrink-0 ring-2 ring-white/20"
+              />
+            ) : (
+              <div
+                className="w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-bold shrink-0 ring-2 ring-white/10"
+                style={{
+                  background: "linear-gradient(135deg, oklch(36% 0.16 264), oklch(28% 0.13 264))",
+                  color: "var(--sidebar-text-active)",
+                }}
+              >
+                {name.charAt(0).toUpperCase()}
+              </div>
+            )}
+            <div className="min-w-0 flex-1">
+              <p className="text-[13px] font-medium truncate leading-tight" style={{ color: "var(--sidebar-text-active)" }}>
+                {name}
+              </p>
+              <p className="text-[11px] truncate leading-tight mt-0.5" style={{ color: "var(--sidebar-text-muted)" }}>
+                {email}
+              </p>
+            </div>
+          </div>
+          <SignOutButton label={signOutLabel} />
+        </div>
+      </aside>
     </>
   );
 }

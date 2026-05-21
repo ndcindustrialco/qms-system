@@ -11,7 +11,7 @@ export default async function ItDepartmentsPage() {
   const departments = await getAllDepartments();
 
   return (
-    <div className="max-w-[1400px] mx-auto px-4 md:px-8">
+    <div className="max-w-350 mx-auto px-4 md:px-8">
       {departments.length === 0 ? (
         <>
           <div className="flex items-start justify-between gap-4 mb-6">

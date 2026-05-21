@@ -87,7 +87,7 @@ export default function DarDrawer({ isOpen, onClose, requesterInfo }: Props) {
       />
 
       {/* Drawer panel */}
-      <div className="fixed top-0 right-0 h-full w-full max-w-2xl card-premium flex flex-col overflow-hidden">
+      <div className="fixed top-0 right-0 h-full w-full max-w-4xl card-premium flex flex-col overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-base-300 shrink-0">
           <h2 className="text-[16px] font-semibold text-base-content">{t.title}</h2>

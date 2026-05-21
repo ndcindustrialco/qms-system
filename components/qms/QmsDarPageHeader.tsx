@@ -11,9 +11,8 @@ export default function QmsDarPageHeader() {
   };
 
   return (
-    <div className="mb-6">
+    <div className="card-premium border border-base-300 rounded-xl shadow-sm px-5 py-4 mb-6 flex items-center justify-between gap-4">
       <h1 className="text-xl md:text-2xl font-bold text-primary">{t.title}</h1>
-      <p className="text-xs md:text-sm text-gray-500 mt-0.5">{t.description}</p>
     </div>
   );
 }

@@ -22,15 +22,15 @@ export default function DarListHeader({ onNewRequest }: Props) {
   );
 
   return (
-    <div className="px-5 py-4 mb-6 flex items-center justify-between gap-4 rounded-xl overflow-hidden relative" style={{ background: "linear-gradient(135deg, var(--sidebar-bg-from) 0%, oklch(19% 0.115 264) 100%)", backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(135deg, var(--sidebar-bg-from) 0%, oklch(19% 0.115 264) 100%)", backgroundSize: "24px 24px, 100% 100%" }}>
+    <div className="card-premium border border-base-300 rounded-xl shadow-sm px-5 py-4 mb-6 flex items-center justify-between gap-4">
       <div className="min-w-0">
-        <h1 className="text-xl md:text-2xl font-bold text-white leading-tight tracking-tight">{t.title}</h1>
+        <h1 className="text-xl md:text-2xl font-bold text-primary leading-tight">{t.title}</h1>
       </div>
 
       {onNewRequest ? (
         <button
           onClick={onNewRequest}
-          className="btn btn-sm gap-1.5 shrink-0 bg-white text-primary hover:bg-white/90 border-0 font-semibold"
+          className="btn btn-primary btn-sm gap-1.5 shrink-0"
         >
           {plusIcon}
           <span className="hidden sm:inline">{t.newRequest}</span>
@@ -38,7 +38,7 @@ export default function DarListHeader({ onNewRequest }: Props) {
       ) : (
         <Link
           href="/dar/new"
-          className="btn btn-sm gap-1.5 shrink-0 bg-white text-primary hover:bg-white/90 border-0 font-semibold"
+          className="btn btn-primary btn-sm gap-1.5 shrink-0"
         >
           {plusIcon}
           <span className="hidden sm:inline">{t.newRequest}</span>

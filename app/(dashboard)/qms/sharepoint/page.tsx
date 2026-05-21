@@ -407,9 +407,8 @@ export default function SharePointBrowserPage() {
   return (
     <div className="max-w-350 mx-auto px-4 md:px-8 flex flex-col gap-4 animate-slide-up">
       {/* Page header */}
-      <div>
+      <div className="card-premium border border-base-300 rounded-xl shadow-sm px-5 py-4 mb-6 flex items-center justify-between gap-4">
         <h1 className="text-xl md:text-2xl font-bold text-primary">{t("spTitle")}</h1>
-        <p className="text-xs md:text-sm text-gray-500 mt-0.5">{t("spSubtitle")}</p>
       </div>
 
       {/* Toolbar */}

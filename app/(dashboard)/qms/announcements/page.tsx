@@ -31,11 +31,8 @@ export default async function ManageAnnouncementsPage() {
 
   return (
     <div className="max-w-350 mx-auto px-4 md:px-8 flex flex-col gap-4 animate-slide-up">
-      <div className="flex items-start justify-between gap-4">
-        <div className="min-w-0">
-          <h1 className="text-xl md:text-2xl font-bold text-primary">Manage Announcements</h1>
-          <p className="text-xs md:text-sm text-gray-500 mt-0.5">Create and manage company-wide announcements</p>
-        </div>
+      <div className="card-premium border border-base-300 rounded-xl shadow-sm px-5 py-4 mb-6 flex items-center justify-between gap-4">
+        <h1 className="text-xl md:text-2xl font-bold text-primary">Manage Announcements</h1>
         <Link href="/qms/announcements/new" className="btn btn-primary btn-sm gap-2 rounded-md">
           <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />

@@ -15,9 +15,6 @@ export default function ItUsersPageHeader({ userCount }: Props) {
   };
 
   return (
-    <div>
-      <h1 className="text-xl md:text-2xl font-bold text-primary">{t.title}</h1>
-      <p className="text-xs md:text-sm text-gray-500 mt-0.5">{t.description}</p>
-    </div>
+    <h1 className="text-xl md:text-2xl font-bold text-primary">{t.title}</h1>
   );
 }

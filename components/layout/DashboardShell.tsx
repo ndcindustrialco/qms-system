@@ -3,7 +3,7 @@
 import { useState } from "react";
 import type { UserRole } from "@/db/schema";
 import { LocaleContext } from "@/lib/locale-context";
-import DashboardNavbar from "./DashboardNavbar";
+import DashboardHeader from "./DashboardHeader";
 import DashboardSidebar from "./DashboardSidebar";
 
 type Props = {
@@ -21,19 +21,20 @@ export default function DashboardShell({ role, name, email, image, children }: P
   return (
     <LocaleContext.Provider value={locale}>
       <div className="flex h-screen overflow-hidden bg-base-200">
-        {/* Mobile Sidebar Drawer */}
+        {/* Sidebar: persistent on desktop, drawer on mobile */}
         <DashboardSidebar
           role={role}
           name={name}
           email={email}
+          image={image}
           isOpen={mobileSidebarOpen}
           onClose={() => setMobileSidebarOpen(false)}
           locale={locale}
         />
 
-        {/* Main Column */}
+        {/* Main column */}
         <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
-          <DashboardNavbar
+          <DashboardHeader
             role={role}
             name={name}
             email={email}
