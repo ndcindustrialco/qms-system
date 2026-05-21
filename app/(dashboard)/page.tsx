@@ -3,7 +3,7 @@ export const runtime = 'nodejs';
 import { and, desc, eq, gte, isNull, lte, or, count } from "drizzle-orm";
 import { requireAuth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { announcements, publicDocuments, departments, darAttachments, darMasters, kpiMonthlyResults, kpiMasters } from "@/db/schema";
+import { announcements, publicDocuments, departments, darAttachments, kpiMonthlyResults, kpiMasters } from "@/db/schema";
 import DashboardClientView from "@/components/dashboard/DashboardClientView";
 
 export default async function CompanyCenterDashboard() {

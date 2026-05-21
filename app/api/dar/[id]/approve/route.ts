@@ -35,8 +35,8 @@ export async function POST(req: NextRequest, { params }: Params): Promise<NextRe
       saveSignature: parsed.data.saveSignature,
     });
 
-    revalidateTag(`dar-${id}`, "max");
-    revalidateTag("dar-list", "max");
+    revalidateTag(`dar-${id}`);
+    revalidateTag("dar-list");
 
     return NextResponse.json({ data: dar, error: null });
   } catch (err) {

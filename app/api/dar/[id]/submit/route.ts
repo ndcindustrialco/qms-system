@@ -17,8 +17,8 @@ export async function POST(_req: NextRequest, { params }: Params): Promise<NextR
 
     const dar = await submitDar(id, session.user.id);
 
-    revalidateTag(`dar-${id}`, "max");
-    revalidateTag("dar-list", "max");
+    revalidateTag(`dar-${id}`);
+    revalidateTag("dar-list");
 
     return NextResponse.json({ data: dar, error: null });
   } catch (err) {

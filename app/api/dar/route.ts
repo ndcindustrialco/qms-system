@@ -1,4 +1,4 @@
-export const runtime = 'nodejs';
+﻿export const runtime = 'nodejs';
 
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
@@ -18,12 +18,12 @@ const createSchema = z.object({
   objective: z.enum(["PREPARE_NEW", "REQUEST_COPY_CONTROLLED", "REQUEST_COPY_UNCONTROLLED", "REVISE", "CANCEL"]),
   docType: z.enum(["MANUAL", "FORMAT", "DRAWING", "PROCEDURE", "SOP", "SIP", "IPQC", "OTHER"]),
   docTypeOther: z.string().max(100).optional(),
-  reason: z.string().min(1, "กรุณาระบุเหตุผล").max(2000),
+  reason: z.string().min(1, "à¸à¸£à¸¸à¸“à¸²à¸£à¸°à¸šà¸¸à¹€à¸«à¸•à¸¸à¸œà¸¥").max(2000),
   items: z.array(z.object({
-    docNumber: z.string().min(1, "กรุณาระบุเลขที่เอกสาร").max(100),
-    docName: z.string().min(1, "กรุณาระบุชื่อเอกสาร").max(255),
-    revision: z.string().min(1, "กรุณาระบุ Revision").max(50),
-  })).min(1, "ต้องมีเอกสารอย่างน้อย 1 รายการ"),
+    docNumber: z.string().min(1, "à¸à¸£à¸¸à¸“à¸²à¸£à¸°à¸šà¸¸à¹€à¸¥à¸‚à¸—à¸µà¹ˆà¹€à¸­à¸à¸ªà¸²à¸£").max(100),
+    docName: z.string().min(1, "à¸à¸£à¸¸à¸“à¸²à¸£à¸°à¸šà¸¸à¸Šà¸·à¹ˆà¸­à¹€à¸­à¸à¸ªà¸²à¸£").max(255),
+    revision: z.string().min(1, "à¸à¸£à¸¸à¸“à¸²à¸£à¸°à¸šà¸¸ Revision").max(50),
+  })).min(1, "à¸•à¹‰à¸­à¸‡à¸¡à¸µà¹€à¸­à¸à¸ªà¸²à¸£à¸­à¸¢à¹ˆà¸²à¸‡à¸™à¹‰à¸­à¸¢ 1 à¸£à¸²à¸¢à¸à¸²à¸£"),
   distributionDepartmentIds: z.array(z.string().cuid()).default([]),
   action: z.enum(["DRAFT", "SUBMIT"]).default("DRAFT"),
   tempAttachments: z.array(z.object({
@@ -70,7 +70,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<ApiResponse<D
 
     if (!session.user.departmentId) {
       return NextResponse.json(
-        { data: null, error: "บัญชีของคุณยังไม่ได้ผูกกับแผนก กรุณาติดต่อ IT" },
+        { data: null, error: "à¸šà¸±à¸à¸Šà¸µà¸‚à¸­à¸‡à¸„à¸¸à¸“à¸¢à¸±à¸‡à¹„à¸¡à¹ˆà¹„à¸”à¹‰à¸œà¸¹à¸à¸à¸±à¸šà¹à¸œà¸™à¸ à¸à¸£à¸¸à¸“à¸²à¸•à¸´à¸”à¸•à¹ˆà¸­ IT" },
         { status: 400 },
       );
     }
@@ -85,7 +85,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<ApiResponse<D
     const { action, ...input } = parsed.data;
 
     if (input.docType === "OTHER" && !input.docTypeOther?.trim()) {
-      throw new ValidationError("กรุณาระบุประเภทเอกสาร (อื่นๆ)");
+      throw new ValidationError("à¸à¸£à¸¸à¸“à¸²à¸£à¸°à¸šà¸¸à¸›à¸£à¸°à¹€à¸ à¸—à¹€à¸­à¸à¸ªà¸²à¸£ (à¸­à¸·à¹ˆà¸™à¹†)");
     }
 
     let dar = await createDar(session.user.id, session.user.departmentId, {
@@ -97,7 +97,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<ApiResponse<D
       dar = await submitDar(dar.id, session.user.id);
     }
 
-    revalidateTag("dar-list", "max");
+    revalidateTag("dar-list");
 
     return NextResponse.json({ data: dar, error: null }, { status: 201 });
   } catch (err) {
@@ -108,3 +108,4 @@ export async function POST(req: NextRequest): Promise<NextResponse<ApiResponse<D
     return NextResponse.json({ data: null, error: "Internal server error" }, { status: 500 });
   }
 }
+

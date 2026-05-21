@@ -3,7 +3,7 @@ export const runtime = 'nodejs';
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 import { requireAuth } from "@/lib/auth";
-import { AppError, ValidationError } from "@/lib/errors";
+import { AppError } from "@/lib/errors";
 import { uploadFileToTemp } from "@/services/sharepoint";
 import type { ApiResponse } from "@/types/api";
 

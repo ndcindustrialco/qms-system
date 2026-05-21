@@ -253,7 +253,8 @@ function DropZone({ uploading, onFiles }: { uploading: boolean; onFiles: (f: Fil
 
 // ── File row ──────────────────────────────────────────────────────────────────
 function FileRow({
-  fileName, fileSize, mimeType, spWebUrl, spDownloadUrl, folderPath,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  fileName, fileSize, mimeType, spWebUrl: _spWebUrl, spDownloadUrl: _spDownloadUrl, folderPath,
   label, onPreview, onDelete, deleting,
 }: {
   fileName: string; fileSize: number; mimeType: string;
@@ -320,6 +321,7 @@ export default function DarAttachmentUpload(props: Props) {
   // Notify parent whenever tempItems changes — avoids calling setState inside a state updater
   useEffect(() => {
     if (props.mode === "temp") {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       onTempItemsChangeRef.current?.(tempItems.map(({ _localId: _, ...rest }) => rest));
     }
   }, [tempItems, props.mode]);

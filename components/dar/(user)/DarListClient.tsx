@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import type { DarSummary } from "@/types/dar";
 import DarListHeader from "@/components/dar/DarListHeader";
 import DarTable from "@/components/dar/DarTable";

@@ -14,7 +14,7 @@ type Props = {
   children: React.ReactNode;
 };
 
-export default function   ({ role, name, email, image, children }: Props) {
+export default function DashboardShell({ role, name, email, image, children }: Props) {
   const [locale, setLocale] = useState<"th" | "en">("th");
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 

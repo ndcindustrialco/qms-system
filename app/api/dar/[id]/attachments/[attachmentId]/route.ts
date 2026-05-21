@@ -1,7 +1,7 @@
 export const runtime = 'nodejs';
 
 import { NextResponse, type NextRequest } from "next/server";
-import { eq, and } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { requireAuth } from "@/lib/auth";
 import { AppError, ForbiddenError, NotFoundError } from "@/lib/errors";
 import { db } from "@/lib/db";
