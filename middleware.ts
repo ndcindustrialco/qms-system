@@ -71,9 +71,8 @@ export default auth(async (req) => {
     return NextResponse.redirect(url);
   }
 
-  // ── Read role from JWT token (session.user.role is not set at Edge) ─────────
-  const token = await getToken({ req, secret: process.env.AUTH_SECRET! });
-  const role = (token?.role ?? "USER") as UserRole;
+  // ── Read role from session (supports chunked cookies from Next-Auth v5) ──────
+  const role = (session.user.role ?? "USER") as UserRole;
 
   // ── Root / dashboard → role-based home ────────────────────────────────────
   // Removed redirect so users can access the main Company Center Dashboard
