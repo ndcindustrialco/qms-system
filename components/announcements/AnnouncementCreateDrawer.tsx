@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useT } from "@/lib/i18n";
 import { useCreateAnnouncement } from "@/hooks/use-create-announcement";
 import AnnouncementBgPicker from "@/components/announcements/AnnouncementBgPicker";
@@ -10,51 +11,102 @@ type Props = {
   onCreated: (success: boolean, errorMessage?: string) => void;
 };
 
+const inputCls = "w-full bg-slate-50/50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-700 text-sm focus:outline-none focus:border-[#0F1059] focus:bg-white transition-colors";
+const labelCls = "text-slate-800 text-sm font-semibold mb-2 block";
+
 export default function AnnouncementCreateDrawer({ open, onClose, onCreated }: Props) {
   const t = useT();
   const { form, setForm, file, setFile, bgImageFile, setBgImageFile, loading, handleSubmit } = useCreateAnnouncement(onCreated);
   const isTh = t("common.cancel") === "ยกเลิก";
 
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open, onClose]);
+
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [open]);
+
+  if (!open) return null;
+
   return (
-    <>
-      {open && <div className="fixed inset-0 bg-black/40 z-40" onClick={onClose} />}
-      <div className={`fixed top-0 right-0 h-full w-full max-w-lg bg-white shadow-2xl z-50 flex flex-col transition-transform duration-300 ${open ? "translate-x-0" : "translate-x-full"}`}>
-        {/* Header */}
-        <div className="px-5 py-4 border-b border-base-200 flex items-center justify-between shrink-0">
-          <h2 className="text-sm md:text-base font-bold text-primary">{t("announcement.createTitle")}</h2>
-          <button onClick={onClose} className="btn btn-ghost btn-sm btn-circle" aria-label="Close">✕</button>
+    <div role="dialog" aria-modal="true" aria-label={t("announcement.createTitle")}
+      className="fixed inset-0 z-50 flex items-end lg:items-stretch lg:justify-end"
+    >
+      <div onClick={onClose} aria-hidden="true" className="absolute inset-0 bg-black/30" />
+
+      <div className={[
+        "relative z-10 flex flex-col bg-white shadow-2xl",
+        "w-full max-h-[92vh] rounded-t-2xl",
+        "lg:h-full lg:max-h-full lg:w-1/2 lg:rounded-none lg:rounded-l-2xl",
+      ].join(" ")}>
+        {/* Mobile drag handle */}
+        <div className="lg:hidden flex justify-center pt-3 pb-1 shrink-0" aria-hidden="true">
+          <div className="w-10 h-1 rounded-full bg-slate-200" />
         </div>
 
-        {/* Body */}
-        <div className="flex-1 overflow-y-auto p-5 flex flex-col gap-4">
-          <div className="form-control gap-1">
-            <label className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">
-              {t("announcement.fieldTitle")} <span className="text-error">*</span>
-            </label>
-            <input type="text" className="input input-bordered input-sm w-full text-sm"
-              value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} maxLength={255} />
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 shrink-0">
+          <div>
+            <h2 className="text-lg font-semibold text-slate-800 leading-snug">{t("announcement.createTitle")}</h2>
+            <p className="text-xs text-slate-400 mt-0.5">{isTh ? "กรอกรายละเอียดประกาศด้านล่าง" : "Fill in the announcement details below"}</p>
+          </div>
+          <button
+            onClick={onClose}
+            aria-label={t("common.cancel")}
+            className="h-9 w-9 flex items-center justify-center rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0F1059] focus-visible:ring-offset-2"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Scrollable body */}
+        <div className="flex-1 overflow-y-auto px-6 py-6 space-y-4">
+          <div>
+            <label className={labelCls}>{t("announcement.fieldTitle")} <span className="text-rose-600">*</span></label>
+            <input
+              type="text"
+              className={inputCls}
+              value={form.title}
+              onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
+              maxLength={255}
+            />
           </div>
 
-          <div className="form-control gap-1">
-            <label className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">
-              {t("announcement.fieldContent")} <span className="text-error">*</span>
-            </label>
-            <textarea className="textarea textarea-bordered w-full text-sm min-h-30"
-              value={form.content} onChange={(e) => setForm((f) => ({ ...f, content: e.target.value }))} maxLength={5000} />
+          <div>
+            <label className={labelCls}>{t("announcement.fieldContent")} <span className="text-rose-600">*</span></label>
+            <textarea
+              className={`${inputCls} resize-none min-h-28`}
+              value={form.content}
+              onChange={(e) => setForm((f) => ({ ...f, content: e.target.value }))}
+              maxLength={5000}
+            />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div className="form-control gap-1">
-              <label className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">{t("announcement.fieldSourceSystem")}</label>
-              <select className="select select-bordered select-sm w-full text-sm"
-                value={form.sourceSystem} onChange={(e) => setForm((f) => ({ ...f, sourceSystem: e.target.value }))}>
+            <div>
+              <label className={labelCls}>{t("announcement.fieldSourceSystem")}</label>
+              <select
+                className={`${inputCls}`}
+                value={form.sourceSystem}
+                onChange={(e) => setForm((f) => ({ ...f, sourceSystem: e.target.value }))}
+              >
                 {["QMS", "IT", "HR", "GA", "SAFETY"].map((s) => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
-            <div className="form-control gap-1">
-              <label className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">{t("announcement.fieldDisplayType")}</label>
-              <select className="select select-bordered select-sm w-full text-sm"
-                value={form.displayType} onChange={(e) => setForm((f) => ({ ...f, displayType: e.target.value }))}>
+            <div>
+              <label className={labelCls}>{t("announcement.fieldDisplayType")}</label>
+              <select
+                className={inputCls}
+                value={form.displayType}
+                onChange={(e) => setForm((f) => ({ ...f, displayType: e.target.value }))}
+              >
                 <option value="LIST">{t("announcement.displayTypeNormal")}</option>
                 <option value="SCROLLING">{t("announcement.displayTypeMain")}</option>
               </select>
@@ -62,36 +114,51 @@ export default function AnnouncementCreateDrawer({ open, onClose, onCreated }: P
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div className="form-control gap-1">
-              <label className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">{t("announcement.fieldStartDate")}</label>
-              <input type="datetime-local" className="input input-bordered input-sm w-full text-sm"
-                value={form.startDate} onChange={(e) => setForm((f) => ({ ...f, startDate: e.target.value }))} />
+            <div>
+              <label className={labelCls}>{t("announcement.fieldStartDate")}</label>
+              <input
+                type="datetime-local"
+                className={inputCls}
+                value={form.startDate}
+                onChange={(e) => setForm((f) => ({ ...f, startDate: e.target.value }))}
+              />
             </div>
-            <div className="form-control gap-1">
-              <label className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">{t("announcement.fieldEndDate")}</label>
-              <input type="datetime-local" className="input input-bordered input-sm w-full text-sm"
-                value={form.endDate} onChange={(e) => setForm((f) => ({ ...f, endDate: e.target.value }))} />
-              <p className="text-[11px] text-gray-500">{t("announcement.endDateHint")}</p>
+            <div>
+              <label className={labelCls}>{t("announcement.fieldEndDate")}</label>
+              <input
+                type="datetime-local"
+                className={inputCls}
+                value={form.endDate}
+                onChange={(e) => setForm((f) => ({ ...f, endDate: e.target.value }))}
+              />
+              <p className="text-slate-400 text-xs mt-1">{t("announcement.endDateHint")}</p>
             </div>
           </div>
 
-          <div className="form-control">
-            <label className="cursor-pointer flex items-start gap-3 p-3 border border-base-300 rounded-lg bg-base-200/30">
-              <input type="checkbox" className="checkbox checkbox-sm checkbox-primary mt-0.5"
-                checked={form.pushToCompanyCenter} onChange={(e) => setForm((f) => ({ ...f, pushToCompanyCenter: e.target.checked }))} />
+          <div>
+            <label className="flex items-start gap-3 p-4 border border-slate-200 rounded-xl bg-slate-50/50 cursor-pointer hover:bg-white transition-colors">
+              <input
+                type="checkbox"
+                className="checkbox checkbox-primary mt-0.5"
+                checked={form.pushToCompanyCenter}
+                onChange={(e) => setForm((f) => ({ ...f, pushToCompanyCenter: e.target.checked }))}
+              />
               <div>
-                <span className="text-xs font-semibold block">{t("announcement.fieldPushToCompany")}</span>
-                <span className="text-[11px] text-gray-500">{t("announcement.pushToCompanyHint")}</span>
+                <span className="text-slate-800 text-sm font-semibold block">{t("announcement.fieldPushToCompany")}</span>
+                <span className="text-slate-400 text-xs">{t("announcement.pushToCompanyHint")}</span>
               </div>
             </label>
           </div>
 
-          <div className="form-control gap-1">
-            <label className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">{t("announcement.fieldAttachment")}</label>
-            <input type="file" className="file-input file-input-bordered file-input-sm w-full text-sm"
-              onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
+          <div>
+            <label className={labelCls}>{t("announcement.fieldAttachment")}</label>
+            <input
+              type="file"
+              className="file-input file-input-bordered w-full text-sm bg-slate-50/50 border-slate-200 rounded-xl focus:border-[#0F1059]"
+              onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+            />
             {file && (
-              <p className="text-[11px] text-primary flex items-center gap-1 mt-1">
+              <p className="text-xs text-emerald-600 flex items-center gap-1 mt-1">
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
@@ -113,14 +180,24 @@ export default function AnnouncementCreateDrawer({ open, onClose, onCreated }: P
         </div>
 
         {/* Footer */}
-        <div className="px-5 py-4 border-t border-base-200 flex justify-end gap-3 shrink-0">
-          <button onClick={onClose} className="btn btn-ghost btn-sm" disabled={loading}>{t("common.cancel")}</button>
-          <button onClick={handleSubmit} className="btn btn-primary btn-sm min-w-28"
-            disabled={loading || !form.title.trim() || !form.content.trim()}>
-            {loading ? <span className="loading loading-spinner loading-xs" /> : t("announcement.publish")}
+        <div className="px-6 py-4 border-t border-slate-100 flex justify-end gap-2 shrink-0">
+          <button
+            onClick={onClose}
+            disabled={loading}
+            className="bg-white text-slate-700 border border-slate-200 rounded-xl px-4 py-2 text-sm font-medium hover:bg-slate-50 transition-colors disabled:opacity-50"
+          >
+            {t("common.cancel")}
+          </button>
+          <button
+            onClick={handleSubmit}
+            disabled={loading || !form.title.trim() || !form.content.trim()}
+            className="bg-[#0F1059] text-white rounded-xl px-4 py-2 text-sm font-medium hover:bg-[#161875] transition-colors disabled:opacity-50 inline-flex items-center gap-2 min-w-28 justify-center"
+          >
+            {loading && <div className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />}
+            {t("announcement.publish")}
           </button>
         </div>
       </div>
-    </>
+    </div>
   );
 }

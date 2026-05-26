@@ -284,8 +284,8 @@ export type KpiMonthlyResultWhereInput = {
   kpiMasterId?: Prisma.StringFilter<"KpiMonthlyResult"> | string
   createdAt?: Prisma.DateTimeFilter<"KpiMonthlyResult"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"KpiMonthlyResult"> | Date | string
-  kpiMaster?: Prisma.XOR<Prisma.KpiMasterScalarRelationFilter, Prisma.KpiMasterWhereInput>
   correctiveActions?: Prisma.KpiCorrectiveActionListRelationFilter
+  kpiMaster?: Prisma.XOR<Prisma.KpiMasterScalarRelationFilter, Prisma.KpiMasterWhereInput>
 }
 
 export type KpiMonthlyResultOrderByWithRelationInput = {
@@ -302,8 +302,8 @@ export type KpiMonthlyResultOrderByWithRelationInput = {
   kpiMasterId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  kpiMaster?: Prisma.KpiMasterOrderByWithRelationInput
   correctiveActions?: Prisma.KpiCorrectiveActionOrderByRelationAggregateInput
+  kpiMaster?: Prisma.KpiMasterOrderByWithRelationInput
 }
 
 export type KpiMonthlyResultWhereUniqueInput = Prisma.AtLeast<{
@@ -324,8 +324,8 @@ export type KpiMonthlyResultWhereUniqueInput = Prisma.AtLeast<{
   kpiMasterId?: Prisma.StringFilter<"KpiMonthlyResult"> | string
   createdAt?: Prisma.DateTimeFilter<"KpiMonthlyResult"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"KpiMonthlyResult"> | Date | string
-  kpiMaster?: Prisma.XOR<Prisma.KpiMasterScalarRelationFilter, Prisma.KpiMasterWhereInput>
   correctiveActions?: Prisma.KpiCorrectiveActionListRelationFilter
+  kpiMaster?: Prisma.XOR<Prisma.KpiMasterScalarRelationFilter, Prisma.KpiMasterWhereInput>
 }, "id" | "kpiMasterId_month">
 
 export type KpiMonthlyResultOrderByWithAggregationInput = {
@@ -381,8 +381,8 @@ export type KpiMonthlyResultCreateInput = {
   fileName?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  kpiMaster: Prisma.KpiMasterCreateNestedOneWithoutMonthlyResultsInput
   correctiveActions?: Prisma.KpiCorrectiveActionCreateNestedManyWithoutKpiMonthlyResultInput
+  kpiMaster: Prisma.KpiMasterCreateNestedOneWithoutMonthlyResultsInput
 }
 
 export type KpiMonthlyResultUncheckedCreateInput = {
@@ -415,8 +415,8 @@ export type KpiMonthlyResultUpdateInput = {
   fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  kpiMaster?: Prisma.KpiMasterUpdateOneRequiredWithoutMonthlyResultsNestedInput
   correctiveActions?: Prisma.KpiCorrectiveActionUpdateManyWithoutKpiMonthlyResultNestedInput
+  kpiMaster?: Prisma.KpiMasterUpdateOneRequiredWithoutMonthlyResultsNestedInput
 }
 
 export type KpiMonthlyResultUncheckedUpdateInput = {
@@ -897,8 +897,8 @@ export type KpiMonthlyResultSelect<ExtArgs extends runtime.Types.Extensions.Inte
   kpiMasterId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  kpiMaster?: boolean | Prisma.KpiMasterDefaultArgs<ExtArgs>
   correctiveActions?: boolean | Prisma.KpiMonthlyResult$correctiveActionsArgs<ExtArgs>
+  kpiMaster?: boolean | Prisma.KpiMasterDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.KpiMonthlyResultCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["kpiMonthlyResult"]>
 
@@ -954,8 +954,8 @@ export type KpiMonthlyResultSelectScalar = {
 
 export type KpiMonthlyResultOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "month" | "actualValue" | "isNa" | "status" | "approvalStatus" | "spItemId" | "spWebUrl" | "spDownloadUrl" | "fileName" | "kpiMasterId" | "createdAt" | "updatedAt", ExtArgs["result"]["kpiMonthlyResult"]>
 export type KpiMonthlyResultInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  kpiMaster?: boolean | Prisma.KpiMasterDefaultArgs<ExtArgs>
   correctiveActions?: boolean | Prisma.KpiMonthlyResult$correctiveActionsArgs<ExtArgs>
+  kpiMaster?: boolean | Prisma.KpiMasterDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.KpiMonthlyResultCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type KpiMonthlyResultIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -968,8 +968,8 @@ export type KpiMonthlyResultIncludeUpdateManyAndReturn<ExtArgs extends runtime.T
 export type $KpiMonthlyResultPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "KpiMonthlyResult"
   objects: {
-    kpiMaster: Prisma.$KpiMasterPayload<ExtArgs>
     correctiveActions: Prisma.$KpiCorrectiveActionPayload<ExtArgs>[]
+    kpiMaster: Prisma.$KpiMasterPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1379,8 +1379,8 @@ readonly fields: KpiMonthlyResultFieldRefs;
  */
 export interface Prisma__KpiMonthlyResultClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  kpiMaster<T extends Prisma.KpiMasterDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.KpiMasterDefaultArgs<ExtArgs>>): Prisma.Prisma__KpiMasterClient<runtime.Types.Result.GetResult<Prisma.$KpiMasterPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   correctiveActions<T extends Prisma.KpiMonthlyResult$correctiveActionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.KpiMonthlyResult$correctiveActionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$KpiCorrectiveActionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  kpiMaster<T extends Prisma.KpiMasterDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.KpiMasterDefaultArgs<ExtArgs>>): Prisma.Prisma__KpiMasterClient<runtime.Types.Result.GetResult<Prisma.$KpiMasterPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.

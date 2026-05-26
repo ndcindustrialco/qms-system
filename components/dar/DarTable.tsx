@@ -25,7 +25,35 @@ const DOC_TYPE_LABELS_EN: Record<string, string> = {
   OTHER:     "Other",
 };
 
-export default function DarTable({ dars }: { dars: DarSummary[] }) {
+type SortKey = "requestDate" | "darNo" | "status";
+type SortDir = "asc" | "desc";
+
+type Props = {
+  dars: DarSummary[];
+  onSort?: (key: SortKey) => void;
+  sortKey?: SortKey;
+  sortDir?: SortDir;
+  onEdit?: (id: string) => void;
+};
+
+function SortIcon({ active, dir }: { active: boolean; dir: SortDir }) {
+  if (!active) return (
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+    </svg>
+  );
+  return dir === "asc" ? (
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 text-[#0F1059]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+    </svg>
+  ) : (
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 text-[#0F1059]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h9m5-4v12m0 0l-4-4m4 4l4-4" />
+    </svg>
+  );
+}
+
+export default function DarTable({ dars, onSort, sortKey, sortDir = "desc", onEdit }: Props) {
   const locale = useLocale();
 
   const t = {
@@ -61,69 +89,77 @@ export default function DarTable({ dars }: { dars: DarSummary[] }) {
   }
 
   return (
-    <div className="hidden md:block card-premium overflow-hidden border border-base-300 rounded-xl shadow-sm">
-      <table className="table w-full">
+    <div className="hidden lg:block bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
+      <table className="w-full">
         <thead>
-          <tr className="border-b border-base-200">
-            <th className="th-pro">{t.darNo}</th>
-            <th className="th-pro">{t.date}</th>
-            <th className="th-pro">{t.objective}</th>
-            <th className="th-pro">{t.docType}</th>
-            <th className="th-pro text-center">{t.items}</th>
-            <th className="th-pro">{t.status}</th>
-            <th className="th-pro" />
+          <tr className="bg-slate-50 border-b border-slate-100">
+            <th className="px-4 py-3 text-left">
+              <button onClick={() => onSort?.("darNo")} className="inline-flex items-center gap-1.5 text-slate-800 text-sm font-semibold hover:text-[#0F1059] transition-colors">
+                {t.darNo}
+                <SortIcon active={sortKey === "darNo"} dir={sortDir} />
+              </button>
+            </th>
+            <th className="px-4 py-3 text-center">
+              <button onClick={() => onSort?.("requestDate")} className="inline-flex items-center gap-1.5 text-slate-800 text-sm font-semibold hover:text-[#0F1059] transition-colors">
+                {t.date}
+                <SortIcon active={sortKey === "requestDate"} dir={sortDir} />
+              </button>
+            </th>
+            <th className="text-slate-800 text-sm font-semibold px-4 py-3 text-left">{t.objective}</th>
+            <th className="text-slate-800 text-sm font-semibold px-4 py-3 text-left">{t.docType}</th>
+            <th className="text-slate-800 text-sm font-semibold px-4 py-3 text-center">{t.items}</th>
+            <th className="px-4 py-3 text-left">
+              <button onClick={() => onSort?.("status")} className="inline-flex items-center gap-1.5 text-slate-800 text-sm font-semibold hover:text-[#0F1059] transition-colors">
+                {t.status}
+                <SortIcon active={sortKey === "status"} dir={sortDir} />
+              </button>
+            </th>
+            <th className="px-4 py-3" />
           </tr>
         </thead>
         <tbody>
           {dars.map((dar) => (
             <tr
               key={dar.id}
-              className="border-b border-base-200 hover:bg-primary/5 transition-colors duration-200"
+              className="bg-white border-b border-slate-100 hover:bg-slate-50 transition-colors"
             >
-              {/* DAR No. */}
-              <td className="py-3.5 px-4">
+              <td className="px-4 py-3">
                 {dar.darNo ? (
-                  <span className="text-xs md:text-sm font-semibold text-primary">{dar.darNo}</span>
+                  <span className="text-sm font-semibold text-[#0F1059]">{dar.darNo}</span>
                 ) : (
-                  <span className="inline-block px-2 py-0.5 text-[11px] rounded-md bg-base-200 text-gray-400 font-medium">
+                  <span className="inline-block px-2 py-0.5 text-xs rounded-full bg-slate-100 text-slate-500 font-medium">
                     {t.draft}
                   </span>
                 )}
               </td>
 
-              {/* Date */}
-              <td className="py-3.5 px-4 text-[11px] md:text-xs text-gray-500 whitespace-nowrap">
-                {fmtDate(dar.requestDate)}
+              <td className="px-4 py-3 text-center">
+                <span className="text-sm font-mono text-slate-600 whitespace-nowrap">{fmtDate(dar.requestDate)}</span>
               </td>
 
-              {/* Objective */}
-              <td className="py-3.5 px-4 text-xs md:text-sm text-base-content">
-                {objectiveLabel(dar.objective)}
+              <td className="px-4 py-3">
+                <span className="text-sm text-slate-600">{objectiveLabel(dar.objective)}</span>
               </td>
 
-              {/* Doc Type */}
-              <td className="py-3.5 px-4 text-xs md:text-sm text-base-content">
-                {docTypeLabel(dar.docType)}
+              <td className="px-4 py-3">
+                <span className="text-sm text-slate-600">{docTypeLabel(dar.docType)}</span>
               </td>
 
-              {/* Item Count */}
-              <td className="py-3.5 px-4 text-center">
-                <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-base-200 text-[11px] font-semibold text-gray-500">
+              <td className="px-4 py-3 text-center">
+                <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-slate-100 text-xs font-semibold text-slate-500">
                   {dar.itemCount}
                 </span>
               </td>
 
-              {/* Status */}
-              <td className="py-3.5 px-4">
+              <td className="px-4 py-3">
                 <DarStatusBadge status={dar.status} />
               </td>
 
-              {/* Actions */}
-              <td className="py-3.5 px-4">
+              <td className="px-4 py-3">
                 <div className="flex items-center gap-2 justify-end">
                   <Link
                     href={`/dar/${dar.id}`}
-                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-[11px] font-semibold text-secondary border border-secondary/30 hover:bg-secondary/10 transition-colors"
+                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-medium text-[#1D6A8A] border border-[#1D6A8A]/30 hover:bg-sky-50 transition-colors"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -133,15 +169,15 @@ export default function DarTable({ dars }: { dars: DarSummary[] }) {
                   </Link>
 
                   {dar.status === "DRAFT" && (
-                    <Link
-                      href={`/dar/${dar.id}/edit`}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-[11px] font-semibold text-gray-500 border border-base-300 hover:bg-base-200 transition-colors"
+                    <button
+                      onClick={() => onEdit?.(dar.id)}
+                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-medium text-slate-600 border border-slate-200 hover:bg-slate-50 transition-colors"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                       </svg>
                       {t.edit}
-                    </Link>
+                    </button>
                   )}
                 </div>
               </td>

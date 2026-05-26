@@ -11,8 +11,9 @@ export default function DarListHeader({ onNewRequest }: Props) {
   const locale = useLocale();
 
   const t = {
-    title:       locale === "th" ? "คำขอเอกสาร (DAR)"       : "Document Requests (DAR)",
-    newRequest:  locale === "th" ? "สร้างคำขอใหม่"           : "New Request",
+    title:      locale === "th" ? "คำขอเอกสาร (DAR)" : "Document Requests (DAR)",
+    subtitle:   locale === "th" ? "จัดการและติดตามคำขอเอกสารของคุณ" : "Manage and track your document requests",
+    newRequest: locale === "th" ? "สร้างคำขอใหม่" : "New Request",
   };
 
   const plusIcon = (
@@ -21,25 +22,22 @@ export default function DarListHeader({ onNewRequest }: Props) {
     </svg>
   );
 
+  const buttonCls = "inline-flex items-center gap-1.5 bg-[#0F1059] hover:bg-[#161875] text-white rounded-xl px-4 py-2 text-sm font-medium transition-colors shrink-0";
+
   return (
-    <div className="card-premium border border-base-300 rounded-xl shadow-sm px-5 py-4 mb-6 flex items-center justify-between gap-4">
+    <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] px-6 py-5 mb-6 flex items-center justify-between gap-4">
       <div className="min-w-0">
-        <h1 className="text-xl md:text-2xl font-bold text-primary leading-tight">{t.title}</h1>
+        <h1 className="text-2xl font-bold text-[#0F1059] leading-tight tracking-tight">{t.title}</h1>
+        <p className="text-xs text-slate-400 mt-1">{t.subtitle}</p>
       </div>
 
       {onNewRequest ? (
-        <button
-          onClick={onNewRequest}
-          className="btn btn-primary btn-sm gap-1.5 shrink-0"
-        >
+        <button onClick={onNewRequest} className={buttonCls}>
           {plusIcon}
           <span className="hidden sm:inline">{t.newRequest}</span>
         </button>
       ) : (
-        <Link
-          href="/dar/new"
-          className="btn btn-primary btn-sm gap-1.5 shrink-0"
-        >
+        <Link href="/dar/new" className={buttonCls}>
           {plusIcon}
           <span className="hidden sm:inline">{t.newRequest}</span>
         </Link>

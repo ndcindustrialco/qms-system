@@ -22,7 +22,6 @@ type Props = {
     department: string | null;
     requestDate: string;
   };
-  // Stable UUID for the temp folder — generated server-side and passed in
   tempId: string;
 };
 
@@ -43,37 +42,40 @@ export default function DarForm({ mode, initialData, departments, requesterInfo,
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <DarRequesterSection
-          name={requesterInfo.name}
-          employeeId={requesterInfo.employeeId}
-          department={requesterInfo.department}
-          requestDate={requesterInfo.requestDate}
-        />
+      <DarRequesterSection
+        name={requesterInfo.name}
+        employeeId={requesterInfo.employeeId}
+        department={requesterInfo.department}
+        requestDate={requesterInfo.requestDate}
+      />
 
-        <DarObjectiveSection
-          objective={state.objective}
-          docType={state.docType}
-          docTypeOther={state.docTypeOther}
-          onObjectiveChange={(v: DarObjective) => setField("objective", v)}
-          onDocTypeChange={(v: DarDocType) => setField("docType", v)}
-          onDocTypeOtherChange={(v) => setField("docTypeOther", v)}
-          errors={{ objective: errors.objective, docType: errors.docType, docTypeOther: errors.docTypeOther }}
-        />
-      </div>
+      <DarObjectiveSection
+        objective={state.objective}
+        docType={state.docType}
+        docTypeOther={state.docTypeOther}
+        onObjectiveChange={(v: DarObjective) => setField("objective", v)}
+        onDocTypeChange={(v: DarDocType) => setField("docType", v)}
+        onDocTypeOtherChange={(v) => setField("docTypeOther", v)}
+        errors={{ objective: errors.objective, docType: errors.docType, docTypeOther: errors.docTypeOther }}
+      />
 
-      <div className="card-premium p-5">
-        <h2 className="text-sm md:text-base font-bold text-primary mb-3">
-          {t("sectionReason")} <span className="text-error">*</span>
+      {/* Reason section */}
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6">
+        <h2 className="text-slate-800 text-base font-semibold mb-4">
+          {t("sectionReason")} <span className="text-rose-600">*</span>
         </h2>
         <textarea
-          className={`textarea textarea-bordered w-full text-[14px] min-h-25 ${errors.reason ? "textarea-error" : ""}`}
+          className={`w-full bg-slate-50/50 border rounded-xl px-4 py-2.5 text-slate-700 text-sm resize-none min-h-25 focus:outline-none focus:bg-white transition-colors ${
+            errors.reason
+              ? "border-rose-400 focus:border-rose-500"
+              : "border-slate-200 focus:border-[#0F1059]"
+          }`}
           placeholder={t("phReasonForRequest")}
           value={state.reason}
           onChange={(e) => setField("reason", e.target.value)}
           maxLength={2000}
         />
-        {errors.reason && <p className="text-[12px] text-error mt-1">{errors.reason}</p>}
+        {errors.reason && <p className="text-rose-600 text-xs mt-1">{errors.reason}</p>}
       </div>
 
       <DarItemsSection
@@ -89,11 +91,10 @@ export default function DarForm({ mode, initialData, departments, requesterInfo,
       />
 
       {/* Attachment section */}
-      <div className="card-premium p-5">
-        <h2 className="text-sm md:text-base font-bold text-primary mb-3">{t("sectionAttach")}</h2>
-        <p className="text-[13px] text-neutral mb-3">{t("attachDesc")}</p>
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6">
+        <h2 className="text-slate-800 text-base font-semibold mb-2">{t("sectionAttach")}</h2>
+        <p className="text-slate-400 text-sm mb-4">{t("attachDesc")}</p>
 
-        {/* Edit mode: DAR already exists — use saved mode */}
         {mode === "edit" && savedDarId ? (
           <DarAttachmentUpload
             mode="saved"
@@ -102,7 +103,6 @@ export default function DarForm({ mode, initialData, departments, requesterInfo,
             canEdit
           />
         ) : (
-          /* Create mode: upload to temp folder immediately */
           <DarAttachmentUpload
             mode="temp"
             tempId={tempId}

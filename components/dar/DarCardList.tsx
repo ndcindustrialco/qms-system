@@ -25,7 +25,7 @@ const DOC_TYPE_LABELS_EN: Record<string, string> = {
   OTHER:     "Other",
 };
 
-export default function DarCardList({ dars }: { dars: DarSummary[] }) {
+export default function DarCardList({ dars, onEdit }: { dars: DarSummary[]; onEdit?: (id: string) => void }) {
   const locale = useLocale();
 
   const t = {
@@ -60,50 +60,47 @@ export default function DarCardList({ dars }: { dars: DarSummary[] }) {
   }
 
   return (
-    <div className="md:hidden flex flex-col gap-3">
+    <div className="lg:hidden space-y-3">
       {dars.map((dar) => (
         <div
           key={dar.id}
-          className="card-premium p-4 border border-base-300 rounded-xl shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
+          className="bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-4 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200"
         >
-          {/* Card header: DAR No. + Status */}
           <div className="flex items-start justify-between gap-2 mb-3">
             <div>
               {dar.darNo ? (
-                <p className="text-sm font-bold text-primary">{dar.darNo}</p>
+                <p className="text-slate-800 font-semibold text-sm">{dar.darNo}</p>
               ) : (
-                <span className="inline-block px-2 py-0.5 text-[11px] rounded-md bg-base-200 text-gray-400 font-medium">
+                <span className="inline-block px-2 py-0.5 text-xs rounded-full bg-slate-100 text-slate-500 font-medium">
                   {t.noDarNo}
                 </span>
               )}
-              <p className="text-[11px] text-gray-500 mt-0.5">{fmtDate(dar.requestDate)}</p>
+              <p className="text-xs font-mono text-slate-400 mt-0.5">{fmtDate(dar.requestDate)}</p>
             </div>
             <DarStatusBadge status={dar.status} />
           </div>
 
-          {/* Metadata rows */}
-          <div className="flex flex-col gap-1.5 border-t border-base-200 pt-3">
+          <div className="flex flex-col gap-1.5 border-t border-slate-100 pt-3">
             <div className="flex items-center gap-2">
-              <span className="text-[11px] text-gray-500 w-28 shrink-0">{t.objective}</span>
-              <span className="text-xs text-base-content font-medium">{objectiveLabel(dar.objective)}</span>
+              <span className="text-xs text-slate-400 w-24 shrink-0">{t.objective}</span>
+              <span className="text-xs text-slate-600 font-medium">{objectiveLabel(dar.objective)}</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-[11px] text-gray-500 w-28 shrink-0">{t.docType}</span>
-              <span className="text-xs text-base-content font-medium">{docTypeLabel(dar.docType)}</span>
+              <span className="text-xs text-slate-400 w-24 shrink-0">{t.docType}</span>
+              <span className="text-xs text-slate-600 font-medium">{docTypeLabel(dar.docType)}</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-[11px] text-gray-500 w-28 shrink-0">{t.itemCount}</span>
-              <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-base-200 text-[11px] font-semibold text-gray-500">
+              <span className="text-xs text-slate-400 w-24 shrink-0">{t.itemCount}</span>
+              <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 text-xs font-semibold text-slate-500">
                 {dar.itemCount}
               </span>
             </div>
           </div>
 
-          {/* Actions */}
           <div className="flex gap-2 mt-4 justify-end">
             <Link
               href={`/dar/${dar.id}`}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold text-secondary border border-secondary/30 hover:bg-secondary/10 transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-[#1D6A8A] border border-[#1D6A8A]/30 hover:bg-sky-50 transition-colors"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -113,15 +110,15 @@ export default function DarCardList({ dars }: { dars: DarSummary[] }) {
             </Link>
 
             {dar.status === "DRAFT" && (
-              <Link
-                href={`/dar/${dar.id}/edit`}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold text-primary-content bg-primary hover:bg-primary/90 transition-colors"
+              <button
+                onClick={() => onEdit?.(dar.id)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-white bg-[#0F1059] hover:bg-[#161875] transition-colors"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                 </svg>
                 {t.edit}
-              </Link>
+              </button>
             )}
           </div>
         </div>

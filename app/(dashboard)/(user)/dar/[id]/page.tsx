@@ -1,4 +1,3 @@
-
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { requireAuth } from "@/lib/auth";
@@ -18,12 +17,20 @@ export default async function DarDetailPage({ params }: Props) {
     ]);
 
     return (
-      <div className="max-w-[1400px] mx-auto px-4 md:px-8">
-        <div className="flex items-center gap-2 text-[11px] md:text-xs text-neutral mb-4">
-          <Link href="/dar" className="hover:text-neutral transition-colors">คำขอเอกสาร</Link>
-          <span>/</span>
-          <span className="text-neutral font-medium">{dar.darNo ?? "ฉบับร่าง"}</span>
-        </div>
+      <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-6">
+        {/* Breadcrumb — §14 */}
+        <nav className="flex items-center gap-2 text-sm text-slate-400 mb-6">
+          <Link href="/dar" className="hover:text-slate-600 transition-colors">
+            {session.user.role === "QMS" || session.user.role === "MR" ? "Document Requests" : "คำขอเอกสาร"}
+          </Link>
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+          <span className="text-slate-600 font-medium truncate">
+            {dar.darNo ?? (session.user.role === "QMS" || session.user.role === "MR" ? "Draft" : "ฉบับร่าง")}
+          </span>
+        </nav>
+
         <DarReadOnlyDetail
           dar={dar}
           currentUserId={session.user.id}

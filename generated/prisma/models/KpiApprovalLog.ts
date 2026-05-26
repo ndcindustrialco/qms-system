@@ -240,8 +240,8 @@ export type KpiApprovalLogWhereInput = {
   signatureTypeUsed?: Prisma.EnumSignatureTypeNullableFilter<"KpiApprovalLog"> | $Enums.SignatureType | null
   kpiMasterId?: Prisma.StringFilter<"KpiApprovalLog"> | string
   assignedUserId?: Prisma.StringFilter<"KpiApprovalLog"> | string
-  kpiMaster?: Prisma.XOR<Prisma.KpiMasterScalarRelationFilter, Prisma.KpiMasterWhereInput>
   assignedUser?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  kpiMaster?: Prisma.XOR<Prisma.KpiMasterScalarRelationFilter, Prisma.KpiMasterWhereInput>
 }
 
 export type KpiApprovalLogOrderByWithRelationInput = {
@@ -253,8 +253,8 @@ export type KpiApprovalLogOrderByWithRelationInput = {
   signatureTypeUsed?: Prisma.SortOrderInput | Prisma.SortOrder
   kpiMasterId?: Prisma.SortOrder
   assignedUserId?: Prisma.SortOrder
-  kpiMaster?: Prisma.KpiMasterOrderByWithRelationInput
   assignedUser?: Prisma.UserOrderByWithRelationInput
+  kpiMaster?: Prisma.KpiMasterOrderByWithRelationInput
 }
 
 export type KpiApprovalLogWhereUniqueInput = Prisma.AtLeast<{
@@ -269,8 +269,8 @@ export type KpiApprovalLogWhereUniqueInput = Prisma.AtLeast<{
   signatureTypeUsed?: Prisma.EnumSignatureTypeNullableFilter<"KpiApprovalLog"> | $Enums.SignatureType | null
   kpiMasterId?: Prisma.StringFilter<"KpiApprovalLog"> | string
   assignedUserId?: Prisma.StringFilter<"KpiApprovalLog"> | string
-  kpiMaster?: Prisma.XOR<Prisma.KpiMasterScalarRelationFilter, Prisma.KpiMasterWhereInput>
   assignedUser?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  kpiMaster?: Prisma.XOR<Prisma.KpiMasterScalarRelationFilter, Prisma.KpiMasterWhereInput>
 }, "id">
 
 export type KpiApprovalLogOrderByWithAggregationInput = {
@@ -310,8 +310,8 @@ export type KpiApprovalLogCreateInput = {
   actionDate?: Date | string
   signatureUsedUrl?: string | null
   signatureTypeUsed?: $Enums.SignatureType | null
-  kpiMaster: Prisma.KpiMasterCreateNestedOneWithoutApprovalLogsInput
   assignedUser: Prisma.UserCreateNestedOneWithoutKpiApprovalLogsInput
+  kpiMaster: Prisma.KpiMasterCreateNestedOneWithoutApprovalLogsInput
 }
 
 export type KpiApprovalLogUncheckedCreateInput = {
@@ -332,8 +332,8 @@ export type KpiApprovalLogUpdateInput = {
   actionDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   signatureUsedUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   signatureTypeUsed?: Prisma.NullableEnumSignatureTypeFieldUpdateOperationsInput | $Enums.SignatureType | null
-  kpiMaster?: Prisma.KpiMasterUpdateOneRequiredWithoutApprovalLogsNestedInput
   assignedUser?: Prisma.UserUpdateOneRequiredWithoutKpiApprovalLogsNestedInput
+  kpiMaster?: Prisma.KpiMasterUpdateOneRequiredWithoutApprovalLogsNestedInput
 }
 
 export type KpiApprovalLogUncheckedUpdateInput = {
@@ -714,8 +714,8 @@ export type KpiApprovalLogSelect<ExtArgs extends runtime.Types.Extensions.Intern
   signatureTypeUsed?: boolean
   kpiMasterId?: boolean
   assignedUserId?: boolean
-  kpiMaster?: boolean | Prisma.KpiMasterDefaultArgs<ExtArgs>
   assignedUser?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  kpiMaster?: boolean | Prisma.KpiMasterDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["kpiApprovalLog"]>
 
 export type KpiApprovalLogSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -727,8 +727,8 @@ export type KpiApprovalLogSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   signatureTypeUsed?: boolean
   kpiMasterId?: boolean
   assignedUserId?: boolean
-  kpiMaster?: boolean | Prisma.KpiMasterDefaultArgs<ExtArgs>
   assignedUser?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  kpiMaster?: boolean | Prisma.KpiMasterDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["kpiApprovalLog"]>
 
 export type KpiApprovalLogSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -740,8 +740,8 @@ export type KpiApprovalLogSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   signatureTypeUsed?: boolean
   kpiMasterId?: boolean
   assignedUserId?: boolean
-  kpiMaster?: boolean | Prisma.KpiMasterDefaultArgs<ExtArgs>
   assignedUser?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  kpiMaster?: boolean | Prisma.KpiMasterDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["kpiApprovalLog"]>
 
 export type KpiApprovalLogSelectScalar = {
@@ -757,23 +757,23 @@ export type KpiApprovalLogSelectScalar = {
 
 export type KpiApprovalLogOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "month" | "stepRole" | "actionDate" | "signatureUsedUrl" | "signatureTypeUsed" | "kpiMasterId" | "assignedUserId", ExtArgs["result"]["kpiApprovalLog"]>
 export type KpiApprovalLogInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  kpiMaster?: boolean | Prisma.KpiMasterDefaultArgs<ExtArgs>
   assignedUser?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  kpiMaster?: boolean | Prisma.KpiMasterDefaultArgs<ExtArgs>
 }
 export type KpiApprovalLogIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  kpiMaster?: boolean | Prisma.KpiMasterDefaultArgs<ExtArgs>
   assignedUser?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  kpiMaster?: boolean | Prisma.KpiMasterDefaultArgs<ExtArgs>
 }
 export type KpiApprovalLogIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  kpiMaster?: boolean | Prisma.KpiMasterDefaultArgs<ExtArgs>
   assignedUser?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  kpiMaster?: boolean | Prisma.KpiMasterDefaultArgs<ExtArgs>
 }
 
 export type $KpiApprovalLogPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "KpiApprovalLog"
   objects: {
-    kpiMaster: Prisma.$KpiMasterPayload<ExtArgs>
     assignedUser: Prisma.$UserPayload<ExtArgs>
+    kpiMaster: Prisma.$KpiMasterPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1178,8 +1178,8 @@ readonly fields: KpiApprovalLogFieldRefs;
  */
 export interface Prisma__KpiApprovalLogClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  kpiMaster<T extends Prisma.KpiMasterDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.KpiMasterDefaultArgs<ExtArgs>>): Prisma.Prisma__KpiMasterClient<runtime.Types.Result.GetResult<Prisma.$KpiMasterPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   assignedUser<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  kpiMaster<T extends Prisma.KpiMasterDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.KpiMasterDefaultArgs<ExtArgs>>): Prisma.Prisma__KpiMasterClient<runtime.Types.Result.GetResult<Prisma.$KpiMasterPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.

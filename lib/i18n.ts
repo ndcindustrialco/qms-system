@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import { useLocale } from "@/lib/locale-context";
 import th from "@/messages/th.json";
 import en from "@/messages/en.json";
@@ -130,5 +131,5 @@ export function t(key: TranslationKey, locale: Locale): string {
 /** React hook — use inside client components */
 export function useT() {
   const locale = useLocale();
-  return (key: TranslationKey) => t(key, locale);
+  return useCallback((key: TranslationKey) => t(key, locale), [locale]);
 }

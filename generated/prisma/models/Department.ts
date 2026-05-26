@@ -190,10 +190,10 @@ export type DepartmentWhereInput = {
   isActive?: Prisma.BoolFilter<"Department"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Department"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Department"> | Date | string
-  users?: Prisma.UserListRelationFilter
-  darMasters?: Prisma.DarMasterListRelationFilter
   darDistributions?: Prisma.DarDistributionListRelationFilter
+  darMasters?: Prisma.DarMasterListRelationFilter
   kpiMasters?: Prisma.KpiMasterListRelationFilter
+  users?: Prisma.UserListRelationFilter
 }
 
 export type DepartmentOrderByWithRelationInput = {
@@ -203,10 +203,10 @@ export type DepartmentOrderByWithRelationInput = {
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  users?: Prisma.UserOrderByRelationAggregateInput
-  darMasters?: Prisma.DarMasterOrderByRelationAggregateInput
   darDistributions?: Prisma.DarDistributionOrderByRelationAggregateInput
+  darMasters?: Prisma.DarMasterOrderByRelationAggregateInput
   kpiMasters?: Prisma.KpiMasterOrderByRelationAggregateInput
+  users?: Prisma.UserOrderByRelationAggregateInput
 }
 
 export type DepartmentWhereUniqueInput = Prisma.AtLeast<{
@@ -219,10 +219,10 @@ export type DepartmentWhereUniqueInput = Prisma.AtLeast<{
   isActive?: Prisma.BoolFilter<"Department"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Department"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Department"> | Date | string
-  users?: Prisma.UserListRelationFilter
-  darMasters?: Prisma.DarMasterListRelationFilter
   darDistributions?: Prisma.DarDistributionListRelationFilter
+  darMasters?: Prisma.DarMasterListRelationFilter
   kpiMasters?: Prisma.KpiMasterListRelationFilter
+  users?: Prisma.UserListRelationFilter
 }, "id" | "name">
 
 export type DepartmentOrderByWithAggregationInput = {
@@ -256,10 +256,10 @@ export type DepartmentCreateInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  users?: Prisma.UserCreateNestedManyWithoutDepartmentInput
-  darMasters?: Prisma.DarMasterCreateNestedManyWithoutDepartmentInput
   darDistributions?: Prisma.DarDistributionCreateNestedManyWithoutDepartmentInput
+  darMasters?: Prisma.DarMasterCreateNestedManyWithoutDepartmentInput
   kpiMasters?: Prisma.KpiMasterCreateNestedManyWithoutDepartmentInput
+  users?: Prisma.UserCreateNestedManyWithoutDepartmentInput
 }
 
 export type DepartmentUncheckedCreateInput = {
@@ -269,10 +269,10 @@ export type DepartmentUncheckedCreateInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  users?: Prisma.UserUncheckedCreateNestedManyWithoutDepartmentInput
-  darMasters?: Prisma.DarMasterUncheckedCreateNestedManyWithoutDepartmentInput
   darDistributions?: Prisma.DarDistributionUncheckedCreateNestedManyWithoutDepartmentInput
+  darMasters?: Prisma.DarMasterUncheckedCreateNestedManyWithoutDepartmentInput
   kpiMasters?: Prisma.KpiMasterUncheckedCreateNestedManyWithoutDepartmentInput
+  users?: Prisma.UserUncheckedCreateNestedManyWithoutDepartmentInput
 }
 
 export type DepartmentUpdateInput = {
@@ -282,10 +282,10 @@ export type DepartmentUpdateInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  users?: Prisma.UserUpdateManyWithoutDepartmentNestedInput
-  darMasters?: Prisma.DarMasterUpdateManyWithoutDepartmentNestedInput
   darDistributions?: Prisma.DarDistributionUpdateManyWithoutDepartmentNestedInput
+  darMasters?: Prisma.DarMasterUpdateManyWithoutDepartmentNestedInput
   kpiMasters?: Prisma.KpiMasterUpdateManyWithoutDepartmentNestedInput
+  users?: Prisma.UserUpdateManyWithoutDepartmentNestedInput
 }
 
 export type DepartmentUncheckedUpdateInput = {
@@ -295,10 +295,10 @@ export type DepartmentUncheckedUpdateInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  users?: Prisma.UserUncheckedUpdateManyWithoutDepartmentNestedInput
-  darMasters?: Prisma.DarMasterUncheckedUpdateManyWithoutDepartmentNestedInput
   darDistributions?: Prisma.DarDistributionUncheckedUpdateManyWithoutDepartmentNestedInput
+  darMasters?: Prisma.DarMasterUncheckedUpdateManyWithoutDepartmentNestedInput
   kpiMasters?: Prisma.KpiMasterUncheckedUpdateManyWithoutDepartmentNestedInput
+  users?: Prisma.UserUncheckedUpdateManyWithoutDepartmentNestedInput
 }
 
 export type DepartmentCreateManyInput = {
@@ -446,8 +446,8 @@ export type DepartmentCreateWithoutUsersInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  darMasters?: Prisma.DarMasterCreateNestedManyWithoutDepartmentInput
   darDistributions?: Prisma.DarDistributionCreateNestedManyWithoutDepartmentInput
+  darMasters?: Prisma.DarMasterCreateNestedManyWithoutDepartmentInput
   kpiMasters?: Prisma.KpiMasterCreateNestedManyWithoutDepartmentInput
 }
 
@@ -458,8 +458,8 @@ export type DepartmentUncheckedCreateWithoutUsersInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  darMasters?: Prisma.DarMasterUncheckedCreateNestedManyWithoutDepartmentInput
   darDistributions?: Prisma.DarDistributionUncheckedCreateNestedManyWithoutDepartmentInput
+  darMasters?: Prisma.DarMasterUncheckedCreateNestedManyWithoutDepartmentInput
   kpiMasters?: Prisma.KpiMasterUncheckedCreateNestedManyWithoutDepartmentInput
 }
 
@@ -486,8 +486,8 @@ export type DepartmentUpdateWithoutUsersInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  darMasters?: Prisma.DarMasterUpdateManyWithoutDepartmentNestedInput
   darDistributions?: Prisma.DarDistributionUpdateManyWithoutDepartmentNestedInput
+  darMasters?: Prisma.DarMasterUpdateManyWithoutDepartmentNestedInput
   kpiMasters?: Prisma.KpiMasterUpdateManyWithoutDepartmentNestedInput
 }
 
@@ -498,8 +498,8 @@ export type DepartmentUncheckedUpdateWithoutUsersInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  darMasters?: Prisma.DarMasterUncheckedUpdateManyWithoutDepartmentNestedInput
   darDistributions?: Prisma.DarDistributionUncheckedUpdateManyWithoutDepartmentNestedInput
+  darMasters?: Prisma.DarMasterUncheckedUpdateManyWithoutDepartmentNestedInput
   kpiMasters?: Prisma.KpiMasterUncheckedUpdateManyWithoutDepartmentNestedInput
 }
 
@@ -510,9 +510,9 @@ export type DepartmentCreateWithoutDarMastersInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  users?: Prisma.UserCreateNestedManyWithoutDepartmentInput
   darDistributions?: Prisma.DarDistributionCreateNestedManyWithoutDepartmentInput
   kpiMasters?: Prisma.KpiMasterCreateNestedManyWithoutDepartmentInput
+  users?: Prisma.UserCreateNestedManyWithoutDepartmentInput
 }
 
 export type DepartmentUncheckedCreateWithoutDarMastersInput = {
@@ -522,9 +522,9 @@ export type DepartmentUncheckedCreateWithoutDarMastersInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  users?: Prisma.UserUncheckedCreateNestedManyWithoutDepartmentInput
   darDistributions?: Prisma.DarDistributionUncheckedCreateNestedManyWithoutDepartmentInput
   kpiMasters?: Prisma.KpiMasterUncheckedCreateNestedManyWithoutDepartmentInput
+  users?: Prisma.UserUncheckedCreateNestedManyWithoutDepartmentInput
 }
 
 export type DepartmentCreateOrConnectWithoutDarMastersInput = {
@@ -550,9 +550,9 @@ export type DepartmentUpdateWithoutDarMastersInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  users?: Prisma.UserUpdateManyWithoutDepartmentNestedInput
   darDistributions?: Prisma.DarDistributionUpdateManyWithoutDepartmentNestedInput
   kpiMasters?: Prisma.KpiMasterUpdateManyWithoutDepartmentNestedInput
+  users?: Prisma.UserUpdateManyWithoutDepartmentNestedInput
 }
 
 export type DepartmentUncheckedUpdateWithoutDarMastersInput = {
@@ -562,9 +562,9 @@ export type DepartmentUncheckedUpdateWithoutDarMastersInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  users?: Prisma.UserUncheckedUpdateManyWithoutDepartmentNestedInput
   darDistributions?: Prisma.DarDistributionUncheckedUpdateManyWithoutDepartmentNestedInput
   kpiMasters?: Prisma.KpiMasterUncheckedUpdateManyWithoutDepartmentNestedInput
+  users?: Prisma.UserUncheckedUpdateManyWithoutDepartmentNestedInput
 }
 
 export type DepartmentCreateWithoutDarDistributionsInput = {
@@ -574,9 +574,9 @@ export type DepartmentCreateWithoutDarDistributionsInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  users?: Prisma.UserCreateNestedManyWithoutDepartmentInput
   darMasters?: Prisma.DarMasterCreateNestedManyWithoutDepartmentInput
   kpiMasters?: Prisma.KpiMasterCreateNestedManyWithoutDepartmentInput
+  users?: Prisma.UserCreateNestedManyWithoutDepartmentInput
 }
 
 export type DepartmentUncheckedCreateWithoutDarDistributionsInput = {
@@ -586,9 +586,9 @@ export type DepartmentUncheckedCreateWithoutDarDistributionsInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  users?: Prisma.UserUncheckedCreateNestedManyWithoutDepartmentInput
   darMasters?: Prisma.DarMasterUncheckedCreateNestedManyWithoutDepartmentInput
   kpiMasters?: Prisma.KpiMasterUncheckedCreateNestedManyWithoutDepartmentInput
+  users?: Prisma.UserUncheckedCreateNestedManyWithoutDepartmentInput
 }
 
 export type DepartmentCreateOrConnectWithoutDarDistributionsInput = {
@@ -614,9 +614,9 @@ export type DepartmentUpdateWithoutDarDistributionsInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  users?: Prisma.UserUpdateManyWithoutDepartmentNestedInput
   darMasters?: Prisma.DarMasterUpdateManyWithoutDepartmentNestedInput
   kpiMasters?: Prisma.KpiMasterUpdateManyWithoutDepartmentNestedInput
+  users?: Prisma.UserUpdateManyWithoutDepartmentNestedInput
 }
 
 export type DepartmentUncheckedUpdateWithoutDarDistributionsInput = {
@@ -626,9 +626,9 @@ export type DepartmentUncheckedUpdateWithoutDarDistributionsInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  users?: Prisma.UserUncheckedUpdateManyWithoutDepartmentNestedInput
   darMasters?: Prisma.DarMasterUncheckedUpdateManyWithoutDepartmentNestedInput
   kpiMasters?: Prisma.KpiMasterUncheckedUpdateManyWithoutDepartmentNestedInput
+  users?: Prisma.UserUncheckedUpdateManyWithoutDepartmentNestedInput
 }
 
 export type DepartmentCreateWithoutKpiMastersInput = {
@@ -638,9 +638,9 @@ export type DepartmentCreateWithoutKpiMastersInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  users?: Prisma.UserCreateNestedManyWithoutDepartmentInput
-  darMasters?: Prisma.DarMasterCreateNestedManyWithoutDepartmentInput
   darDistributions?: Prisma.DarDistributionCreateNestedManyWithoutDepartmentInput
+  darMasters?: Prisma.DarMasterCreateNestedManyWithoutDepartmentInput
+  users?: Prisma.UserCreateNestedManyWithoutDepartmentInput
 }
 
 export type DepartmentUncheckedCreateWithoutKpiMastersInput = {
@@ -650,9 +650,9 @@ export type DepartmentUncheckedCreateWithoutKpiMastersInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  users?: Prisma.UserUncheckedCreateNestedManyWithoutDepartmentInput
-  darMasters?: Prisma.DarMasterUncheckedCreateNestedManyWithoutDepartmentInput
   darDistributions?: Prisma.DarDistributionUncheckedCreateNestedManyWithoutDepartmentInput
+  darMasters?: Prisma.DarMasterUncheckedCreateNestedManyWithoutDepartmentInput
+  users?: Prisma.UserUncheckedCreateNestedManyWithoutDepartmentInput
 }
 
 export type DepartmentCreateOrConnectWithoutKpiMastersInput = {
@@ -678,9 +678,9 @@ export type DepartmentUpdateWithoutKpiMastersInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  users?: Prisma.UserUpdateManyWithoutDepartmentNestedInput
-  darMasters?: Prisma.DarMasterUpdateManyWithoutDepartmentNestedInput
   darDistributions?: Prisma.DarDistributionUpdateManyWithoutDepartmentNestedInput
+  darMasters?: Prisma.DarMasterUpdateManyWithoutDepartmentNestedInput
+  users?: Prisma.UserUpdateManyWithoutDepartmentNestedInput
 }
 
 export type DepartmentUncheckedUpdateWithoutKpiMastersInput = {
@@ -690,9 +690,9 @@ export type DepartmentUncheckedUpdateWithoutKpiMastersInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  users?: Prisma.UserUncheckedUpdateManyWithoutDepartmentNestedInput
-  darMasters?: Prisma.DarMasterUncheckedUpdateManyWithoutDepartmentNestedInput
   darDistributions?: Prisma.DarDistributionUncheckedUpdateManyWithoutDepartmentNestedInput
+  darMasters?: Prisma.DarMasterUncheckedUpdateManyWithoutDepartmentNestedInput
+  users?: Prisma.UserUncheckedUpdateManyWithoutDepartmentNestedInput
 }
 
 
@@ -701,17 +701,17 @@ export type DepartmentUncheckedUpdateWithoutKpiMastersInput = {
  */
 
 export type DepartmentCountOutputType = {
-  users: number
-  darMasters: number
   darDistributions: number
+  darMasters: number
   kpiMasters: number
+  users: number
 }
 
 export type DepartmentCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  users?: boolean | DepartmentCountOutputTypeCountUsersArgs
-  darMasters?: boolean | DepartmentCountOutputTypeCountDarMastersArgs
   darDistributions?: boolean | DepartmentCountOutputTypeCountDarDistributionsArgs
+  darMasters?: boolean | DepartmentCountOutputTypeCountDarMastersArgs
   kpiMasters?: boolean | DepartmentCountOutputTypeCountKpiMastersArgs
+  users?: boolean | DepartmentCountOutputTypeCountUsersArgs
 }
 
 /**
@@ -727,8 +727,8 @@ export type DepartmentCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.E
 /**
  * DepartmentCountOutputType without action
  */
-export type DepartmentCountOutputTypeCountUsersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.UserWhereInput
+export type DepartmentCountOutputTypeCountDarDistributionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DarDistributionWhereInput
 }
 
 /**
@@ -741,15 +741,15 @@ export type DepartmentCountOutputTypeCountDarMastersArgs<ExtArgs extends runtime
 /**
  * DepartmentCountOutputType without action
  */
-export type DepartmentCountOutputTypeCountDarDistributionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.DarDistributionWhereInput
+export type DepartmentCountOutputTypeCountKpiMastersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.KpiMasterWhereInput
 }
 
 /**
  * DepartmentCountOutputType without action
  */
-export type DepartmentCountOutputTypeCountKpiMastersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.KpiMasterWhereInput
+export type DepartmentCountOutputTypeCountUsersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.UserWhereInput
 }
 
 
@@ -760,10 +760,10 @@ export type DepartmentSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  users?: boolean | Prisma.Department$usersArgs<ExtArgs>
-  darMasters?: boolean | Prisma.Department$darMastersArgs<ExtArgs>
   darDistributions?: boolean | Prisma.Department$darDistributionsArgs<ExtArgs>
+  darMasters?: boolean | Prisma.Department$darMastersArgs<ExtArgs>
   kpiMasters?: boolean | Prisma.Department$kpiMastersArgs<ExtArgs>
+  users?: boolean | Prisma.Department$usersArgs<ExtArgs>
   _count?: boolean | Prisma.DepartmentCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["department"]>
 
@@ -796,10 +796,10 @@ export type DepartmentSelectScalar = {
 
 export type DepartmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "emailGroup" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["department"]>
 export type DepartmentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  users?: boolean | Prisma.Department$usersArgs<ExtArgs>
-  darMasters?: boolean | Prisma.Department$darMastersArgs<ExtArgs>
   darDistributions?: boolean | Prisma.Department$darDistributionsArgs<ExtArgs>
+  darMasters?: boolean | Prisma.Department$darMastersArgs<ExtArgs>
   kpiMasters?: boolean | Prisma.Department$kpiMastersArgs<ExtArgs>
+  users?: boolean | Prisma.Department$usersArgs<ExtArgs>
   _count?: boolean | Prisma.DepartmentCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type DepartmentIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -808,10 +808,10 @@ export type DepartmentIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.E
 export type $DepartmentPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Department"
   objects: {
-    users: Prisma.$UserPayload<ExtArgs>[]
-    darMasters: Prisma.$DarMasterPayload<ExtArgs>[]
     darDistributions: Prisma.$DarDistributionPayload<ExtArgs>[]
+    darMasters: Prisma.$DarMasterPayload<ExtArgs>[]
     kpiMasters: Prisma.$KpiMasterPayload<ExtArgs>[]
+    users: Prisma.$UserPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1214,10 +1214,10 @@ readonly fields: DepartmentFieldRefs;
  */
 export interface Prisma__DepartmentClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  users<T extends Prisma.Department$usersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Department$usersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  darMasters<T extends Prisma.Department$darMastersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Department$darMastersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DarMasterPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   darDistributions<T extends Prisma.Department$darDistributionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Department$darDistributionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DarDistributionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  darMasters<T extends Prisma.Department$darMastersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Department$darMastersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DarMasterPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   kpiMasters<T extends Prisma.Department$kpiMastersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Department$kpiMastersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$KpiMasterPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  users<T extends Prisma.Department$usersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Department$usersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1646,27 +1646,27 @@ export type DepartmentDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.In
 }
 
 /**
- * Department.users
+ * Department.darDistributions
  */
-export type Department$usersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Department$darDistributionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the User
+   * Select specific fields to fetch from the DarDistribution
    */
-  select?: Prisma.UserSelect<ExtArgs> | null
+  select?: Prisma.DarDistributionSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the User
+   * Omit specific fields from the DarDistribution
    */
-  omit?: Prisma.UserOmit<ExtArgs> | null
+  omit?: Prisma.DarDistributionOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.UserInclude<ExtArgs> | null
-  where?: Prisma.UserWhereInput
-  orderBy?: Prisma.UserOrderByWithRelationInput | Prisma.UserOrderByWithRelationInput[]
-  cursor?: Prisma.UserWhereUniqueInput
+  include?: Prisma.DarDistributionInclude<ExtArgs> | null
+  where?: Prisma.DarDistributionWhereInput
+  orderBy?: Prisma.DarDistributionOrderByWithRelationInput | Prisma.DarDistributionOrderByWithRelationInput[]
+  cursor?: Prisma.DarDistributionWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.UserScalarFieldEnum | Prisma.UserScalarFieldEnum[]
+  distinct?: Prisma.DarDistributionScalarFieldEnum | Prisma.DarDistributionScalarFieldEnum[]
 }
 
 /**
@@ -1694,30 +1694,6 @@ export type Department$darMastersArgs<ExtArgs extends runtime.Types.Extensions.I
 }
 
 /**
- * Department.darDistributions
- */
-export type Department$darDistributionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the DarDistribution
-   */
-  select?: Prisma.DarDistributionSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the DarDistribution
-   */
-  omit?: Prisma.DarDistributionOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.DarDistributionInclude<ExtArgs> | null
-  where?: Prisma.DarDistributionWhereInput
-  orderBy?: Prisma.DarDistributionOrderByWithRelationInput | Prisma.DarDistributionOrderByWithRelationInput[]
-  cursor?: Prisma.DarDistributionWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.DarDistributionScalarFieldEnum | Prisma.DarDistributionScalarFieldEnum[]
-}
-
-/**
  * Department.kpiMasters
  */
 export type Department$kpiMastersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1739,6 +1715,30 @@ export type Department$kpiMastersArgs<ExtArgs extends runtime.Types.Extensions.I
   take?: number
   skip?: number
   distinct?: Prisma.KpiMasterScalarFieldEnum | Prisma.KpiMasterScalarFieldEnum[]
+}
+
+/**
+ * Department.users
+ */
+export type Department$usersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
+  orderBy?: Prisma.UserOrderByWithRelationInput | Prisma.UserOrderByWithRelationInput[]
+  cursor?: Prisma.UserWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.UserScalarFieldEnum | Prisma.UserScalarFieldEnum[]
 }
 
 /**

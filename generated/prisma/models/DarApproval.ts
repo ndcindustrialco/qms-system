@@ -206,8 +206,8 @@ export type DarApprovalWhereInput = {
   signatureTypeUsed?: Prisma.EnumSignatureTypeNullableFilter<"DarApproval"> | $Enums.SignatureType | null
   darMasterId?: Prisma.StringFilter<"DarApproval"> | string
   assignedUserId?: Prisma.StringFilter<"DarApproval"> | string
-  darMaster?: Prisma.XOR<Prisma.DarMasterScalarRelationFilter, Prisma.DarMasterWhereInput>
   assignedUser?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  darMaster?: Prisma.XOR<Prisma.DarMasterScalarRelationFilter, Prisma.DarMasterWhereInput>
 }
 
 export type DarApprovalOrderByWithRelationInput = {
@@ -219,8 +219,8 @@ export type DarApprovalOrderByWithRelationInput = {
   signatureTypeUsed?: Prisma.SortOrderInput | Prisma.SortOrder
   darMasterId?: Prisma.SortOrder
   assignedUserId?: Prisma.SortOrder
-  darMaster?: Prisma.DarMasterOrderByWithRelationInput
   assignedUser?: Prisma.UserOrderByWithRelationInput
+  darMaster?: Prisma.DarMasterOrderByWithRelationInput
 }
 
 export type DarApprovalWhereUniqueInput = Prisma.AtLeast<{
@@ -235,8 +235,8 @@ export type DarApprovalWhereUniqueInput = Prisma.AtLeast<{
   signatureTypeUsed?: Prisma.EnumSignatureTypeNullableFilter<"DarApproval"> | $Enums.SignatureType | null
   darMasterId?: Prisma.StringFilter<"DarApproval"> | string
   assignedUserId?: Prisma.StringFilter<"DarApproval"> | string
-  darMaster?: Prisma.XOR<Prisma.DarMasterScalarRelationFilter, Prisma.DarMasterWhereInput>
   assignedUser?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  darMaster?: Prisma.XOR<Prisma.DarMasterScalarRelationFilter, Prisma.DarMasterWhereInput>
 }, "id">
 
 export type DarApprovalOrderByWithAggregationInput = {
@@ -274,8 +274,8 @@ export type DarApprovalCreateInput = {
   actionDate?: Date | string | null
   signatureUsedUrl?: string | null
   signatureTypeUsed?: $Enums.SignatureType | null
-  darMaster: Prisma.DarMasterCreateNestedOneWithoutApprovalsInput
   assignedUser: Prisma.UserCreateNestedOneWithoutDarApprovalsInput
+  darMaster: Prisma.DarMasterCreateNestedOneWithoutApprovalsInput
 }
 
 export type DarApprovalUncheckedCreateInput = {
@@ -296,8 +296,8 @@ export type DarApprovalUpdateInput = {
   actionDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   signatureUsedUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   signatureTypeUsed?: Prisma.NullableEnumSignatureTypeFieldUpdateOperationsInput | $Enums.SignatureType | null
-  darMaster?: Prisma.DarMasterUpdateOneRequiredWithoutApprovalsNestedInput
   assignedUser?: Prisma.UserUpdateOneRequiredWithoutDarApprovalsNestedInput
+  darMaster?: Prisma.DarMasterUpdateOneRequiredWithoutApprovalsNestedInput
 }
 
 export type DarApprovalUncheckedUpdateInput = {
@@ -674,8 +674,8 @@ export type DarApprovalSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   signatureTypeUsed?: boolean
   darMasterId?: boolean
   assignedUserId?: boolean
-  darMaster?: boolean | Prisma.DarMasterDefaultArgs<ExtArgs>
   assignedUser?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  darMaster?: boolean | Prisma.DarMasterDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["darApproval"]>
 
 export type DarApprovalSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -687,8 +687,8 @@ export type DarApprovalSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   signatureTypeUsed?: boolean
   darMasterId?: boolean
   assignedUserId?: boolean
-  darMaster?: boolean | Prisma.DarMasterDefaultArgs<ExtArgs>
   assignedUser?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  darMaster?: boolean | Prisma.DarMasterDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["darApproval"]>
 
 export type DarApprovalSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -700,8 +700,8 @@ export type DarApprovalSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   signatureTypeUsed?: boolean
   darMasterId?: boolean
   assignedUserId?: boolean
-  darMaster?: boolean | Prisma.DarMasterDefaultArgs<ExtArgs>
   assignedUser?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  darMaster?: boolean | Prisma.DarMasterDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["darApproval"]>
 
 export type DarApprovalSelectScalar = {
@@ -717,23 +717,23 @@ export type DarApprovalSelectScalar = {
 
 export type DarApprovalOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "stepRole" | "action" | "actionDate" | "signatureUsedUrl" | "signatureTypeUsed" | "darMasterId" | "assignedUserId", ExtArgs["result"]["darApproval"]>
 export type DarApprovalInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  darMaster?: boolean | Prisma.DarMasterDefaultArgs<ExtArgs>
   assignedUser?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  darMaster?: boolean | Prisma.DarMasterDefaultArgs<ExtArgs>
 }
 export type DarApprovalIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  darMaster?: boolean | Prisma.DarMasterDefaultArgs<ExtArgs>
   assignedUser?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  darMaster?: boolean | Prisma.DarMasterDefaultArgs<ExtArgs>
 }
 export type DarApprovalIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  darMaster?: boolean | Prisma.DarMasterDefaultArgs<ExtArgs>
   assignedUser?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  darMaster?: boolean | Prisma.DarMasterDefaultArgs<ExtArgs>
 }
 
 export type $DarApprovalPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "DarApproval"
   objects: {
-    darMaster: Prisma.$DarMasterPayload<ExtArgs>
     assignedUser: Prisma.$UserPayload<ExtArgs>
+    darMaster: Prisma.$DarMasterPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1138,8 +1138,8 @@ readonly fields: DarApprovalFieldRefs;
  */
 export interface Prisma__DarApprovalClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  darMaster<T extends Prisma.DarMasterDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DarMasterDefaultArgs<ExtArgs>>): Prisma.Prisma__DarMasterClient<runtime.Types.Result.GetResult<Prisma.$DarMasterPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   assignedUser<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  darMaster<T extends Prisma.DarMasterDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DarMasterDefaultArgs<ExtArgs>>): Prisma.Prisma__DarMasterClient<runtime.Types.Result.GetResult<Prisma.$DarMasterPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.

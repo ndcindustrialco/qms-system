@@ -284,9 +284,9 @@ export type KpiMasterWhereInput = {
   createdById?: Prisma.StringNullableFilter<"KpiMaster"> | string | null
   createdAt?: Prisma.DateTimeFilter<"KpiMaster"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"KpiMaster"> | Date | string
+  approvalLogs?: Prisma.KpiApprovalLogListRelationFilter
   department?: Prisma.XOR<Prisma.DepartmentScalarRelationFilter, Prisma.DepartmentWhereInput>
   monthlyResults?: Prisma.KpiMonthlyResultListRelationFilter
-  approvalLogs?: Prisma.KpiApprovalLogListRelationFilter
 }
 
 export type KpiMasterOrderByWithRelationInput = {
@@ -303,9 +303,9 @@ export type KpiMasterOrderByWithRelationInput = {
   createdById?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  approvalLogs?: Prisma.KpiApprovalLogOrderByRelationAggregateInput
   department?: Prisma.DepartmentOrderByWithRelationInput
   monthlyResults?: Prisma.KpiMonthlyResultOrderByRelationAggregateInput
-  approvalLogs?: Prisma.KpiApprovalLogOrderByRelationAggregateInput
 }
 
 export type KpiMasterWhereUniqueInput = Prisma.AtLeast<{
@@ -325,9 +325,9 @@ export type KpiMasterWhereUniqueInput = Prisma.AtLeast<{
   createdById?: Prisma.StringNullableFilter<"KpiMaster"> | string | null
   createdAt?: Prisma.DateTimeFilter<"KpiMaster"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"KpiMaster"> | Date | string
+  approvalLogs?: Prisma.KpiApprovalLogListRelationFilter
   department?: Prisma.XOR<Prisma.DepartmentScalarRelationFilter, Prisma.DepartmentWhereInput>
   monthlyResults?: Prisma.KpiMonthlyResultListRelationFilter
-  approvalLogs?: Prisma.KpiApprovalLogListRelationFilter
 }, "id">
 
 export type KpiMasterOrderByWithAggregationInput = {
@@ -383,9 +383,9 @@ export type KpiMasterCreateInput = {
   createdById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  approvalLogs?: Prisma.KpiApprovalLogCreateNestedManyWithoutKpiMasterInput
   department: Prisma.DepartmentCreateNestedOneWithoutKpiMastersInput
   monthlyResults?: Prisma.KpiMonthlyResultCreateNestedManyWithoutKpiMasterInput
-  approvalLogs?: Prisma.KpiApprovalLogCreateNestedManyWithoutKpiMasterInput
 }
 
 export type KpiMasterUncheckedCreateInput = {
@@ -402,8 +402,8 @@ export type KpiMasterUncheckedCreateInput = {
   createdById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  monthlyResults?: Prisma.KpiMonthlyResultUncheckedCreateNestedManyWithoutKpiMasterInput
   approvalLogs?: Prisma.KpiApprovalLogUncheckedCreateNestedManyWithoutKpiMasterInput
+  monthlyResults?: Prisma.KpiMonthlyResultUncheckedCreateNestedManyWithoutKpiMasterInput
 }
 
 export type KpiMasterUpdateInput = {
@@ -419,9 +419,9 @@ export type KpiMasterUpdateInput = {
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  approvalLogs?: Prisma.KpiApprovalLogUpdateManyWithoutKpiMasterNestedInput
   department?: Prisma.DepartmentUpdateOneRequiredWithoutKpiMastersNestedInput
   monthlyResults?: Prisma.KpiMonthlyResultUpdateManyWithoutKpiMasterNestedInput
-  approvalLogs?: Prisma.KpiApprovalLogUpdateManyWithoutKpiMasterNestedInput
 }
 
 export type KpiMasterUncheckedUpdateInput = {
@@ -438,8 +438,8 @@ export type KpiMasterUncheckedUpdateInput = {
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  monthlyResults?: Prisma.KpiMonthlyResultUncheckedUpdateManyWithoutKpiMasterNestedInput
   approvalLogs?: Prisma.KpiApprovalLogUncheckedUpdateManyWithoutKpiMasterNestedInput
+  monthlyResults?: Prisma.KpiMonthlyResultUncheckedUpdateManyWithoutKpiMasterNestedInput
 }
 
 export type KpiMasterCreateManyInput = {
@@ -657,8 +657,8 @@ export type KpiMasterCreateWithoutDepartmentInput = {
   createdById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  monthlyResults?: Prisma.KpiMonthlyResultCreateNestedManyWithoutKpiMasterInput
   approvalLogs?: Prisma.KpiApprovalLogCreateNestedManyWithoutKpiMasterInput
+  monthlyResults?: Prisma.KpiMonthlyResultCreateNestedManyWithoutKpiMasterInput
 }
 
 export type KpiMasterUncheckedCreateWithoutDepartmentInput = {
@@ -674,8 +674,8 @@ export type KpiMasterUncheckedCreateWithoutDepartmentInput = {
   createdById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  monthlyResults?: Prisma.KpiMonthlyResultUncheckedCreateNestedManyWithoutKpiMasterInput
   approvalLogs?: Prisma.KpiApprovalLogUncheckedCreateNestedManyWithoutKpiMasterInput
+  monthlyResults?: Prisma.KpiMonthlyResultUncheckedCreateNestedManyWithoutKpiMasterInput
 }
 
 export type KpiMasterCreateOrConnectWithoutDepartmentInput = {
@@ -736,8 +736,8 @@ export type KpiMasterCreateWithoutMonthlyResultsInput = {
   createdById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  department: Prisma.DepartmentCreateNestedOneWithoutKpiMastersInput
   approvalLogs?: Prisma.KpiApprovalLogCreateNestedManyWithoutKpiMasterInput
+  department: Prisma.DepartmentCreateNestedOneWithoutKpiMastersInput
 }
 
 export type KpiMasterUncheckedCreateWithoutMonthlyResultsInput = {
@@ -786,8 +786,8 @@ export type KpiMasterUpdateWithoutMonthlyResultsInput = {
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  department?: Prisma.DepartmentUpdateOneRequiredWithoutKpiMastersNestedInput
   approvalLogs?: Prisma.KpiApprovalLogUpdateManyWithoutKpiMasterNestedInput
+  department?: Prisma.DepartmentUpdateOneRequiredWithoutKpiMastersNestedInput
 }
 
 export type KpiMasterUncheckedUpdateWithoutMonthlyResultsInput = {
@@ -919,8 +919,8 @@ export type KpiMasterUpdateWithoutDepartmentInput = {
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  monthlyResults?: Prisma.KpiMonthlyResultUpdateManyWithoutKpiMasterNestedInput
   approvalLogs?: Prisma.KpiApprovalLogUpdateManyWithoutKpiMasterNestedInput
+  monthlyResults?: Prisma.KpiMonthlyResultUpdateManyWithoutKpiMasterNestedInput
 }
 
 export type KpiMasterUncheckedUpdateWithoutDepartmentInput = {
@@ -936,8 +936,8 @@ export type KpiMasterUncheckedUpdateWithoutDepartmentInput = {
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  monthlyResults?: Prisma.KpiMonthlyResultUncheckedUpdateManyWithoutKpiMasterNestedInput
   approvalLogs?: Prisma.KpiApprovalLogUncheckedUpdateManyWithoutKpiMasterNestedInput
+  monthlyResults?: Prisma.KpiMonthlyResultUncheckedUpdateManyWithoutKpiMasterNestedInput
 }
 
 export type KpiMasterUncheckedUpdateManyWithoutDepartmentInput = {
@@ -961,13 +961,13 @@ export type KpiMasterUncheckedUpdateManyWithoutDepartmentInput = {
  */
 
 export type KpiMasterCountOutputType = {
-  monthlyResults: number
   approvalLogs: number
+  monthlyResults: number
 }
 
 export type KpiMasterCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  monthlyResults?: boolean | KpiMasterCountOutputTypeCountMonthlyResultsArgs
   approvalLogs?: boolean | KpiMasterCountOutputTypeCountApprovalLogsArgs
+  monthlyResults?: boolean | KpiMasterCountOutputTypeCountMonthlyResultsArgs
 }
 
 /**
@@ -983,15 +983,15 @@ export type KpiMasterCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Ex
 /**
  * KpiMasterCountOutputType without action
  */
-export type KpiMasterCountOutputTypeCountMonthlyResultsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.KpiMonthlyResultWhereInput
+export type KpiMasterCountOutputTypeCountApprovalLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.KpiApprovalLogWhereInput
 }
 
 /**
  * KpiMasterCountOutputType without action
  */
-export type KpiMasterCountOutputTypeCountApprovalLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.KpiApprovalLogWhereInput
+export type KpiMasterCountOutputTypeCountMonthlyResultsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.KpiMonthlyResultWhereInput
 }
 
 
@@ -1009,9 +1009,9 @@ export type KpiMasterSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   createdById?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  approvalLogs?: boolean | Prisma.KpiMaster$approvalLogsArgs<ExtArgs>
   department?: boolean | Prisma.DepartmentDefaultArgs<ExtArgs>
   monthlyResults?: boolean | Prisma.KpiMaster$monthlyResultsArgs<ExtArgs>
-  approvalLogs?: boolean | Prisma.KpiMaster$approvalLogsArgs<ExtArgs>
   _count?: boolean | Prisma.KpiMasterCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["kpiMaster"]>
 
@@ -1067,9 +1067,9 @@ export type KpiMasterSelectScalar = {
 
 export type KpiMasterOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "year" | "periodType" | "objectiveDetails" | "measurementFrequency" | "calculationFormula" | "guidelines" | "trackingRecords" | "targetValue" | "departmentId" | "createdById" | "createdAt" | "updatedAt", ExtArgs["result"]["kpiMaster"]>
 export type KpiMasterInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  approvalLogs?: boolean | Prisma.KpiMaster$approvalLogsArgs<ExtArgs>
   department?: boolean | Prisma.DepartmentDefaultArgs<ExtArgs>
   monthlyResults?: boolean | Prisma.KpiMaster$monthlyResultsArgs<ExtArgs>
-  approvalLogs?: boolean | Prisma.KpiMaster$approvalLogsArgs<ExtArgs>
   _count?: boolean | Prisma.KpiMasterCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type KpiMasterIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1082,9 +1082,9 @@ export type KpiMasterIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
 export type $KpiMasterPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "KpiMaster"
   objects: {
+    approvalLogs: Prisma.$KpiApprovalLogPayload<ExtArgs>[]
     department: Prisma.$DepartmentPayload<ExtArgs>
     monthlyResults: Prisma.$KpiMonthlyResultPayload<ExtArgs>[]
-    approvalLogs: Prisma.$KpiApprovalLogPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1494,9 +1494,9 @@ readonly fields: KpiMasterFieldRefs;
  */
 export interface Prisma__KpiMasterClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  approvalLogs<T extends Prisma.KpiMaster$approvalLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.KpiMaster$approvalLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$KpiApprovalLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   department<T extends Prisma.DepartmentDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DepartmentDefaultArgs<ExtArgs>>): Prisma.Prisma__DepartmentClient<runtime.Types.Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   monthlyResults<T extends Prisma.KpiMaster$monthlyResultsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.KpiMaster$monthlyResultsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$KpiMonthlyResultPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  approvalLogs<T extends Prisma.KpiMaster$approvalLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.KpiMaster$approvalLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$KpiApprovalLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1940,30 +1940,6 @@ export type KpiMasterDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Int
 }
 
 /**
- * KpiMaster.monthlyResults
- */
-export type KpiMaster$monthlyResultsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the KpiMonthlyResult
-   */
-  select?: Prisma.KpiMonthlyResultSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the KpiMonthlyResult
-   */
-  omit?: Prisma.KpiMonthlyResultOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.KpiMonthlyResultInclude<ExtArgs> | null
-  where?: Prisma.KpiMonthlyResultWhereInput
-  orderBy?: Prisma.KpiMonthlyResultOrderByWithRelationInput | Prisma.KpiMonthlyResultOrderByWithRelationInput[]
-  cursor?: Prisma.KpiMonthlyResultWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.KpiMonthlyResultScalarFieldEnum | Prisma.KpiMonthlyResultScalarFieldEnum[]
-}
-
-/**
  * KpiMaster.approvalLogs
  */
 export type KpiMaster$approvalLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1985,6 +1961,30 @@ export type KpiMaster$approvalLogsArgs<ExtArgs extends runtime.Types.Extensions.
   take?: number
   skip?: number
   distinct?: Prisma.KpiApprovalLogScalarFieldEnum | Prisma.KpiApprovalLogScalarFieldEnum[]
+}
+
+/**
+ * KpiMaster.monthlyResults
+ */
+export type KpiMaster$monthlyResultsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the KpiMonthlyResult
+   */
+  select?: Prisma.KpiMonthlyResultSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the KpiMonthlyResult
+   */
+  omit?: Prisma.KpiMonthlyResultOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.KpiMonthlyResultInclude<ExtArgs> | null
+  where?: Prisma.KpiMonthlyResultWhereInput
+  orderBy?: Prisma.KpiMonthlyResultOrderByWithRelationInput | Prisma.KpiMonthlyResultOrderByWithRelationInput[]
+  cursor?: Prisma.KpiMonthlyResultWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.KpiMonthlyResultScalarFieldEnum | Prisma.KpiMonthlyResultScalarFieldEnum[]
 }
 
 /**

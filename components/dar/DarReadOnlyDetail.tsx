@@ -18,23 +18,38 @@ interface Props {
   savedSignatureType?: SignatureType | null;
 }
 
+const card = "bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden";
+const cardHead = "px-6 py-4 border-b border-slate-100 flex items-center justify-between";
+const cardBody = "p-6";
+const sectionLabel = "text-xs text-slate-400 mb-1";
+const sectionValue = "text-sm font-medium text-slate-800";
+
 export default function DarReadOnlyDetail({ dar, currentUserId, savedSignatureUrl, savedSignatureType }: Props) {
   const t = useT();
   const locale = useLocale();
   const isDraft = dar.status === "DRAFT";
 
+  function fmtDate(iso: string) {
+    return new Date(iso).toLocaleDateString(locale === "en" ? "en-GB" : "th-TH", {
+      day: "2-digit", month: "long", year: "numeric",
+    });
+  }
+
   return (
-    <div className="flex flex-col gap-4">
-      {/* Header card */}
-      <div className="card-premium px-5 py-4 border border-base-300 rounded-xl shadow-sm">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+    <div className="space-y-4">
+      {/* Header card — DAR No. + status + actions */}
+      <div className={card}>
+        <div className="px-6 py-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <p className="text-[11px] md:text-xs text-gray-500">{t("fieldDarNo")}</p>
-            <p className="text-xl md:text-2xl font-bold text-primary mt-0.5">
-              {dar.darNo ?? <span className="text-gray-500 text-base">{t("fieldDarNoDraft")}</span>}
-            </p>
+            <p className="text-xs text-slate-400 mb-1">{t("fieldDarNo")}</p>
+            {dar.darNo ? (
+              <p className="text-2xl font-bold text-[#0F1059] leading-tight tracking-tight">{dar.darNo}</p>
+            ) : (
+              <p className="text-lg font-semibold text-slate-400">{t("fieldDarNoDraft")}</p>
+            )}
+            <p className="text-xs text-slate-400 mt-1 font-mono">{fmtDate(dar.requestDate)}</p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 shrink-0">
             <DarStatusBadge status={dar.status} />
             {isDraft && <DarDraftActions darId={dar.id} />}
           </div>
@@ -42,89 +57,93 @@ export default function DarReadOnlyDetail({ dar, currentUserId, savedSignatureUr
       </div>
 
       {/* Requester info */}
-      <div className="card-premium border border-base-300 rounded-xl shadow-sm">
-        <div className="px-5 py-4 border-b border-base-200">
-          <h2 className="text-sm md:text-base font-bold text-primary">{t("sectionRequester")}</h2>
+      <div className={card}>
+        <div className={cardHead}>
+          <h2 className="text-base font-semibold text-slate-800">{t("sectionRequester")}</h2>
         </div>
-        <div className="p-5 grid grid-cols-2 md:grid-cols-4 gap-3 text-xs md:text-sm">
+        <div className={`${cardBody} grid grid-cols-2 md:grid-cols-4 gap-4`}>
           <div>
-            <p className="text-[11px] md:text-xs text-gray-500">{t("fieldFullName")}</p>
-            <p className="mt-0.5 font-medium">{dar.requester.name ?? "—"}</p>
+            <p className={sectionLabel}>{t("fieldFullName")}</p>
+            <p className={sectionValue}>{dar.requester.name ?? "—"}</p>
           </div>
           <div>
-            <p className="text-[11px] md:text-xs text-gray-500">{t("fieldEmpId")}</p>
-            <p className="mt-0.5 font-medium">{dar.requester.employeeId ?? "—"}</p>
+            <p className={sectionLabel}>{t("fieldEmpId")}</p>
+            <p className={`${sectionValue} font-mono`}>{dar.requester.employeeId ?? "—"}</p>
           </div>
           <div>
-            <p className="text-[11px] md:text-xs text-gray-500">{t("fieldDepartment")}</p>
-            <p className="mt-0.5 font-medium">{dar.requester.department?.name ?? "—"}</p>
+            <p className={sectionLabel}>{t("fieldDepartment")}</p>
+            <p className={sectionValue}>{dar.requester.department?.name ?? "—"}</p>
           </div>
           <div>
-            <p className="text-[11px] md:text-xs text-gray-500">{t("fieldDate")}</p>
-            <p className="mt-0.5 font-medium">
-              {new Date(dar.requestDate).toLocaleDateString(
-                locale === "en" ? "en-GB" : "th-TH",
-                { day: "2-digit", month: "long", year: "numeric" },
+            <p className={sectionLabel}>{t("fieldDate")}</p>
+            <p className={`${sectionValue} font-mono`}>{fmtDate(dar.requestDate)}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Objective & Doc type */}
+      <div className={card}>
+        <div className={cardHead}>
+          <h2 className="text-base font-semibold text-slate-800">{t("sectionObjective")}</h2>
+        </div>
+        <div className={`${cardBody} grid grid-cols-1 md:grid-cols-2 gap-4`}>
+          <div>
+            <p className={sectionLabel}>{t("fieldObjective")}</p>
+            <p className={sectionValue}>{OBJECTIVE_LABELS[dar.objective]}</p>
+          </div>
+          <div>
+            <p className={sectionLabel}>{t("fieldDocType")}</p>
+            <p className={sectionValue}>
+              {DOC_TYPE_LABELS[dar.docType]}
+              {dar.docTypeOther && (
+                <span className="text-slate-500"> — {dar.docTypeOther}</span>
               )}
             </p>
           </div>
         </div>
       </div>
 
-      {/* Objective & Doc type */}
-      <div className="card-premium border border-base-300 rounded-xl shadow-sm">
-        <div className="px-5 py-4 border-b border-base-200">
-          <h2 className="text-sm md:text-base font-bold text-primary">{t("sectionObjective")}</h2>
-        </div>
-        <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-3 text-xs md:text-sm">
-          <div>
-            <p className="text-[11px] md:text-xs text-gray-500">{t("fieldObjective")}</p>
-            <p className="mt-0.5 font-medium">{OBJECTIVE_LABELS[dar.objective]}</p>
-          </div>
-          <div>
-            <p className="text-[11px] md:text-xs text-gray-500">{t("fieldDocType")}</p>
-            <p className="mt-0.5 font-medium">
-              {DOC_TYPE_LABELS[dar.docType]}
-              {dar.docTypeOther && ` — ${dar.docTypeOther}`}
-            </p>
-          </div>
-        </div>
-      </div>
-
       {/* Reason */}
-      <div className="card-premium border border-base-300 rounded-xl shadow-sm">
-        <div className="px-5 py-4 border-b border-base-200">
-          <h2 className="text-sm md:text-base font-bold text-primary">{t("sectionReason")}</h2>
+      <div className={card}>
+        <div className={cardHead}>
+          <h2 className="text-base font-semibold text-slate-800">{t("sectionReason")}</h2>
         </div>
-        <div className="p-5">
-          <p className="text-xs md:text-sm text-neutral whitespace-pre-wrap">{dar.reason}</p>
+        <div className={cardBody}>
+          <p className="text-sm text-slate-600 whitespace-pre-wrap leading-relaxed">{dar.reason}</p>
         </div>
       </div>
 
       {/* Items */}
-      <div className="card-premium border border-base-300 rounded-xl shadow-sm">
-        <div className="px-5 py-4 border-b border-base-200">
-          <h2 className="text-sm md:text-base font-bold text-primary">
-            {t("sectionItems")} ({dar.items.length} {locale === "en" ? "items" : "รายการ"})
-          </h2>
+      <div className={card}>
+        <div className={cardHead}>
+          <h2 className="text-base font-semibold text-slate-800">{t("sectionItems")}</h2>
+          <span className="text-xs text-slate-400">
+            {dar.items.length} {locale === "en" ? "items" : "รายการ"}
+          </span>
         </div>
-        <div className="p-5">
+        <div className={cardBody}>
           <DarItemsTable items={dar.items} />
         </div>
       </div>
 
       {/* Distribution */}
-      <div className="card-premium border border-base-300 rounded-xl shadow-sm">
-        <div className="px-5 py-4 border-b border-base-200">
-          <h2 className="text-sm md:text-base font-bold text-primary">{t("sectionDistrib")}</h2>
+      <div className={card}>
+        <div className={cardHead}>
+          <h2 className="text-base font-semibold text-slate-800">{t("sectionDistrib")}</h2>
+          <span className="text-xs text-slate-400">
+            {dar.distributions.length} {locale === "en" ? "dept(s)" : "แผนก"}
+          </span>
         </div>
-        <div className="p-5">
+        <div className={cardBody}>
           {dar.distributions.length === 0 ? (
-            <p className="text-xs md:text-sm text-gray-500">{t("noDeptFound")}</p>
+            <p className="text-sm text-slate-400">{t("noDeptFound")}</p>
           ) : (
             <div className="flex flex-wrap gap-2">
               {dar.distributions.map((d) => (
-                <span key={d.departmentId} className="inline-block px-2.5 py-0.5 text-[11px] rounded-full font-bold border border-base-300 text-neutral bg-base-100">
+                <span
+                  key={d.departmentId}
+                  className="inline-block px-3 py-1 text-xs font-medium rounded-full bg-slate-50 text-slate-600 border border-slate-200"
+                >
                   {d.department.name}
                 </span>
               ))}
@@ -134,11 +153,11 @@ export default function DarReadOnlyDetail({ dar, currentUserId, savedSignatureUr
       </div>
 
       {/* Attachments */}
-      <div className="card-premium border border-base-300 rounded-xl shadow-sm">
-        <div className="px-5 py-4 border-b border-base-200">
-          <h2 className="text-sm md:text-base font-bold text-primary">{t("sectionAttach")}</h2>
+      <div className={card}>
+        <div className={cardHead}>
+          <h2 className="text-base font-semibold text-slate-800">{t("sectionAttach")}</h2>
         </div>
-        <div className="p-5">
+        <div className={cardBody}>
           <DarAttachmentUpload
             mode="saved"
             darId={dar.id}
