@@ -92,7 +92,7 @@ export default function DarTable({ dars, onSort, sortKey, sortDir = "desc", onEd
     <div className="hidden lg:block bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
       <table className="w-full">
         <thead>
-          <tr className="bg-slate-50 border-b border-slate-100">
+          <tr className="bg-slate-50 border-b border-slate-100 sticky top-0 z-10">
             <th className="px-4 py-3 text-left">
               <button onClick={() => onSort?.("darNo")} className="inline-flex items-center gap-1.5 text-slate-800 text-sm font-semibold hover:text-[#0F1059] transition-colors">
                 {t.darNo}
@@ -159,7 +159,7 @@ export default function DarTable({ dars, onSort, sortKey, sortDir = "desc", onEd
                 <div className="flex items-center gap-2 justify-end">
                   <Link
                     href={`/dar/${dar.id}`}
-                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-medium text-[#1D6A8A] border border-[#1D6A8A]/30 hover:bg-sky-50 transition-colors"
+                    className="h-11 inline-flex items-center gap-1 px-3 rounded-xl text-xs font-medium text-[#1D6A8A] border border-[#1D6A8A]/30 hover:bg-sky-50 transition-colors"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -171,7 +171,7 @@ export default function DarTable({ dars, onSort, sortKey, sortDir = "desc", onEd
                   {dar.status === "DRAFT" && (
                     <button
                       onClick={() => onEdit?.(dar.id)}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-medium text-slate-600 border border-slate-200 hover:bg-slate-50 transition-colors"
+                      className="h-11 inline-flex items-center gap-1 px-3 rounded-xl text-xs font-medium text-slate-600 border border-slate-200 hover:bg-slate-50 transition-colors"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />

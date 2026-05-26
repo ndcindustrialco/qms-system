@@ -52,22 +52,22 @@ export default function HeroBanner({ announcements }: { announcements: Announcem
         {slide ? (
           <>
             <div className="flex items-center gap-2.5 mb-4">
-              <span className="text-[10px] font-black uppercase tracking-[0.18em] px-2.5 py-1 rounded-md"
+              <span className="text-xs font-bold uppercase tracking-[0.18em] px-2.5 py-1 rounded-md"
                 style={{ background: `${accent}1A`, color: accent, border: `1px solid ${accent}40` }}>
                 {slide.sourceSystem}
               </span>
-              <span className="text-[11px] text-white/30">
+              <span className="text-xs text-white/30">
                 {new Date(slide.createdAt).toLocaleDateString(isTh ? "th-TH" : "en-US", { day: "2-digit", month: "short", year: "numeric" })}
               </span>
             </div>
-            <h1 className="text-xl md:text-[1.6rem] font-bold leading-tight mb-3 max-w-2xl"
+            <h1 className="text-xl md:text-2xl font-bold leading-tight mb-3 max-w-2xl"
               style={{ color: textCol, textShadow: `0 0 60px ${accent}22` }}>
               {slide.title}
             </h1>
             <p className="text-sm leading-relaxed max-w-xl line-clamp-2" style={{ color: `${textCol}99` }}>{slide.content}</p>
             {slide.spWebUrl && (
               <a href={slide.spWebUrl} target="_blank" rel="noopener noreferrer"
-                className="mt-5 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider w-fit px-4 py-2 rounded-lg transition-all duration-150 hover:scale-[1.04]"
+                className="mt-5 h-11 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider w-fit px-4 rounded-xl transition-all duration-150 hover:scale-[1.04]"
                 style={{ background: `${accent}18`, color: accent, border: `1px solid ${accent}40` }}>
                 {isTh ? "ดูรายละเอียด" : "View Details"}
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -86,8 +86,11 @@ export default function HeroBanner({ announcements }: { announcements: Announcem
         <div className="absolute bottom-4 right-6 flex items-center gap-1.5 z-20">
           {announcements.map((_, i) => (
             <button key={i} onClick={() => go(i)}
-              className="rounded-full transition-all duration-300"
-              style={{ width: i === current ? 18 : 5, height: 5, background: i === current ? accent : "rgba(255,255,255,0.2)" }} />
+              aria-label={`Go to slide ${i + 1}`}
+              className="flex items-center justify-center h-8 min-w-[20px] transition-all duration-300">
+              <span className="block rounded-full transition-all duration-300"
+                style={{ width: i === current ? 18 : 5, height: 5, background: i === current ? accent : "rgba(255,255,255,0.2)" }} />
+            </button>
           ))}
         </div>
       )}

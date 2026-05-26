@@ -38,7 +38,7 @@ export default function AnnouncementViewDrawer({ item, open, onClose, onEdit }: 
       <div className={[
         "relative z-10 flex flex-col bg-white shadow-2xl",
         "w-full max-h-[92vh] rounded-t-2xl",
-        "lg:h-full lg:max-h-full lg:w-96 lg:rounded-none lg:rounded-l-2xl",
+        "lg:h-full lg:max-h-full lg:w-[480px] lg:rounded-none lg:rounded-l-2xl",
       ].join(" ")}>
         {/* Mobile drag handle */}
         <div className="lg:hidden flex justify-center pt-3 pb-1 shrink-0" aria-hidden="true">
@@ -54,7 +54,7 @@ export default function AnnouncementViewDrawer({ item, open, onClose, onEdit }: 
           <button
             onClick={onClose}
             aria-label={t("common.close")}
-            className="h-9 w-9 flex items-center justify-center rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0F1059] focus-visible:ring-offset-2"
+            className="h-11 w-11 flex items-center justify-center rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0F1059] focus-visible:ring-offset-2"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -69,14 +69,14 @@ export default function AnnouncementViewDrawer({ item, open, onClose, onEdit }: 
         <div className="px-6 py-4 border-t border-slate-100 flex justify-end gap-2 shrink-0">
           <button
             onClick={onClose}
-            className="bg-white text-slate-700 border border-slate-200 rounded-xl px-4 py-2 text-sm font-medium hover:bg-slate-50 transition-colors"
+            className="h-11 bg-white text-slate-700 border border-slate-200 rounded-xl px-4 text-sm font-medium hover:bg-slate-50 transition-colors"
           >
             {t("common.close")}
           </button>
           {item && (
             <button
               onClick={() => { onClose(); onEdit(item); }}
-              className="bg-[#0F1059] text-white rounded-xl px-4 py-2 text-sm font-medium hover:bg-[#161875] transition-colors"
+              className="h-11 bg-[#0F1059] text-white rounded-xl px-4 text-sm font-medium hover:bg-[#161875] transition-colors"
             >
               {t("common.edit")}
             </button>

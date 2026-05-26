@@ -130,14 +130,14 @@ export default function AnnouncementsTableClient({ rows }: { rows: AnnouncementR
       {/* Page header — §14 Page Header Pattern */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-800">
+          <h1 className="text-2xl font-bold tracking-tight text-[#0F1059]">
             {t("announcement.title")}
           </h1>
           <p className="text-sm text-slate-400 mt-1">จัดการประกาศและข่าวสารของระบบ</p>
         </div>
         <button
           onClick={() => setCreateOpen(true)}
-          className="inline-flex items-center gap-1.5 bg-[#0F1059] hover:bg-[#161875] text-white rounded-xl px-4 py-2 text-sm font-medium transition-colors shrink-0"
+          className="h-11 min-w-[44px] inline-flex items-center gap-1.5 bg-[#0F1059] hover:bg-[#161875] text-white rounded-xl px-4 text-sm font-medium transition-colors shrink-0"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
@@ -148,22 +148,45 @@ export default function AnnouncementsTableClient({ rows }: { rows: AnnouncementR
 
       {/* Stats row */}
       <div className="grid grid-cols-3 gap-4">
-        {[
-          { label: "ประกาศทั้งหมด", value: totalCount, color: "text-slate-800", bg: "bg-slate-50" },
-          { label: t("announcement.statusActive"), value: activeCount, color: "text-emerald-600", bg: "bg-emerald-50" },
-          { label: "Scrolling Ticker", value: scrollingCount, color: "text-sky-600", bg: "bg-sky-50" },
-        ].map((s) => (
-          <div key={s.label} className="bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-4 flex items-center gap-3">
-            <div className={`w-10 h-10 rounded-xl ${s.bg} flex items-center justify-center shrink-0`}>
-              <span className={`text-lg font-bold ${s.color}`}>{s.value}</span>
-            </div>
-            <p className="text-xs text-slate-500 leading-snug">{s.label}</p>
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-5 flex items-center gap-4">
+          <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
+            <svg className="w-5 h-5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+            </svg>
           </div>
-        ))}
+          <div>
+            <p className="text-2xl font-bold text-slate-800 leading-none">{totalCount}</p>
+            <p className="text-xs text-slate-400 mt-1">ประกาศทั้งหมด</p>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-5 flex items-center gap-4">
+          <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0">
+            <svg className="w-5 h-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div>
+            <p className="text-2xl font-bold text-emerald-600 leading-none">{activeCount}</p>
+            <p className="text-xs text-slate-400 mt-1">{t("announcement.statusActive")}</p>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-5 flex items-center gap-4">
+          <div className="w-10 h-10 rounded-xl bg-sky-50 flex items-center justify-center shrink-0">
+            <svg className="w-5 h-5 text-sky-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+          </div>
+          <div>
+            <p className="text-2xl font-bold text-sky-600 leading-none">{scrollingCount}</p>
+            <p className="text-xs text-slate-400 mt-1">Scrolling Ticker</p>
+          </div>
+        </div>
       </div>
 
       {/* Toolbar — §15 Table Toolbar */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] px-5 py-4 flex flex-wrap items-center gap-3">
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-4 flex flex-wrap items-center gap-3">
         {/* Filter tabs */}
         <div className="flex items-center gap-1 bg-slate-100 rounded-xl p-1 shrink-0">
           {filterTabs.map((tab) => (

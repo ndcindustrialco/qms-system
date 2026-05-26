@@ -32,8 +32,8 @@ export default function AnnouncementsTable({ rows, onView, onEdit, onDelete, onT
 
   return (
     <table className="w-full">
-      <thead>
-        <tr className="bg-slate-50 border-b border-slate-100">
+      <thead className="sticky top-0 z-10 bg-slate-50 border-b border-slate-100">
+        <tr>
           <th className="text-slate-800 text-sm font-semibold px-4 py-3 text-left">{t("announcement.colTitle")}</th>
           <th className="text-slate-800 text-sm font-semibold px-4 py-3 text-left">{t("announcement.colSystem")}</th>
           <th className="text-slate-800 text-sm font-semibold px-4 py-3 text-left">{t("announcement.colType")}</th>

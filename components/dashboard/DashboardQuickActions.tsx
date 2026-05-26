@@ -59,15 +59,15 @@ export default function DashboardQuickActions({ isTh, role }: Props) {
     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
       {actions.map((a) => (
         <Link key={a.href} href={a.href}
-          className="group relative flex items-center gap-3 bg-white border border-base-300 rounded-xl px-4 py-3.5 overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+          className="group relative flex items-center gap-3 bg-white border border-slate-200 rounded-xl px-4 py-3.5 overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
           <div className="absolute left-0 top-0 bottom-0 w-[3px] rounded-r-sm" style={{ background: a.color }} />
-          <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-all duration-200 group-hover:scale-110"
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-all duration-200 group-hover:scale-110"
             style={{ background: a.light, color: a.color }}>
             {a.icon}
           </div>
           <div className="min-w-0">
-            <p className="text-[13px] font-bold truncate" style={{ color: a.color }}>{isTh ? a.labelTh : a.labelEn}</p>
-            <p className="text-[11px] text-gray-400 truncate">{isTh ? a.subTh : a.subEn}</p>
+            <p className="text-sm font-bold truncate" style={{ color: a.color }}>{isTh ? a.labelTh : a.labelEn}</p>
+            <p className="text-xs text-slate-400 truncate">{isTh ? a.subTh : a.subEn}</p>
           </div>
         </Link>
       ))}

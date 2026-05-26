@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useT } from "@/lib/i18n";
 import type { AnnouncementRow } from "@/services/announcement";
 
@@ -14,6 +14,20 @@ type Props = {
 export default function AnnouncementDeleteModal({ item, open, onClose, onDeleted }: Props) {
   const t = useT();
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape" && !loading) onClose(); };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open, loading, onClose]);
+
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [open]);
+
+  if (!open) return null;
 
   async function handleDelete() {
     if (!item) return;
@@ -31,21 +45,31 @@ export default function AnnouncementDeleteModal({ item, open, onClose, onDeleted
   }
 
   return (
-    <dialog className={`modal ${open ? "modal-open" : ""}`} aria-modal="true">
-      <div className="modal-box rounded-2xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] max-w-md w-full">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 rounded-full bg-rose-50 flex items-center justify-center shrink-0">
+    <div role="dialog" aria-modal="true" aria-label={t("announcement.deleteTitle")}
+      className="fixed inset-0 z-50 flex items-center justify-center px-4"
+    >
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 bg-black/30"
+        onClick={() => !loading && onClose()}
+      />
+
+      <div className="relative z-10 bg-white rounded-2xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.12)] w-full max-w-md">
+        <div className="flex items-start gap-4 mb-4">
+          <div className="w-10 h-10 rounded-xl bg-rose-50 border border-rose-100 flex items-center justify-center shrink-0">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
             </svg>
           </div>
-          <div>
+          <div className="flex-1 min-w-0">
             <h3 className="text-base font-semibold text-slate-800">{t("announcement.deleteTitle")}</h3>
-            {item && <p className="text-xs text-slate-400 mt-0.5 truncate max-w-65">{item.title}</p>}
+            {item && (
+              <p className="text-xs text-slate-400 mt-0.5 truncate">{item.title}</p>
+            )}
           </div>
         </div>
 
-        <p className="text-sm text-slate-600 mb-6">
+        <p className="text-sm text-slate-600 mb-6 leading-relaxed">
           {t("announcement.deleteConfirm")} {t("announcement.deleteWarning")}
         </p>
 
@@ -53,21 +77,20 @@ export default function AnnouncementDeleteModal({ item, open, onClose, onDeleted
           <button
             onClick={onClose}
             disabled={loading}
-            className="bg-white text-slate-700 border border-slate-200 rounded-xl px-4 py-2 text-sm font-medium hover:bg-slate-50 transition-colors disabled:opacity-50"
+            className="h-11 min-w-[44px] bg-white text-slate-700 border border-slate-200 rounded-xl px-4 text-sm font-medium hover:bg-slate-50 transition-colors disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0F1059] focus-visible:ring-offset-2"
           >
             {t("common.cancel")}
           </button>
           <button
             onClick={handleDelete}
             disabled={loading}
-            className="bg-rose-600 text-white rounded-xl px-4 py-2 text-sm font-medium hover:bg-rose-700 transition-colors disabled:opacity-50 inline-flex items-center gap-2"
+            className="h-11 min-w-[44px] bg-rose-600 text-white rounded-xl px-4 text-sm font-medium hover:bg-rose-700 transition-colors disabled:opacity-50 inline-flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2"
           >
             {loading && <div className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />}
             {t("common.delete")}
           </button>
         </div>
       </div>
-      <div className="modal-backdrop" onClick={() => !loading && onClose()} />
-    </dialog>
+    </div>
   );
 }

@@ -122,7 +122,7 @@ export default function DarDrawer({ isOpen, onClose, requesterInfo }: Props) {
           <button
             onClick={onClose}
             aria-label={isTh ? "ปิด" : "Close"}
-            className="h-9 w-9 flex items-center justify-center rounded-xl text-slate-400
+            className="h-11 w-11 flex items-center justify-center rounded-xl text-slate-400
                        hover:text-slate-600 hover:bg-slate-100 transition-colors
                        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0F1059] focus-visible:ring-offset-2"
           >

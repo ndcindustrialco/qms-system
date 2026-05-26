@@ -58,7 +58,7 @@ export default function AnnouncementCreateDrawer({ open, onClose, onCreated }: P
           <button
             onClick={onClose}
             aria-label={t("common.cancel")}
-            className="h-9 w-9 flex items-center justify-center rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0F1059] focus-visible:ring-offset-2"
+            className="h-11 w-11 flex items-center justify-center rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0F1059] focus-visible:ring-offset-2"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -139,7 +139,7 @@ export default function AnnouncementCreateDrawer({ open, onClose, onCreated }: P
             <label className="flex items-start gap-3 p-4 border border-slate-200 rounded-xl bg-slate-50/50 cursor-pointer hover:bg-white transition-colors">
               <input
                 type="checkbox"
-                className="checkbox checkbox-primary mt-0.5"
+                className="mt-0.5 w-4 h-4 rounded border-slate-300 accent-[#0F1059] cursor-pointer"
                 checked={form.pushToCompanyCenter}
                 onChange={(e) => setForm((f) => ({ ...f, pushToCompanyCenter: e.target.checked }))}
               />
@@ -154,7 +154,7 @@ export default function AnnouncementCreateDrawer({ open, onClose, onCreated }: P
             <label className={labelCls}>{t("announcement.fieldAttachment")}</label>
             <input
               type="file"
-              className="file-input file-input-bordered w-full text-sm bg-slate-50/50 border-slate-200 rounded-xl focus:border-[#0F1059]"
+              className="w-full bg-slate-50/50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-700 text-sm focus:outline-none focus:border-[#0F1059] focus:bg-white transition-colors file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-[#0F1059] file:text-white hover:file:bg-[#161875]"
               onChange={(e) => setFile(e.target.files?.[0] ?? null)}
             />
             {file && (
@@ -184,14 +184,14 @@ export default function AnnouncementCreateDrawer({ open, onClose, onCreated }: P
           <button
             onClick={onClose}
             disabled={loading}
-            className="bg-white text-slate-700 border border-slate-200 rounded-xl px-4 py-2 text-sm font-medium hover:bg-slate-50 transition-colors disabled:opacity-50"
+            className="h-11 min-w-[44px] bg-white text-slate-700 border border-slate-200 rounded-xl px-4 text-sm font-medium hover:bg-slate-50 transition-colors disabled:opacity-50"
           >
             {t("common.cancel")}
           </button>
           <button
             onClick={handleSubmit}
             disabled={loading || !form.title.trim() || !form.content.trim()}
-            className="bg-[#0F1059] text-white rounded-xl px-4 py-2 text-sm font-medium hover:bg-[#161875] transition-colors disabled:opacity-50 inline-flex items-center gap-2 min-w-28 justify-center"
+            className="h-11 min-w-[44px] bg-[#0F1059] text-white rounded-xl px-4 text-sm font-medium hover:bg-[#161875] transition-colors disabled:opacity-50 inline-flex items-center gap-2 min-w-28 justify-center"
           >
             {loading && <div className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />}
             {t("announcement.publish")}

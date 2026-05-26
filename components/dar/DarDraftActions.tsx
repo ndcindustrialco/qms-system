@@ -44,7 +44,7 @@ export default function DarDraftActions({ darId }: Props) {
         <button
           type="button"
           onClick={() => setShowConfirm(true)}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-medium
+          className="h-11 min-w-[44px] inline-flex items-center gap-1.5 px-3 rounded-xl text-sm font-medium
                      text-rose-600 border border-rose-200 hover:bg-rose-50 transition-colors
                      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2"
         >
@@ -59,7 +59,7 @@ export default function DarDraftActions({ darId }: Props) {
         <dialog className="modal modal-open" aria-modal="true">
           <div className="modal-box rounded-2xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] max-w-md w-full">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-full bg-rose-50 flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-rose-50 flex items-center justify-center shrink-0">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                 </svg>
@@ -78,7 +78,7 @@ export default function DarDraftActions({ darId }: Props) {
                 type="button"
                 disabled={deleting}
                 onClick={() => { setShowConfirm(false); setError(null); }}
-                className="bg-white text-slate-700 border border-slate-200 rounded-xl px-4 py-2 text-sm font-medium hover:bg-slate-50 transition-colors disabled:opacity-50"
+                className="h-11 min-w-[44px] bg-white text-slate-700 border border-slate-200 rounded-xl px-4 text-sm font-medium hover:bg-slate-50 transition-colors disabled:opacity-50"
               >
                 {isTh ? "ยกเลิก" : "Cancel"}
               </button>
@@ -86,7 +86,7 @@ export default function DarDraftActions({ darId }: Props) {
                 type="button"
                 disabled={deleting}
                 onClick={handleDelete}
-                className="bg-rose-600 text-white rounded-xl px-4 py-2 text-sm font-medium hover:bg-rose-700 transition-colors disabled:opacity-50 inline-flex items-center gap-2"
+                className="h-11 min-w-[44px] bg-rose-600 text-white rounded-xl px-4 text-sm font-medium hover:bg-rose-700 transition-colors disabled:opacity-50 inline-flex items-center gap-2"
               >
                 {deleting && (
                   <div className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />

@@ -30,14 +30,14 @@ export default function AnnouncementViewFields({ item }: { item: AnnouncementRow
       <div className="grid grid-cols-2 gap-4">
         <div>
           <span className={label}>{t("announcement.fieldSourceSystem")}</span>
-          <span className="inline-block px-2.5 py-0.5 text-xs font-semibold rounded-full bg-[#0F1059]/10 text-[#0F1059]">
+          <span className="inline-block px-2.5 py-0.5 text-xs font-semibold rounded-full bg-[#0F1059]/10 text-[#0F1059] border border-[#0F1059]/20">
             {item.sourceSystem}
           </span>
         </div>
         <div>
           <span className={label}>{t("announcement.fieldDisplayType")}</span>
           <span className={`inline-block px-2.5 py-0.5 text-xs font-semibold rounded-full ${
-            item.displayType === "SCROLLING" ? "bg-sky-50 text-sky-600" : "bg-slate-100 text-slate-500"
+            item.displayType === "SCROLLING" ? "bg-sky-50 text-sky-600 border border-sky-200" : "bg-slate-100 text-slate-500 border border-slate-200"
           }`}>
             {item.displayType === "SCROLLING" ? t("announcement.displayTypeMain") : t("announcement.displayTypeNormal")}
           </span>
@@ -78,18 +78,32 @@ export default function AnnouncementViewFields({ item }: { item: AnnouncementRow
         <div>
           <span className={label}>{t("announcement.fieldStatus")}</span>
           {isActive ? (
-            <span className="inline-block px-2.5 py-0.5 text-xs font-semibold rounded-full bg-emerald-50 text-emerald-600">
-              {t("announcement.statusActive")} ✓
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-semibold rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200">
+              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+              </svg>
+              {t("announcement.statusActive")}
             </span>
           ) : (
-            <span className="inline-block px-2.5 py-0.5 text-xs font-semibold rounded-full bg-slate-100 text-slate-500">
+            <span className="inline-block px-2.5 py-0.5 text-xs font-semibold rounded-full bg-slate-100 text-slate-500 border border-slate-200">
               {t("announcement.statusInactive")}
             </span>
           )}
         </div>
         <div>
           <span className={label}>{t("announcement.fieldPushToCompany")}</span>
-          <p className={value}>{item.pushToCompanyCenter ? "Yes" : "No"}</p>
+          {item.pushToCompanyCenter ? (
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-semibold rounded-full bg-sky-50 text-sky-600 border border-sky-200">
+              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+              </svg>
+              แสดงหน้าหลัก
+            </span>
+          ) : (
+            <span className="inline-block px-2.5 py-0.5 text-xs font-semibold rounded-full bg-slate-100 text-slate-500 border border-slate-200">
+              ไม่แสดง
+            </span>
+          )}
         </div>
       </div>
 
