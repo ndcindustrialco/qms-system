@@ -12,6 +12,7 @@ function mapApproval(a: {
   actionDate: Date | null;
   signatureUsedUrl: string | null;
   signatureTypeUsed: SignatureType | null;
+  comment: string | null;
   assignedUser: { id: string; name: string | null; employeeId: string | null; department: { id: string; name: string } | null };
 }): DarApprovalRow {
   return {
@@ -21,6 +22,7 @@ function mapApproval(a: {
     actionDate: a.actionDate?.toISOString() ?? null,
     signatureUsedUrl: a.signatureUsedUrl,
     signatureTypeUsed: a.signatureTypeUsed,
+    comment: a.comment,
     assignedUser: a.assignedUser,
   };
 }
@@ -80,6 +82,7 @@ async function fetchDarDetail(id: string): Promise<DarDetail | null> {
         actionDate: a.actionDate,
         signatureUsedUrl: a.signatureUsedUrl,
         signatureTypeUsed: a.signatureTypeUsed,
+        comment: a.comment,
         assignedUser: {
           id: a.assignedUser.id,
           name: a.assignedUser.name,
@@ -381,6 +384,7 @@ export interface ApproveInput {
   signatureDataUrl: string;
   signatureType: SignatureType;
   saveSignature: boolean;
+  comment?: string | null;
 }
 
 export async function approveDar(darId: string, userId: string, input: ApproveInput): Promise<DarDetail> {
@@ -423,7 +427,7 @@ export async function approveDar(darId: string, userId: string, input: ApproveIn
   await db.$transaction(async (tx) => {
     await tx.darApproval.update({
       where: { id: myStep.id },
-      data: { action: "APPROVED", actionDate: now, signatureUsedUrl: input.signatureDataUrl, signatureTypeUsed: input.signatureType },
+      data: { action: "APPROVED", actionDate: now, signatureUsedUrl: input.signatureDataUrl, signatureTypeUsed: input.signatureType, comment: input.comment ?? null },
     });
 
     if (input.saveSignature) {
@@ -448,7 +452,7 @@ export async function approveDar(darId: string, userId: string, input: ApproveIn
 
 // ── Reject ────────────────────────────────────────────────────────────────────
 
-export async function rejectDar(darId: string, userId: string, _reason: string): Promise<DarDetail> {
+export async function rejectDar(darId: string, userId: string, comment: string): Promise<DarDetail> {
   const dar = await db.darMaster.findUnique({ where: { id: darId }, select: { id: true, status: true } });
   if (!dar) throw new NotFoundError("DAR");
 
@@ -460,7 +464,7 @@ export async function rejectDar(darId: string, userId: string, _reason: string):
 
   const now = new Date();
   await db.$transaction(async (tx) => {
-    await tx.darApproval.update({ where: { id: myStep.id }, data: { action: "REJECTED", actionDate: now } });
+    await tx.darApproval.update({ where: { id: myStep.id }, data: { action: "REJECTED", actionDate: now, comment } });
     await tx.darMaster.update({ where: { id: darId }, data: { status: "DRAFT" } });
   });
 

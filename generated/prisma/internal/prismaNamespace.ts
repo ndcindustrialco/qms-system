@@ -1780,7 +1780,8 @@ export const DarApprovalScalarFieldEnum = {
   signatureUsedUrl: 'signatureUsedUrl',
   signatureTypeUsed: 'signatureTypeUsed',
   darMasterId: 'darMasterId',
-  assignedUserId: 'assignedUserId'
+  assignedUserId: 'assignedUserId',
+  comment: 'comment'
 } as const
 
 export type DarApprovalScalarFieldEnum = (typeof DarApprovalScalarFieldEnum)[keyof typeof DarApprovalScalarFieldEnum]

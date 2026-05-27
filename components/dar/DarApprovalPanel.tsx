@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import { useT } from "@/lib/i18n";
+import { useLocale } from "@/lib/locale-context";
 import type { DarDetail, DarApprovalRow, ReviewerCandidate } from "@/types/dar";
 import type { SignatureType } from "@/types/dar";
-import SignaturePad from "./SignaturePad";
 
 interface Props {
   dar: DarDetail;
@@ -15,89 +15,692 @@ interface Props {
   onUpdated: (dar: DarDetail) => void;
 }
 
-const STEP_LABELS: Record<DarApprovalRow["stepRole"], string> = {
-  PREPARER: "ผู้จัดทำ",
-  REVIEWER: "ผู้ตรวจสอบ",
-  APPROVER_MR: "ผู้แทนฝ่ายบริหาร",
-};
+// ── Signature input ───────────────────────────────────────────────────────────
 
-const ACTION_LABELS: Record<DarApprovalRow["action"], string> = {
-  PENDING: "รออนุมัติ",
-  APPROVED: "อนุมัติแล้ว",
-  REJECTED: "ส่งคืน",
-};
+const CANVAS_W = 600;
+const CANVAS_H = 160;
 
-const ACTION_BADGE: Record<DarApprovalRow["action"], string> = {
-  PENDING: "badge-warning",
-  APPROVED: "badge-success",
-  REJECTED: "badge-error",
-};
+function DrawPad({ onChange, clearLabel }: { onChange: (url: string | null) => void; clearLabel: string }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const drawing = useRef(false);
+  const hasContent = useRef(false);
 
-// ── Approval timeline ─────────────────────────────────────────────────────────
-function ApprovalTimeline({ approvals }: { approvals: DarApprovalRow[] }) {
-  if (approvals.length === 0) return null;
+  function getPos(e: React.MouseEvent | React.TouchEvent, canvas: HTMLCanvasElement) {
+    const rect = canvas.getBoundingClientRect();
+    const sx = canvas.width / rect.width;
+    const sy = canvas.height / rect.height;
+    if ("touches" in e) {
+      const touch = e.touches[0];
+      return { x: (touch.clientX - rect.left) * sx, y: (touch.clientY - rect.top) * sy };
+    }
+    return { x: (e.clientX - rect.left) * sx, y: (e.clientY - rect.top) * sy };
+  }
+
+  function startDraw(e: React.MouseEvent | React.TouchEvent) {
+    const canvas = canvasRef.current; if (!canvas) return;
+    drawing.current = true;
+    const ctx = canvas.getContext("2d")!;
+    const { x, y } = getPos(e, canvas);
+    ctx.beginPath(); ctx.moveTo(x, y);
+    e.preventDefault();
+  }
+
+  function draw(e: React.MouseEvent | React.TouchEvent) {
+    if (!drawing.current) return;
+    const canvas = canvasRef.current; if (!canvas) return;
+    const ctx = canvas.getContext("2d")!;
+    ctx.lineWidth = 2; ctx.lineCap = "round"; ctx.strokeStyle = "#0f1059";
+    const { x, y } = getPos(e, canvas);
+    ctx.lineTo(x, y); ctx.stroke();
+    hasContent.current = true;
+    e.preventDefault();
+  }
+
+  function stopDraw() {
+    if (!drawing.current) return;
+    drawing.current = false;
+    const canvas = canvasRef.current; if (!canvas) return;
+    onChange(hasContent.current ? canvas.toDataURL("image/png") : null);
+  }
+
+  function clear() {
+    const canvas = canvasRef.current; if (!canvas) return;
+    canvas.getContext("2d")!.clearRect(0, 0, canvas.width, canvas.height);
+    hasContent.current = false;
+    onChange(null);
+  }
 
   return (
-    <div className="flex flex-col gap-0">
-      {approvals.map((a, idx) => (
-        <div key={a.id} className="flex gap-3">
-          {/* Connector line */}
-          <div className="flex flex-col items-center">
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 border-2 ${
-              a.action === "APPROVED" ? "bg-success border-success text-success-content" :
-              a.action === "REJECTED" ? "bg-error border-error text-error-content" :
-              "bg-base-100 border-base-300 text-neutral"
-            }`}>
-              {a.action === "APPROVED" ? (
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-              ) : a.action === "REJECTED" ? (
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                  <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
-              ) : (
-                <span className="text-[11px] font-bold">{idx + 1}</span>
-              )}
-            </div>
-            {idx < approvals.length - 1 && (
-              <div className={`w-0.5 flex-1 my-1 ${a.action === "APPROVED" ? "bg-success" : "bg-base-300"}`} style={{ minHeight: 24 }} />
-            )}
-          </div>
+    <div className="flex flex-col gap-2">
+      <canvas
+        ref={canvasRef} width={CANVAS_W} height={CANVAS_H}
+        className="w-full border-2 border-dashed border-slate-200 rounded-xl bg-white cursor-crosshair touch-none"
+        style={{ maxHeight: 160 }}
+        onMouseDown={startDraw} onMouseMove={draw} onMouseUp={stopDraw} onMouseLeave={stopDraw}
+        onTouchStart={startDraw} onTouchMove={draw} onTouchEnd={stopDraw}
+      />
+      <button type="button" onClick={clear} className="self-end text-xs text-slate-400 hover:text-slate-600 transition-colors">
+        {clearLabel}
+      </button>
+    </div>
+  );
+}
 
-          {/* Content */}
-          <div className="pb-4 flex-1">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-[14px] font-medium text-base-content">{STEP_LABELS[a.stepRole]}</span>
-              <span className={`badge badge-sm ${ACTION_BADGE[a.action]}`}>{ACTION_LABELS[a.action]}</span>
-            </div>
-            <p className="text-[13px] text-neutral mt-0.5">
-              {a.assignedUser.name ?? a.assignedUser.employeeId ?? "—"}
-              {a.assignedUser.department && ` · ${a.assignedUser.department.name}`}
-            </p>
-            {a.actionDate && (
-              <p className="text-[12px] text-neutral opacity-70 mt-0.5">
-                {new Date(a.actionDate).toLocaleString("th-TH", {
-                  day: "2-digit", month: "short", year: "numeric",
-                  hour: "2-digit", minute: "2-digit",
-                })}
-              </p>
-            )}
-            {a.signatureUsedUrl && a.action === "APPROVED" && (
-              <div className="mt-1 border border-base-300 rounded-lg bg-base-100 inline-block p-1">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={a.signatureUsedUrl} alt="ลายมือชื่อ" className="h-10 object-contain" />
-              </div>
-            )}
+function TypePad({ onChange, placeholder, sampleLabel, fonts }: {
+  onChange: (url: string | null) => void;
+  placeholder: string;
+  sampleLabel: string;
+  fonts: { label: string; value: string }[];
+}) {
+  const [text, setText] = useState("");
+  const [font, setFont] = useState(fonts[0].value);
+
+  const renderToCanvas = useCallback((t: string, f: string): string | null => {
+    if (!t.trim()) return null;
+    const canvas = document.createElement("canvas");
+    canvas.width = CANVAS_W; canvas.height = CANVAS_H;
+    const ctx = canvas.getContext("2d")!;
+    ctx.clearRect(0, 0, CANVAS_W, CANVAS_H);
+    ctx.fillStyle = "#0f1059"; ctx.font = `52px ${f}`;
+    ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.fillText(t, CANVAS_W / 2, CANVAS_H / 2);
+    return canvas.toDataURL("image/png");
+  }, []);
+
+  useEffect(() => { onChange(renderToCanvas(text, font)); }, [text, font, onChange, renderToCanvas]);
+
+  return (
+    <div className="flex flex-col gap-3">
+      <input type="text"
+        className="flex h-10 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/60 transition-colors"
+        placeholder={placeholder} value={text}
+        onChange={(e) => setText(e.target.value)} maxLength={40}
+      />
+      <div className="flex gap-2 flex-wrap">
+        {fonts.map((f) => (
+          <button key={f.value} type="button" onClick={() => setFont(f.value)}
+            className={`h-8 px-3 text-sm rounded-lg font-medium transition-colors ${font === f.value ? "bg-primary text-white" : "border border-slate-200 text-slate-600 hover:bg-slate-50"}`}>
+            <span style={{ fontFamily: f.value }}>{text || sampleLabel}</span>
+          </button>
+        ))}
+      </div>
+      {text.trim() && (
+        <div className="w-full border-2 border-dashed border-slate-200 rounded-xl bg-white flex items-center justify-center" style={{ height: 100 }}>
+          <span style={{ fontFamily: font, fontSize: 42 }} className="text-primary">{text}</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ImagePad({ onChange, uploadLabel, uploadHint, sizeError, sigAlt }: {
+  onChange: (url: string | null) => void;
+  uploadLabel: string; uploadHint: string; sizeError: string; sigAlt: string;
+}) {
+  const [preview, setPreview] = useState<string | null>(null);
+
+  function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]; if (!file) return;
+    if (file.size > 2 * 1024 * 1024) { alert(sizeError); return; }
+    const reader = new FileReader();
+    reader.onload = (ev) => { const url = ev.target?.result as string; setPreview(url); onChange(url); };
+    reader.readAsDataURL(file);
+  }
+
+  return (
+    <div className="flex flex-col gap-3">
+      <label className="flex flex-col items-center justify-center w-full border-2 border-dashed border-slate-200 rounded-xl p-6 cursor-pointer hover:border-primary/60 transition-colors bg-white">
+        <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 text-slate-300 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+        </svg>
+        <span className="text-sm text-slate-500">{uploadLabel}</span>
+        <span className="text-xs text-slate-400 mt-1">{uploadHint}</span>
+        <input type="file" accept="image/*" className="hidden" onChange={handleFile} />
+      </label>
+      {preview && (
+        <div className="border-2 border-dashed border-slate-200 rounded-xl bg-white p-3 flex items-center justify-center" style={{ height: 100 }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={preview} alt={sigAlt} className="max-h-full max-w-full object-contain" />
+        </div>
+      )}
+    </div>
+  );
+}
+
+type SigMode = "DRAW" | "TYPE" | "IMAGE";
+
+interface SignatureSectionProps {
+  savedSignatureUrl?: string | null;
+  savedSignatureType?: SignatureType | null;
+  onSignatureChange: (dataUrl: string | null, type: SigMode) => void;
+  onSaveChange: (save: boolean) => void;
+}
+
+function SignatureSection({ savedSignatureUrl, savedSignatureType, onSignatureChange, onSaveChange }: SignatureSectionProps) {
+  const t = useT();
+  const [mode, setMode] = useState<SigMode>("DRAW");
+
+  const handleChange = useCallback((url: string | null) => {
+    onSignatureChange(url, mode);
+  }, [mode, onSignatureChange]);
+
+  const typeFonts = [
+    { label: t("dar.approval.sigFontScript"),  value: "Dancing Script, cursive" },
+    { label: t("dar.approval.sigFontStyle"),   value: "Pacifico, cursive" },
+    { label: t("dar.approval.sigFontCursive"), value: "Great Vibes, cursive" },
+  ];
+
+  const tabs: { key: SigMode; label: string; icon: React.ReactNode }[] = [
+    {
+      key: "DRAW", label: t("dar.approval.sigModeDrawLabel"),
+      icon: <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>,
+    },
+    {
+      key: "TYPE", label: t("dar.approval.sigModeTypeLabel"),
+      icon: <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h8m-8 6h16" /></svg>,
+    },
+    {
+      key: "IMAGE", label: t("dar.approval.sigModeImageLabel"),
+      icon: <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>,
+    },
+  ];
+
+  return (
+    <div className="flex flex-col gap-4">
+      {savedSignatureUrl && savedSignatureType && (
+        <div className="flex items-center gap-3 rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-3">
+          <div className="bg-white border border-emerald-200 rounded-lg p-1.5 shrink-0">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={savedSignatureUrl} alt={t("dar.approval.sigSavedAlt")} className="h-8 object-contain" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-emerald-800">{t("dar.approval.savedSigLabel")}</p>
+          </div>
+          <button type="button"
+            onClick={() => onSignatureChange(savedSignatureUrl, savedSignatureType)}
+            className="shrink-0 h-8 px-3 text-xs font-medium rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition-colors">
+            {t("dar.approval.btnUseSavedSig")}
+          </button>
+        </div>
+      )}
+
+      <div className="flex gap-1 p-1 bg-slate-100 rounded-xl">
+        {tabs.map((tab) => (
+          <button key={tab.key} type="button"
+            onClick={() => { setMode(tab.key); onSignatureChange(null, tab.key); }}
+            className={`flex-1 flex items-center justify-center gap-1.5 h-8 text-xs font-medium rounded-lg transition-all ${mode === tab.key ? "bg-white shadow-sm text-primary" : "text-slate-500 hover:text-slate-700"}`}>
+            {tab.icon}
+            <span className="hidden sm:inline">{tab.label}</span>
+          </button>
+        ))}
+      </div>
+
+      <div>
+        {mode === "DRAW" && <DrawPad onChange={handleChange} clearLabel={t("dar.approval.sigClear")} />}
+        {mode === "TYPE" && (
+          <TypePad onChange={handleChange} placeholder={t("dar.approval.sigTypePlaceholder")}
+            sampleLabel={t("dar.approval.sigTypeSample")} fonts={typeFonts} />
+        )}
+        {mode === "IMAGE" && (
+          <ImagePad onChange={handleChange} uploadLabel={t("dar.approval.sigImageUploadLabel")}
+            uploadHint={t("dar.approval.sigImageUploadHint")} sizeError={t("dar.approval.sigImageSizeError")}
+            sigAlt={t("dar.approval.sigAlt")} />
+        )}
+      </div>
+
+      <label className="flex items-center gap-2 cursor-pointer select-none">
+        <input type="checkbox" className="w-4 h-4 rounded border-slate-300 text-primary"
+          onChange={(e) => onSaveChange(e.target.checked)} />
+        <span className="text-xs text-slate-500">{t("dar.approval.saveSigCheckbox")}</span>
+      </label>
+    </div>
+  );
+}
+
+// ── Modal shell ───────────────────────────────────────────────────────────────
+
+function Modal({ onClose, children }: { onClose: () => void; children: React.ReactNode }) {
+  // Close on Escape
+  useEffect(() => {
+    function handleKey(e: KeyboardEvent) { if (e.key === "Escape") onClose(); }
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
+  }, [onClose]);
+
+  // Prevent body scroll
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = prev; };
+  }, []);
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      onClick={onClose}>
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" />
+      {/* Dialog */}
+      <div
+        className="relative z-10 w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
+
+// ── Approve modal ─────────────────────────────────────────────────────────────
+
+interface ApproveModalProps {
+  darId: string;
+  stepLabel: string;
+  savedSignatureUrl?: string | null;
+  savedSignatureType?: SignatureType | null;
+  onClose: () => void;
+  onDone: (dar: DarDetail) => void;
+}
+
+function ApproveModal({ darId, stepLabel, savedSignatureUrl, savedSignatureType, onClose, onDone }: ApproveModalProps) {
+  const t = useT();
+  const [sigDataUrl, setSigDataUrl] = useState<string | null>(null);
+  const [sigType, setSigType] = useState<SigMode>("DRAW");
+  const [saveSignature, setSaveSignature] = useState(false);
+  const [comment, setComment] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSignatureChange = useCallback((url: string | null, type: SigMode) => {
+    setSigDataUrl(url); setSigType(type);
+  }, []);
+
+  async function handleSubmit() {
+    if (!sigDataUrl) return;
+    setSubmitting(true); setError(null);
+    try {
+      const res = await fetch(`/api/dar/${darId}/approve`, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ signatureDataUrl: sigDataUrl, signatureType: sigType, saveSignature, comment: comment.trim() || null }),
+      });
+      const json = await res.json();
+      if (!res.ok || json.error) { setError(json.error ?? t("dar.approval.errorGeneric")); return; }
+      onDone(json.data);
+    } finally { setSubmitting(false); }
+  }
+
+  return (
+    <Modal onClose={onClose}>
+      {/* Header */}
+      <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+          </div>
+          <div>
+            <p className="text-sm font-bold text-slate-800">{t("dar.approval.btnApprove")}</p>
+            <p className="text-xs text-slate-400">{stepLabel}</p>
           </div>
         </div>
-      ))}
+        <button type="button" onClick={onClose}
+          className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+
+      {/* Body */}
+      <div className="px-6 py-5 flex flex-col gap-5 max-h-[70vh] overflow-y-auto">
+        {/* Comment */}
+        <div className="flex flex-col gap-1.5">
+          <label className="text-xs font-medium text-slate-600">
+            {t("dar.approval.commentLabel")} <span className="text-slate-400 font-normal">{t("dar.approval.commentOptional")}</span>
+          </label>
+          <textarea
+            rows={3}
+            placeholder={t("dar.approval.commentPlaceholder")}
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            maxLength={1000}
+            className="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 bg-white resize-none focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/60 transition-colors"
+          />
+        </div>
+
+        {/* Signature */}
+        <div className="flex flex-col gap-2">
+          <label className="text-xs font-medium text-slate-600">
+            {t("dar.approval.signatureLabel")} <span className="text-rose-500">*</span>
+          </label>
+          <SignatureSection
+            savedSignatureUrl={savedSignatureUrl}
+            savedSignatureType={savedSignatureType}
+            onSignatureChange={handleSignatureChange}
+            onSaveChange={setSaveSignature}
+          />
+        </div>
+
+        {error && (
+          <div className="flex items-start gap-2 rounded-xl bg-rose-50 border border-rose-200 px-4 py-3 text-sm text-rose-700">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            {error}
+          </div>
+        )}
+      </div>
+
+      {/* Footer */}
+      <div className="flex justify-end gap-2 px-6 py-4 border-t border-slate-100 bg-slate-50/60">
+        <Button variant="ghost" size="sm" type="button" onClick={onClose} disabled={submitting}>{t("common.cancel")}</Button>
+        <button type="button"
+          disabled={!sigDataUrl || submitting}
+          onClick={handleSubmit}
+          className="h-8 px-5 text-xs font-semibold rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors inline-flex items-center gap-1.5">
+          {submitting
+            ? <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            : <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><polyline points="20 6 9 17 4 12" /></svg>
+          }
+          {t("dar.approval.btnConfirmApprove")}
+        </button>
+      </div>
+    </Modal>
+  );
+}
+
+// ── Reject modal ──────────────────────────────────────────────────────────────
+
+interface RejectModalProps {
+  darId: string;
+  stepLabel: string;
+  onClose: () => void;
+  onDone: (dar: DarDetail) => void;
+}
+
+function RejectModal({ darId, stepLabel, onClose, onDone }: RejectModalProps) {
+  const t = useT();
+  const [reason, setReason] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleSubmit() {
+    if (!reason.trim()) return;
+    setSubmitting(true); setError(null);
+    try {
+      const res = await fetch(`/api/dar/${darId}/reject`, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reason: reason.trim() }),
+      });
+      const json = await res.json();
+      if (!res.ok || json.error) { setError(json.error ?? t("dar.approval.errorGeneric")); return; }
+      onDone(json.data);
+    } finally { setSubmitting(false); }
+  }
+
+  return (
+    <Modal onClose={onClose}>
+      {/* Header */}
+      <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg bg-rose-100 flex items-center justify-center shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </div>
+          <div>
+            <p className="text-sm font-bold text-slate-800">{t("dar.approval.btnReject")}</p>
+            <p className="text-xs text-slate-400">{stepLabel}</p>
+          </div>
+        </div>
+        <button type="button" onClick={onClose}
+          className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+
+      {/* Body */}
+      <div className="px-6 py-5 flex flex-col gap-4">
+        <div className="flex flex-col gap-1.5">
+          <label className="text-xs font-medium text-slate-600">
+            {t("dar.approval.rejectReasonLabel")} <span className="text-rose-500">*</span>
+          </label>
+          <textarea
+            rows={5}
+            autoFocus
+            placeholder={t("dar.approval.rejectReasonPlaceholder")}
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            maxLength={1000}
+            className="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 bg-white resize-none focus:outline-none focus:ring-2 focus:ring-rose-300/50 focus:border-rose-300 transition-colors"
+          />
+          <p className="text-[11px] text-slate-400 text-right">{reason.length}/1000</p>
+        </div>
+
+        {error && (
+          <div className="flex items-start gap-2 rounded-xl bg-rose-50 border border-rose-200 px-4 py-3 text-sm text-rose-700">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            {error}
+          </div>
+        )}
+      </div>
+
+      {/* Footer */}
+      <div className="flex justify-end gap-2 px-6 py-4 border-t border-slate-100 bg-slate-50/60">
+        <Button variant="ghost" size="sm" type="button" onClick={onClose} disabled={submitting}>{t("common.cancel")}</Button>
+        <button type="button"
+          disabled={!reason.trim() || submitting}
+          onClick={handleSubmit}
+          className="h-8 px-5 text-xs font-semibold rounded-lg bg-rose-600 text-white hover:bg-rose-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors inline-flex items-center gap-1.5">
+          {submitting
+            ? <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            : <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+          }
+          {t("dar.approval.btnConfirmReject")}
+        </button>
+      </div>
+    </Modal>
+  );
+}
+
+// ── Preparer sign modal ───────────────────────────────────────────────────────
+
+interface PreparerSignModalProps {
+  darId: string;
+  savedSignatureUrl?: string | null;
+  savedSignatureType?: SignatureType | null;
+  onClose: () => void;
+  onDone: (dar: DarDetail) => void;
+}
+
+function PreparerSignModal({ darId, savedSignatureUrl, savedSignatureType, onClose, onDone }: PreparerSignModalProps) {
+  const t = useT();
+  const [sigDataUrl, setSigDataUrl] = useState<string | null>(null);
+  const [sigType, setSigType] = useState<SigMode>("DRAW");
+  const [saveSignature, setSaveSignature] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSignatureChange = useCallback((url: string | null, type: SigMode) => {
+    setSigDataUrl(url); setSigType(type);
+  }, []);
+
+  async function handleSubmit() {
+    if (!sigDataUrl) return;
+    setSubmitting(true); setError(null);
+    try {
+      const res = await fetch(`/api/dar/${darId}/approve`, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ signatureDataUrl: sigDataUrl, signatureType: sigType, saveSignature, comment: null }),
+      });
+      const json = await res.json();
+      if (!res.ok || json.error) { setError(json.error ?? t("dar.approval.errorGeneric")); return; }
+      onDone(json.data);
+    } finally { setSubmitting(false); }
+  }
+
+  return (
+    <Modal onClose={onClose}>
+      <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+            </svg>
+          </div>
+          <p className="text-sm font-bold text-slate-800">{t("dar.approval.preparerSignTitle")}</p>
+        </div>
+        <button type="button" onClick={onClose}
+          className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+
+      <div className="px-6 py-5 max-h-[70vh] overflow-y-auto">
+        <SignatureSection
+          savedSignatureUrl={savedSignatureUrl}
+          savedSignatureType={savedSignatureType}
+          onSignatureChange={handleSignatureChange}
+          onSaveChange={setSaveSignature}
+        />
+        {error && (
+          <div className="mt-4 flex items-start gap-2 rounded-xl bg-rose-50 border border-rose-200 px-4 py-3 text-sm text-rose-700">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            {error}
+          </div>
+        )}
+      </div>
+
+      <div className="flex justify-end gap-2 px-6 py-4 border-t border-slate-100 bg-slate-50/60">
+        <Button variant="ghost" size="sm" type="button" onClick={onClose} disabled={submitting}>{t("common.cancel")}</Button>
+        <Button size="sm" type="button" disabled={!sigDataUrl || submitting} onClick={handleSubmit}>
+          {submitting && <span className="w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full animate-spin mr-1.5" />}
+          {t("dar.approval.btnConfirmSign")}
+        </Button>
+      </div>
+    </Modal>
+  );
+}
+
+// ── Approval timeline ─────────────────────────────────────────────────────────
+
+const STEP_ORDER: DarApprovalRow["stepRole"][] = ["PREPARER", "REVIEWER", "APPROVER_MR"];
+
+function ApprovalTimeline({ approvals }: { approvals: DarApprovalRow[] }) {
+  const t = useT();
+  const locale = useLocale();
+
+  const stepLabel = (role: DarApprovalRow["stepRole"]) => ({
+    PREPARER:    t("dar.approval.stepPreparer"),
+    REVIEWER:    t("dar.approval.stepReviewer"),
+    APPROVER_MR: t("dar.approval.stepApproverMr"),
+  })[role];
+
+  const actionLabel = (action: DarApprovalRow["action"]) => ({
+    APPROVED: t("dar.approval.actionApproved"),
+    REJECTED: t("dar.approval.actionRejected"),
+    PENDING:  t("dar.approval.actionPending"),
+  })[action];
+
+  // Build a fixed 3-row list: use the real row if it exists, otherwise a placeholder
+  const byRole = Object.fromEntries(approvals.map((a) => [a.stepRole, a])) as Partial<Record<DarApprovalRow["stepRole"], DarApprovalRow>>;
+
+  return (
+    <div className="flex flex-col">
+      {STEP_ORDER.map((role, idx) => {
+        const a = byRole[role];
+        const isLast = idx === STEP_ORDER.length - 1;
+
+        if (!a) {
+          // Placeholder — step not yet created
+          return (
+            <div key={role} className="flex gap-3">
+              <div className="flex flex-col items-center">
+                <div className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 border-2 border-dashed border-slate-200 bg-slate-50 text-slate-300">
+                  <span className="text-xs font-bold">{idx + 1}</span>
+                </div>
+                {!isLast && <div className="w-0.5 flex-1 my-1 bg-slate-100" style={{ minHeight: 24 }} />}
+              </div>
+              <div className="pb-5 flex-1 min-w-0">
+                <span className="text-sm font-semibold text-slate-400">{stepLabel(role)}</span>
+                <p className="text-xs text-slate-300 mt-0.5">—</p>
+              </div>
+            </div>
+          );
+        }
+
+        return (
+          <div key={a.id} className="flex gap-3">
+            <div className="flex flex-col items-center">
+              <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 border-2 ${
+                a.action === "APPROVED" ? "bg-emerald-500 border-emerald-500 text-white" :
+                a.action === "REJECTED" ? "bg-rose-500 border-rose-500 text-white" :
+                "bg-white border-amber-300 text-amber-500"
+              }`}>
+                {a.action === "APPROVED" ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><polyline points="20 6 9 17 4 12" /></svg>
+                ) : a.action === "REJECTED" ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+                ) : (
+                  <span className="text-xs font-bold">{idx + 1}</span>
+                )}
+              </div>
+              {!isLast && (
+                <div className={`w-0.5 flex-1 my-1 ${a.action === "APPROVED" ? "bg-emerald-200" : "bg-slate-100"}`} style={{ minHeight: 24 }} />
+              )}
+            </div>
+            <div className="pb-5 flex-1 min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-sm font-semibold text-slate-800">{stepLabel(a.stepRole)}</span>
+                <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium ${
+                  a.action === "APPROVED" ? "bg-emerald-100 text-emerald-700" :
+                  a.action === "REJECTED" ? "bg-rose-100 text-rose-700" :
+                  "bg-amber-100 text-amber-700"
+                }`}>
+                  {actionLabel(a.action)}
+                </span>
+              </div>
+              <p className="text-xs text-slate-500 mt-0.5">
+                {a.assignedUser.name ?? a.assignedUser.employeeId ?? "—"}
+                {a.assignedUser.department && <span className="text-slate-400"> · {a.assignedUser.department.name}</span>}
+              </p>
+              {a.actionDate && (
+                <p className="text-[11px] text-slate-400 mt-0.5">
+                  {new Date(a.actionDate).toLocaleString(locale === "en" ? "en-GB" : "th-TH", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+                </p>
+              )}
+              {a.comment && (
+                <div className="mt-2 rounded-lg bg-slate-50 border border-slate-100 px-3 py-2">
+                  <p className="text-xs text-slate-400 mb-0.5 font-medium">{t("dar.approval.commentLabel")}</p>
+                  <p className="text-sm text-slate-700 whitespace-pre-wrap leading-relaxed">{a.comment}</p>
+                </div>
+              )}
+              {a.signatureUsedUrl && a.action === "APPROVED" && (
+                <div className="mt-2 border border-slate-200 rounded-lg bg-white inline-block px-3 py-2">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={a.signatureUsedUrl} alt={t("dar.approval.sigAlt")} className="h-10 object-contain" />
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }
 
 // ── Assign reviewer panel ─────────────────────────────────────────────────────
+
 function AssignReviewerPanel({ darId, onDone }: { darId: string; onDone: (dar: DarDetail) => void }) {
+  const t = useT();
   const [candidates, setCandidates] = useState<ReviewerCandidate[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState("");
@@ -110,277 +713,174 @@ function AssignReviewerPanel({ darId, onDone }: { darId: string; onDone: (dar: D
       const res = await fetch("/api/dar/reviewer-candidates");
       const json = await res.json();
       setCandidates(json.data ?? []);
-    } finally {
-      setLoading(false);
-    }
+    } finally { setLoading(false); }
   }
 
   async function submit() {
     if (!selected) return;
-    setSubmitting(true);
-    setError(null);
+    setSubmitting(true); setError(null);
     try {
       const res = await fetch(`/api/dar/${darId}/assign-reviewer`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+        method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ reviewerUserId: selected }),
       });
       const json = await res.json();
-      if (!res.ok || json.error) { setError(json.error ?? "เกิดข้อผิดพลาด"); return; }
+      if (!res.ok || json.error) { setError(json.error ?? t("dar.approval.errorGeneric")); return; }
       onDone(json.data);
-    } finally {
-      setSubmitting(false);
-    }
+    } finally { setSubmitting(false); }
   }
 
   if (!candidates) {
     return (
-      <Button size="sm" className="" 
-        type="button"
-         
-        onClick={loadCandidates}
-        disabled={loading}
-      >
-        {loading ? <span className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin inline-block" /> : null}
-        กำหนดผู้ตรวจสอบ
+      <Button size="sm" type="button" onClick={loadCandidates} disabled={loading}>
+        {loading && <span className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin mr-1" />}
+        {t("dar.approval.btnAssignReviewer")}
       </Button>
     );
   }
 
   return (
     <div className="flex flex-col gap-3">
-      <p className="text-[14px] text-base-content font-medium">เลือกผู้ตรวจสอบ</p>
-      <select
-        className="w-full h-8 px-3 py-1 text-[14px] rounded-md border border-slate-300 bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500"
-        value={selected}
-        onChange={(e) => setSelected(e.target.value)}
-      >
-        <option value="">-- เลือกผู้ตรวจสอบ --</option>
+      <p className="text-sm font-medium text-slate-700">{t("dar.approval.selectReviewer")}</p>
+      <select className="w-full h-9 px-3 text-sm rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-primary/30"
+        value={selected} onChange={(e) => setSelected(e.target.value)}>
+        <option value="">{t("dar.approval.selectReviewerPlaceholder")}</option>
         {candidates.map((c) => (
-          <option key={c.id} value={c.id}>
-            {c.name ?? c.email}
-            {c.department ? ` (${c.department.name})` : ""}
-          </option>
+          <option key={c.id} value={c.id}>{c.name ?? c.email}{c.department ? ` (${c.department.name})` : ""}</option>
         ))}
       </select>
-      {error && <p className="text-[13px] text-error">{error}</p>}
+      {error && <p className="text-xs text-rose-600">{error}</p>}
       <div className="flex gap-2">
-        <Button size="sm" className="" 
-          type="button"
-           
-          disabled={!selected || submitting}
-          onClick={submit}
-        >
-          {submitting ? <span className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin inline-block" /> : null}
-          ยืนยัน
+        <Button size="sm" type="button" disabled={!selected || submitting} onClick={submit}>
+          {submitting && <span className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin mr-1" />}
+          {t("common.confirm")}
         </Button>
-        <Button variant="ghost" size="sm" className=""  type="button"   onClick={() => setCandidates(null)}>
-          ยกเลิก
-        </Button>
-      </div>
-    </div>
-  );
-}
-
-// ── Reject modal ──────────────────────────────────────────────────────────────
-function RejectModal({ darId, onDone, onClose }: { darId: string; onDone: (dar: DarDetail) => void; onClose: () => void }) {
-  const [reason, setReason] = useState("");
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  async function submit() {
-    if (!reason.trim()) return;
-    setSubmitting(true);
-    setError(null);
-    try {
-      const res = await fetch(`/api/dar/${darId}/reject`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ reason }),
-      });
-      const json = await res.json();
-      if (!res.ok || json.error) { setError(json.error ?? "เกิดข้อผิดพลาด"); return; }
-      onDone(json.data);
-      onClose();
-    } finally {
-      setSubmitting(false);
-    }
-  }
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-base-content/20 p-4">
-      <div className="bg-base-100 rounded-xl shadow-lg border border-base-300 w-full max-w-md p-6 flex flex-col gap-4">
-        <h3 className="text-[16px] font-semibold text-base-content">ส่งคืนคำขอ</h3>
-        <div>
-          <label className="text-[13px] text-neutral mb-1 block">เหตุผลในการส่งคืน <span className="text-error">*</span></label>
-          <Textarea
-            rows={4}
-            placeholder="ระบุเหตุผล..."
-            value={reason}
-            onChange={(e) => setReason(e.target.value)}
-            maxLength={1000}
-          />
-        </div>
-        {error && <p className="text-[13px] text-error">{error}</p>}
-        <div className="flex justify-end gap-2">
-          <Button variant="ghost" size="sm" className=""  type="button"   onClick={onClose} disabled={submitting}>ยกเลิก</Button>
-          <Button variant="destructive" size="sm" className="" 
-            type="button"
-             
-            disabled={!reason.trim() || submitting}
-            onClick={submit}
-          >
-            {submitting ? <span className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin inline-block" /> : null}
-            ยืนยันส่งคืน
-          </Button>
-        </div>
+        <Button variant="ghost" size="sm" type="button" onClick={() => setCandidates(null)}>{t("common.cancel")}</Button>
       </div>
     </div>
   );
 }
 
 // ── Main panel ────────────────────────────────────────────────────────────────
-export default function DarApprovalPanel({
-  dar,
-  currentUserId,
-  savedSignatureUrl,
-  savedSignatureType,
-  onUpdated,
-}: Props) {
-  const [showSignPad, setShowSignPad] = useState(false);
-  const [showReject, setShowReject] = useState(false);
-  const [approving, setApproving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  // Find the pending step assigned to current user
-  const myPendingStep = dar.approvals.find(
-    (a) => a.assignedUser.id === currentUserId && a.action === "PENDING",
-  );
+type ModalMode = "none" | "approve" | "reject" | "preparerSign";
 
-  // Preparer step (to determine if assign-reviewer CTA is needed)
+export default function DarApprovalPanel({ dar, currentUserId, savedSignatureUrl, savedSignatureType, onUpdated }: Props) {
+  const t = useT();
+  const [modal, setModal] = useState<ModalMode>("none");
+
+  const myPendingStep = dar.approvals.find((a) => a.assignedUser.id === currentUserId && a.action === "PENDING");
   const preparerStep = dar.approvals.find((a) => a.stepRole === "PREPARER");
   const isRequester = dar.requester.id === currentUserId;
   const preparerApproved = preparerStep?.action === "APPROVED";
   const reviewerAssigned = dar.approvals.some((a) => a.stepRole === "REVIEWER");
+  const isPreparerStep = myPendingStep?.stepRole === "PREPARER";
 
-  const handleSign = useCallback(
-    async (dataUrl: string, type: SignatureType) => {
-      setShowSignPad(false);
-      setApproving(true);
-      setError(null);
-      try {
-        const res = await fetch(`/api/dar/${dar.id}/approve`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            signatureDataUrl: dataUrl,
-            signatureType: type,
-            saveSignature: false,
-          }),
-        });
-        const json = await res.json();
-        if (!res.ok || json.error) { setError(json.error ?? "เกิดข้อผิดพลาด"); return; }
-        onUpdated(json.data);
-      } finally {
-        setApproving(false);
-      }
-    },
-    [dar.id, onUpdated],
-  );
+  const stepLabel = (role: DarApprovalRow["stepRole"]) => ({
+    PREPARER:    t("dar.approval.stepPreparer"),
+    REVIEWER:    t("dar.approval.stepReviewer"),
+    APPROVER_MR: t("dar.approval.stepApproverMr"),
+  })[role];
+
+  function handleDone(updated: DarDetail) {
+    setModal("none");
+    onUpdated(updated);
+  }
 
   return (
-    <div className="card-premium p-5 flex flex-col gap-4">
-      <h2 className="text-sm md:text-base font-bold text-primary">ขั้นตอนการอนุมัติ</h2>
-
-      {/* Timeline */}
-      <ApprovalTimeline approvals={dar.approvals} />
-
-      {/* Error */}
-      {error && (
-        <div className="bg-rose-50 border border-rose-200 text-rose-700 rounded-md py-2 px-3 text-[14px]">
-          <span>{error}</span>
+    <>
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
+        {/* Header */}
+        <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+          </div>
+          <h2 className="text-sm font-bold text-slate-800">{t("dar.approval.title")}</h2>
         </div>
-      )}
 
-      {/* Actions */}
-      {/* 1. Preparer self-sign (requester, PREPARER step is PENDING) */}
-      {myPendingStep?.stepRole === "PREPARER" && (
-        <div className="border-t border-base-300 pt-4">
-          <p className="text-[14px] text-base-content mb-3">
-            ลงลายมือชื่อยืนยันเอกสาร (ผู้จัดทำ)
-          </p>
-          {!showSignPad ? (
-            <Button size="sm" className="" 
-              type="button"
-               
-              onClick={() => setShowSignPad(true)}
-              disabled={approving}
-            >
-              {approving ? <span className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin inline-block" /> : null}
-              ลงลายมือชื่อ
-            </Button>
-          ) : (
-            <SignaturePad
-              savedSignatureUrl={savedSignatureUrl}
-              savedSignatureType={savedSignatureType}
-              onConfirm={handleSign}
-              onCancel={() => setShowSignPad(false)}
-            />
-          )}
-        </div>
-      )}
+        <div className="p-6 flex flex-col gap-6">
+          {/* Timeline */}
+          <ApprovalTimeline approvals={dar.approvals} />
 
-      {/* 2. Assign reviewer (requester after preparer approved, no reviewer yet) */}
-      {isRequester && preparerApproved && !reviewerAssigned && dar.status === "PENDING_REVIEW" && (
-        <div className="border-t border-base-300 pt-4">
-          <AssignReviewerPanel darId={dar.id} onDone={onUpdated} />
-        </div>
-      )}
-
-      {/* 3. Reviewer / MR approve or reject */}
-      {myPendingStep && myPendingStep.stepRole !== "PREPARER" && (
-        <div className="border-t border-base-300 pt-4">
-          <p className="text-[14px] text-base-content mb-3">
-            ขั้นตอนของคุณ: <strong>{STEP_LABELS[myPendingStep.stepRole]}</strong>
-          </p>
-          {!showSignPad ? (
-            <div className="flex gap-2 flex-wrap">
-              <Button size="sm" className="" 
-                type="button"
-                 
-                onClick={() => setShowSignPad(true)}
-                disabled={approving}
-              >
-                {approving ? <span className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin inline-block" /> : null}
-                อนุมัติ (ลงลายมือชื่อ)
-              </Button>
-              <Button variant="destructive" size="sm" className="bg-transparent border border-rose-500 text-rose-500 hover:bg-rose-50" 
-                type="button"
-                 
-                onClick={() => setShowReject(true)}
-              >
-                ส่งคืน
-              </Button>
+          {/* 1. Preparer self-sign */}
+          {myPendingStep && isPreparerStep && (
+            <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 flex items-center justify-between gap-4">
+              <div>
+                <p className="text-sm font-semibold text-primary">{t("dar.approval.preparerSignTitle")}</p>
+                <p className="text-xs text-slate-500 mt-0.5">{t("dar.approval.stepPreparer")}</p>
+              </div>
+              <button type="button" onClick={() => setModal("preparerSign")}
+                className="shrink-0 h-9 px-4 text-xs font-semibold rounded-lg bg-primary text-white hover:bg-primary/90 transition-colors inline-flex items-center gap-1.5">
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                </svg>
+                {t("dar.approval.btnConfirmSign")}
+              </button>
             </div>
-          ) : (
-            <SignaturePad
-              savedSignatureUrl={savedSignatureUrl}
-              savedSignatureType={savedSignatureType}
-              onConfirm={handleSign}
-              onCancel={() => setShowSignPad(false)}
-            />
+          )}
+
+          {/* 2. Assign reviewer */}
+          {isRequester && preparerApproved && !reviewerAssigned && dar.status === "PENDING_REVIEW" && (
+            <div className="rounded-xl border border-amber-200 bg-amber-50 p-5">
+              <AssignReviewerPanel darId={dar.id} onDone={onUpdated} />
+            </div>
+          )}
+
+          {/* 3. Reviewer / MR approve or reject */}
+          {myPendingStep && !isPreparerStep && (
+            <div className="rounded-xl border border-slate-200 overflow-hidden">
+              <div className="px-5 py-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between gap-3">
+                <span className="text-sm font-semibold text-slate-700">
+                  {t("dar.approval.yourStep")}: <span className="text-primary">{stepLabel(myPendingStep.stepRole)}</span>
+                </span>
+                <div className="flex gap-2">
+                  <button type="button" onClick={() => setModal("approve")}
+                    className="h-8 px-4 text-xs font-medium rounded-lg bg-primary text-white hover:bg-primary/90 transition-colors inline-flex items-center gap-1.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><polyline points="20 6 9 17 4 12" /></svg>
+                    {t("dar.approval.btnApprove")}
+                  </button>
+                  <button type="button" onClick={() => setModal("reject")}
+                    className="h-8 px-4 text-xs font-medium rounded-lg border border-rose-300 text-rose-600 hover:bg-rose-50 transition-colors inline-flex items-center gap-1.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+                    {t("dar.approval.btnReject")}
+                  </button>
+                </div>
+              </div>
+            </div>
           )}
         </div>
-      )}
+      </div>
 
-      {/* Reject modal */}
-      {showReject && (
-        <RejectModal
+      {/* Modals */}
+      {modal === "preparerSign" && (
+        <PreparerSignModal
           darId={dar.id}
-          onDone={onUpdated}
-          onClose={() => setShowReject(false)}
+          savedSignatureUrl={savedSignatureUrl}
+          savedSignatureType={savedSignatureType}
+          onClose={() => setModal("none")}
+          onDone={handleDone}
         />
       )}
-    </div>
+      {modal === "approve" && myPendingStep && (
+        <ApproveModal
+          darId={dar.id}
+          stepLabel={stepLabel(myPendingStep.stepRole)}
+          savedSignatureUrl={savedSignatureUrl}
+          savedSignatureType={savedSignatureType}
+          onClose={() => setModal("none")}
+          onDone={handleDone}
+        />
+      )}
+      {modal === "reject" && myPendingStep && (
+        <RejectModal
+          darId={dar.id}
+          stepLabel={stepLabel(myPendingStep.stepRole)}
+          onClose={() => setModal("none")}
+          onDone={handleDone}
+        />
+      )}
+    </>
   );
 }

@@ -215,6 +215,7 @@ type SavedProps = {
   darId: string;
   initialAttachments: DarAttachmentRow[];
   canEdit: boolean;
+  readOnly?: boolean;
 };
 
 type TempProps = {
@@ -224,6 +225,150 @@ type TempProps = {
 };
 
 type Props = SavedProps | TempProps;
+
+// ── Inline preview card (read-only mode — no click needed) ────────────────────
+function InlinePreviewCard({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  fileName, fileSize, mimeType, spItemId, spWebUrl, spDownloadUrl: _spDownloadUrl,
+}: {
+  fileName: string; fileSize: number; mimeType: string;
+  spItemId: string; spWebUrl: string; spDownloadUrl: string;
+}) {
+  const isImage  = mimeType.startsWith("image/");
+  const isPdf    = mimeType === "application/pdf";
+  const isOffice = isOfficeMime(mimeType);
+
+  const proxyUrl = `/api/sharepoint/preview-proxy?itemId=${spItemId}`;
+
+  // PDF — fetch as blob so browser renders inline
+  const [pdfBlobUrl, setPdfBlobUrl] = useState<string | null>(null);
+  const [pdfLoading, setPdfLoading] = useState(false);
+  const pdfBlobRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!isPdf) return;
+    let cancelled = false;
+    setPdfLoading(true);
+    fetch(proxyUrl)
+      .then((res) => res.arrayBuffer())
+      .then((buf) => {
+        if (cancelled) return;
+        const blob = new Blob([buf], { type: "application/pdf" });
+        const url  = URL.createObjectURL(blob);
+        pdfBlobRef.current = url;
+        setPdfBlobUrl(url);
+      })
+      .catch(() => {})
+      .finally(() => { if (!cancelled) setPdfLoading(false); });
+    return () => {
+      cancelled = true;
+      if (pdfBlobRef.current) { URL.revokeObjectURL(pdfBlobRef.current); pdfBlobRef.current = null; }
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [spItemId]);
+
+  // Office — fetch embed URL from Graph /preview
+  const [officeEmbedUrl, setOfficeEmbedUrl] = useState<string | null>(null);
+  const [officeLoading, setOfficeLoading] = useState(false);
+
+  useEffect(() => {
+    if (!isOffice) return;
+    let cancelled = false;
+    setOfficeLoading(true);
+    fetch(`/api/sharepoint/office-embed?itemId=${spItemId}`)
+      .then((res) => res.json())
+      .then((json: { data: string | null }) => { if (!cancelled && json.data) setOfficeEmbedUrl(json.data); })
+      .catch(() => {})
+      .finally(() => { if (!cancelled) setOfficeLoading(false); });
+    return () => { cancelled = true; };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [spItemId]);
+
+  const spinner = (
+    <div className="flex items-center justify-center py-16">
+      <span className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin inline-block" />
+    </div>
+  );
+
+  return (
+    <li className="rounded-xl border border-slate-100 bg-white shadow-sm overflow-hidden">
+      {/* Header row */}
+      <div className="flex items-center gap-3 px-4 py-3 border-b border-slate-100">
+        <FileIcon mimeType={mimeType} />
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-medium text-slate-800 truncate">{fileName}</p>
+          <p className="text-xs text-slate-400">{formatBytes(fileSize)}</p>
+        </div>
+        <div className="flex items-center gap-1.5 shrink-0">
+          <a
+            href={proxyUrl}
+            download={fileName}
+            className="h-7 px-2.5 text-xs text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-md font-medium inline-flex items-center gap-1 transition-colors"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            ดาวน์โหลด
+          </a>
+          <a
+            href={spWebUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="h-7 px-2.5 text-xs text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-md font-medium inline-flex items-center gap-1 transition-colors"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+            SharePoint
+          </a>
+        </div>
+      </div>
+
+      {/* Inline preview body */}
+      <div className="bg-slate-50">
+        {isImage && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={proxyUrl} alt={fileName} className="w-full object-contain max-h-[70vh]" />
+        )}
+        {isPdf && (
+          pdfLoading || !pdfBlobUrl ? spinner : (
+            <object data={pdfBlobUrl} type="application/pdf" className="w-full border-0" style={{ height: "70vh" }}>
+              <div className="flex flex-col items-center gap-3 py-12 text-center">
+                <p className="text-sm text-slate-500">เบราว์เซอร์ไม่รองรับ PDF viewer</p>
+                <a href={proxyUrl} download={fileName} className="text-sm font-medium text-primary underline">ดาวน์โหลดไฟล์</a>
+              </div>
+            </object>
+          )
+        )}
+        {isOffice && (
+          officeLoading || !officeEmbedUrl ? spinner : (
+            <iframe
+              src={officeEmbedUrl}
+              className="w-full border-0"
+              style={{ height: "70vh" }}
+              title={fileName}
+              sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+            />
+          )
+        )}
+        {!isImage && !isPdf && !isOffice && (
+          <div className="flex flex-col items-center gap-3 py-12 text-center">
+            <FileIcon mimeType={mimeType} />
+            <p className="text-sm text-slate-500">ไม่รองรับการแสดงผลในเบราว์เซอร์</p>
+            <div className="flex gap-3">
+              <a href={proxyUrl} download={fileName} className="inline-flex items-center justify-center h-8 px-3 text-xs font-medium rounded-md border border-slate-200 bg-white hover:bg-slate-50 transition-colors">
+                ดาวน์โหลดไฟล์
+              </a>
+              <a href={spWebUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center h-8 px-3 text-xs font-medium rounded-md bg-primary text-white hover:bg-primary/90 transition-colors">
+                เปิดใน SharePoint
+              </a>
+            </div>
+          </div>
+        )}
+      </div>
+    </li>
+  );
+}
 
 // ── Drop zone ─────────────────────────────────────────────────────────────────
 function DropZone({ uploading, onFiles }: { uploading: boolean; onFiles: (f: FileList) => void }) {
@@ -378,6 +523,7 @@ export default function DarAttachmentUpload(props: Props) {
   }
 
   const canEdit = props.mode === "temp" || props.canEdit;
+  const isReadOnly = props.mode === "saved" && (props.readOnly ?? false);
 
   const allItems: DisplayItem[] = [
     ...savedItems.map((d): DisplayItem => ({ kind: "saved", data: d })),
@@ -403,6 +549,14 @@ export default function DarAttachmentUpload(props: Props) {
             {allItems.map((item) => {
               if (item.kind === "saved") {
                 const a = item.data;
+                if (isReadOnly) {
+                  return (
+                    <InlinePreviewCard key={a.id}
+                      fileName={a.fileName} fileSize={a.fileSize} mimeType={a.mimeType}
+                      spItemId={a.spItemId} spWebUrl={a.spWebUrl} spDownloadUrl={a.spDownloadUrl}
+                    />
+                  );
+                }
                 return (
                   <FileRow key={a.id}
                     fileName={a.fileName} fileSize={a.fileSize} mimeType={a.mimeType}

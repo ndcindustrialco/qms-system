@@ -169,6 +169,7 @@ model DarApproval {
   signatureTypeUsed SignatureType?
   darMasterId       String
   assignedUserId    String
+  comment           String?
   assignedUser      User           @relation(fields: [assignedUserId], references: [id])
   darMaster         DarMaster      @relation(fields: [darMasterId], references: [id], onDelete: Cascade)
 

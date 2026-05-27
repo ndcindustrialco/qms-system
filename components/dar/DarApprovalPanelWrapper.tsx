@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useT } from "@/lib/i18n";
 import type { DarDetail } from "@/types/dar";
 import type { SignatureType } from "@/types/dar";
 import DarApprovalPanel from "./DarApprovalPanel";
@@ -11,15 +12,18 @@ interface Props {
   currentUserId: string;
   savedSignatureUrl?: string | null;
   savedSignatureType?: SignatureType | null;
+  onExternalUpdate?: (dar: DarDetail) => void;
 }
 
-export default function DarApprovalPanelWrapper({ initialDar, currentUserId, savedSignatureUrl, savedSignatureType }: Props) {
+export default function DarApprovalPanelWrapper({ initialDar, currentUserId, savedSignatureUrl, savedSignatureType, onExternalUpdate }: Props) {
+  const t = useT();
   const [dar, setDar] = useState<DarDetail>(initialDar);
   const [flash, setFlash] = useState<string | null>(null);
 
   function handleUpdated(updated: DarDetail) {
     setDar(updated);
-    setFlash("ดำเนินการสำเร็จ");
+    onExternalUpdate?.(updated);
+    setFlash(t("dar.approval.successFlash"));
     setTimeout(() => setFlash(null), 3000);
   }
 

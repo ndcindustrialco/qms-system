@@ -3,7 +3,7 @@
 import Image from "next/image";
 
 interface LoginClientProps {
-  signInAction: () => Promise<never>;
+  signInAction: () => Promise<void>;
 }
 
 const YT_ID = "XKch3HFovaQ";

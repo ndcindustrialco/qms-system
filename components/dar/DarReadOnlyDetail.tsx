@@ -18,6 +18,8 @@ interface Props {
   savedSignatureUrl?: string | null;
   savedSignatureType?: SignatureType | null;
   isQms?: boolean;
+  readOnly?: boolean;
+  hideApprovalPanel?: boolean;
 }
 
 const card = "bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden";
@@ -26,7 +28,7 @@ const cardBody = "p-6";
 const sectionLabel = "text-xs text-slate-400 mb-1";
 const sectionValue = "text-sm font-medium text-slate-800";
 
-export default function DarReadOnlyDetail({ dar, currentUserId, savedSignatureUrl, savedSignatureType, isQms = false }: Props) {
+export default function DarReadOnlyDetail({ dar, currentUserId, savedSignatureUrl, savedSignatureType, isQms = false, readOnly = false, hideApprovalPanel = false }: Props) {
   const t = useT();
   const locale = useLocale();
   const isDraft = dar.status === "DRAFT";
@@ -168,16 +170,17 @@ export default function DarReadOnlyDetail({ dar, currentUserId, savedSignatureUr
             darId={dar.id}
             initialAttachments={dar.attachments}
             canEdit={
+              !readOnly &&
               !!currentUserId &&
-              dar.status !== "COMPLETED" &&
-              dar.status !== "CANCELLED"
+              dar.status === "DRAFT"
             }
+            readOnly={readOnly}
           />
         </div>
       </div>
 
       {/* Approval panel */}
-      {currentUserId && dar.status !== "DRAFT" && (
+      {!hideApprovalPanel && currentUserId && dar.status !== "DRAFT" && (
         <DarApprovalPanelWrapper
           initialDar={dar}
           currentUserId={currentUserId}

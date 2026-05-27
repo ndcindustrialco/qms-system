@@ -36,10 +36,27 @@ export async function PATCH(req: NextRequest, { params }: Params): Promise<NextR
       );
     }
 
-    const updated = await db.user.update({
-      where: { id },
-      data: { role },
-      select: { id: true, role: true },
+    const updated = await db.$transaction(async (tx) => {
+      const user = await tx.user.update({
+        where: { id },
+        data: { role },
+        select: { id: true, role: true },
+      });
+
+      if (role === "MR") {
+        await tx.systemConfig.upsert({
+          where: { configKey: "CURRENT_MR_USER_ID" },
+          update: { configValue: id },
+          create: { configKey: "CURRENT_MR_USER_ID", configValue: id, description: "Designated MR user for DAR approvals" },
+        });
+      } else {
+        // Remove the config key only if it currently points to this user
+        await tx.systemConfig.deleteMany({
+          where: { configKey: "CURRENT_MR_USER_ID", configValue: id },
+        });
+      }
+
+      return user;
     });
 
     return NextResponse.json({ data: { id: updated.id, role: updated.role }, error: null });

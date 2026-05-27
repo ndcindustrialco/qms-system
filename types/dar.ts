@@ -85,6 +85,7 @@ export type DarApprovalRow = {
   actionDate: string | null;
   signatureUsedUrl: string | null;
   signatureTypeUsed: SignatureType | null;
+  comment: string | null;
   assignedUser: {
     id: string;
     name: string | null;
