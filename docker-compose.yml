@@ -5,6 +5,8 @@ services:
     container_name: qms-redis
     restart: unless-stopped
     command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru --save ""
+    ports:
+      - "6380:6380"
     volumes:
       - redis_data:/data
     healthcheck:
@@ -40,7 +42,7 @@ services:
       AZURE_AD_CLIENT_SECRET: ${AZURE_AD_CLIENT_SECRET}
       AZURE_AD_TENANT_ID: ${AZURE_AD_TENANT_ID}
       SHAREPOINT_SITE_ID: ${SHAREPOINT_SITE_ID}
-      REDIS_URL: redis://redis:6379
+      REDIS_URL: redis://redis:6380
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- $${NEXTAUTH_URL}/api/health || exit 1"]
       interval: 30s
