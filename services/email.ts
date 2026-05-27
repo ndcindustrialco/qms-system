@@ -8,35 +8,8 @@
  * Set MAIL_SENDER_ADDRESS to the shared/service mailbox (e.g. noreply@yourcompany.com).
  */
 
-async function getAppAccessToken(): Promise<string> {
-  const tenantId = process.env.AZURE_AD_TENANT_ID!;
-  const clientId = process.env.AZURE_AD_CLIENT_ID!;
-  const clientSecret = process.env.AZURE_AD_CLIENT_SECRET!;
+import { getGraphToken } from "@/lib/graph-token";
 
-  const url = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`;
-  const body = new URLSearchParams({
-    client_id: clientId,
-    client_secret: clientSecret,
-    grant_type: "client_credentials",
-    scope: "https://graph.microsoft.com/.default",
-  });
-
-  const res = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body: body.toString(),
-  });
-
-  if (!res.ok) {
-    const errorText = await res.text();
-    throw new Error(`Failed to acquire app-only access token: ${res.status} ${errorText}`);
-  }
-
-  const data = await res.json() as { access_token: string };
-  return data.access_token;
-}
 
 export interface MailRecipient {
   name: string;
@@ -58,7 +31,7 @@ async function sendMail(opts: SendMailOptions): Promise<void> {
     return;
   }
 
-  const token = await getAppAccessToken();
+  const token = await getGraphToken();
 
   const payload = {
     message: {
@@ -278,7 +251,7 @@ export async function sendMrApprovalRequestEmail(opts: {
   senderEmail?: string;
 }): Promise<void> {
   const appUrl = process.env.NEXTAUTH_URL ?? "";
-  const darUrl = `${appUrl}/dar/${opts.darId}`;
+  const darUrl = `${appUrl}/dar/${opts.darId}/review`;
 
   const itemRows = opts.items
     .map(

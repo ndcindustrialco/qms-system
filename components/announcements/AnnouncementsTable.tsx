@@ -1,7 +1,7 @@
 "use client";
 
 import { useT } from "@/lib/i18n";
-import type { AnnouncementRow } from "@/services/announcement";
+import type { AnnouncementRow } from "@/services/announcementService";
 import AnnouncementTableRow from "@/components/announcements/AnnouncementTableRow";
 import {
   Table,

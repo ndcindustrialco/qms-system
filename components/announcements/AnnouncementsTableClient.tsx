@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { useRouter } from "next/navigation";
 import { useT } from "@/lib/i18n";
-import type { AnnouncementRow } from "@/services/announcement";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import type { AnnouncementRow } from "@/services/announcementService";
 import AnnouncementsTable from "@/components/announcements/AnnouncementsTable";
 import AnnouncementViewDrawer from "@/components/announcements/AnnouncementViewDrawer";
 import AnnouncementEditDrawer from "@/components/announcements/AnnouncementEditDrawer";
@@ -12,8 +13,6 @@ import AnnouncementCreateDrawer from "@/components/announcements/AnnouncementCre
 import PageHeader from "@/components/common/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import Toast from "@/components/common/Toast";
-import { useToast } from "@/hooks/use-toast";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useUrlFilters } from "@/hooks/use-url-filters";
 
@@ -23,10 +22,19 @@ function getIsActive(a: AnnouncementRow): boolean {
   return a.status === "ACTIVE";
 }
 
-export default function AnnouncementsTableClient({ rows }: { rows: AnnouncementRow[] }) {
-  const router = useRouter();
+export default function AnnouncementsTableClient({ rows: initialRows }: { rows: AnnouncementRow[] }) {
   const t = useT();
-  const { toast, showToast, hideToast } = useToast();
+  const queryClient = useQueryClient();
+
+  const { data: rows = [] } = useQuery<AnnouncementRow[]>({
+    queryKey: ["announcements"],
+    queryFn: async () => {
+      const res = await fetch("/api/announcements");
+      const json = await res.json();
+      return json.data ?? [];
+    },
+    initialData: initialRows,
+  });
 
   const [viewOpen, setViewOpen] = useState(false);
   const [viewItem, setViewItem] = useState<AnnouncementRow | null>(null);
@@ -74,40 +82,49 @@ export default function AnnouncementsTableClient({ rows }: { rows: AnnouncementR
   function handleEdit(row: AnnouncementRow) { setEditItem(row); setEditOpen(true); }
   function handleDelete(row: AnnouncementRow) { setDeleteItem(row); setDeleteModalOpen(true); }
 
-  async function handleToggle(row: AnnouncementRow, active: boolean) {
-    const res = await fetch(`/api/announcements/${row.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ active }),
-    });
-    const json = await res.json() as { error: string | null };
-    if (!res.ok || json.error) {
-      showToast("error", json.error ?? t("announcement.updateFail"));
-      return;
+  const toggleMutation = useMutation({
+    mutationFn: async ({ id, active }: { id: string; active: boolean }) => {
+      const res = await fetch(`/api/announcements/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ active }),
+      });
+      const json = await res.json();
+      if (!res.ok || json.error) throw new Error(json.error ?? "Toggle failed");
+      return json.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["announcements"] });
+      toast.success(t("announcement.updateSuccess"));
+    },
+    onError: (err: Error) => {
+      toast.error(err.message ?? t("announcement.updateFail"));
     }
-    showToast("success", t("announcement.updateSuccess"));
-    router.refresh();
+  });
+
+  async function handleToggle(row: AnnouncementRow, active: boolean) {
+    toggleMutation.mutate({ id: row.id, active });
   }
 
   function handleSaved(success: boolean, errorMessage?: string) {
-    if (!success) { showToast("error", errorMessage ?? t("announcement.updateFail")); return; }
+    if (!success) { toast.error(errorMessage ?? t("announcement.updateFail")); return; }
     setEditOpen(false);
-    showToast("success", t("announcement.updateSuccess"));
-    router.refresh();
+    toast.success(t("announcement.updateSuccess"));
+    queryClient.invalidateQueries({ queryKey: ["announcements"] });
   }
 
   function handleCreated(success: boolean, errorMessage?: string) {
-    if (!success) { showToast("error", errorMessage ?? t("announcement.createFail")); return; }
+    if (!success) { toast.error(errorMessage ?? t("announcement.createFail")); return; }
     setCreateOpen(false);
-    showToast("success", t("announcement.createSuccess"));
-    router.refresh();
+    toast.success(t("announcement.createSuccess"));
+    queryClient.invalidateQueries({ queryKey: ["announcements"] });
   }
 
   function handleDeleted(success: boolean, errorMessage?: string) {
-    if (!success) { showToast("error", errorMessage ?? t("announcement.deleteFail")); return; }
+    if (!success) { toast.error(errorMessage ?? t("announcement.deleteFail")); return; }
     setDeleteModalOpen(false);
-    showToast("success", t("announcement.deleteSuccess"));
-    router.refresh();
+    toast.success(t("announcement.deleteSuccess"));
+    queryClient.invalidateQueries({ queryKey: ["announcements"] });
   }
 
   // ── Filter tabs ────────────────────────────────────────────────────────────
@@ -246,15 +263,7 @@ export default function AnnouncementsTableClient({ rows }: { rows: AnnouncementR
       <AnnouncementDeleteModal item={deleteItem} open={deleteModalOpen} onClose={() => setDeleteModalOpen(false)} onDeleted={handleDeleted} />
       <AnnouncementCreateDrawer open={createOpen} onClose={() => setCreateOpen(false)} onCreated={handleCreated} />
 
-      {/* Toast — error has no auto-dismiss (duration=0) */}
-      {toast && (
-        <Toast
-          type={toast.type}
-          message={toast.message}
-          onClose={hideToast}
-          duration={toast.type === "error" ? 0 : 4000}
-        />
-      )}
+
     </div>
   );
 }

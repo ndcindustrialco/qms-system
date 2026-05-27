@@ -1,10 +1,10 @@
 
-import { NextResponse } from "next/server";
 import { requireRole } from "@/lib/auth";
-import { AppError } from "@/lib/errors";
-import { getAllUsers } from "@/services/user";
-import type { ApiResponse } from "@/types/api";
-import type { UserWithDept } from "@/types/user";
+import { UserService } from "@/services/userService";
+import { sendSuccess } from "@/lib/apiResponse";
+import { handleApiError } from "@/lib/apiErrorHandler";
+
+const userService = new UserService();
 
 /**
  * GET /api/it/users
@@ -12,17 +12,13 @@ import type { UserWithDept } from "@/types/user";
  * Returns all users in the database with their department.
  * Restricted to IT role.
  */
-export async function GET(): Promise<NextResponse<ApiResponse<UserWithDept[]>>> {
+export async function GET() {
   try {
     await requireRole("IT");
 
-    const users = await getAllUsers();
-    return NextResponse.json({ data: users, error: null });
+    const users = await userService.getAllUsers();
+    return sendSuccess(users, "Users retrieved successfully");
   } catch (err) {
-    if (err instanceof AppError) {
-      return NextResponse.json({ data: null, error: err.message }, { status: err.statusCode });
-    }
-    console.error("[GET /api/it/users]", err);
-    return NextResponse.json({ data: null, error: "Internal server error" }, { status: 500 });
+    return handleApiError(err);
   }
 }

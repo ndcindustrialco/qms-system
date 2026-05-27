@@ -1,4 +1,4 @@
-﻿import type { UserRole } from "@/generated/prisma/client";
+import type { UserRole } from "@/generated/prisma/client";
 
 export type UserWithDept = {
   id: string;
@@ -13,4 +13,12 @@ export type UserWithDept = {
 
 // Lightweight shape used by bulk-push and inline edits
 export type UserPatchable = Pick<UserWithDept, "id" | "employeeId" | "msUserId">;
+
+export type SyncResult = {
+  total: number;
+  created: number;
+  updated: number;
+  skipped: number;
+  errors: Array<{ email: string; message: string }>;
+};
 

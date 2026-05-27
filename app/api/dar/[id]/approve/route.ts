@@ -1,15 +1,18 @@
-
-import { NextResponse, type NextRequest } from "next/server";
-import { z } from "zod";
-import { revalidateTag } from "next/cache";
 import { requireAuth } from "@/lib/auth";
-import { AppError } from "@/lib/errors";
-import { approveDar } from "@/services/dar";
+import { DarService } from "@/services/darService";
+import { UserRepository } from "@/repositories/userRepository";
+import { SystemConfigRepository } from "@/repositories/systemConfigRepository";
 import { sendMrApprovalRequestEmail } from "@/services/email";
 import { OBJECTIVE_LABELS, DOC_TYPE_LABELS } from "@/types/dar";
-import { db } from "@/lib/db";
-import type { ApiResponse } from "@/types/api";
-import type { DarDetail } from "@/types/dar";
+import { sendSuccess } from "@/lib/apiResponse";
+import { handleApiError } from "@/lib/apiErrorHandler";
+import { type NextRequest } from "next/server";
+import { z } from "zod";
+import { revalidateTag } from "next/cache";
+
+const darService = new DarService();
+const userRepo = new UserRepository();
+const configRepo = new SystemConfigRepository();
 
 const schema = z.object({
   signatureDataUrl: z.string()
@@ -22,23 +25,19 @@ const schema = z.object({
 
 type Params = { params: Promise<{ id: string }> };
 
-export async function POST(req: NextRequest, { params }: Params): Promise<NextResponse<ApiResponse<DarDetail>>> {
+export async function POST(req: NextRequest, { params }: Params) {
   try {
     const session = await requireAuth();
     const { id } = await params;
 
     const body = await req.json();
-    const parsed = schema.safeParse(body);
-    if (!parsed.success) {
-      const error = parsed.error.issues[0]?.message ?? "Invalid request body";
-      return NextResponse.json({ data: null, error }, { status: 400 });
-    }
+    const parsed = schema.parse(body);
 
-    const dar = await approveDar(id, session.user.id, {
-      signatureDataUrl: parsed.data.signatureDataUrl,
-      signatureType: parsed.data.signatureType,
-      saveSignature: parsed.data.saveSignature,
-      comment: parsed.data.comment ?? null,
+    const dar = await darService.approveDar(id, session.user.id, {
+      signatureDataUrl: parsed.signatureDataUrl,
+      signatureType: parsed.signatureType,
+      saveSignature: parsed.saveSignature,
+      comment: parsed.comment ?? null,
     });
 
     revalidateTag(`dar-${id}`);
@@ -46,23 +45,20 @@ export async function POST(req: NextRequest, { params }: Params): Promise<NextRe
 
     // When the reviewer approves, notify MR — sender is the requester
     const reviewerApprovedThisStep = dar.approvals.some(
-      (a) => a.stepRole === "REVIEWER" && a.assignedUser.id === session.user.id && a.action === "APPROVED",
+      (a) => a.stepRole === "REVIEWER" && a.assignedUser.id === session.user.id && a.action === "APPROVED"
     );
     const hasPendingMrStep = dar.approvals.some(
-      (a) => a.stepRole === "APPROVER_MR" && a.action === "PENDING",
+      (a) => a.stepRole === "APPROVER_MR" && a.action === "PENDING"
     );
 
     if (reviewerApprovedThisStep && hasPendingMrStep && dar.darNo) {
-      const [mrConfig, requesterUser] = await Promise.all([
-        db.systemConfig.findUnique({ where: { configKey: "CURRENT_MR_USER_ID" }, select: { configValue: true } }),
-        db.user.findUnique({ where: { id: dar.requester.id }, select: { name: true, email: true } }),
+      const [mrConfigValue, requesterUser] = await Promise.all([
+        configRepo.findValueByKey("CURRENT_MR_USER_ID"),
+        userRepo.findById(dar.requester.id),
       ]);
 
-      if (mrConfig?.configValue) {
-        const mrUser = await db.user.findUnique({
-          where: { id: mrConfig.configValue },
-          select: { name: true, email: true },
-        });
+      if (mrConfigValue) {
+        const mrUser = await userRepo.findById(mrConfigValue);
 
         if (mrUser?.email) {
           sendMrApprovalRequestEmail({
@@ -86,12 +82,8 @@ export async function POST(req: NextRequest, { params }: Params): Promise<NextRe
       }
     }
 
-    return NextResponse.json({ data: dar, error: null });
+    return sendSuccess(dar, "DAR approved successfully");
   } catch (err) {
-    if (err instanceof AppError) {
-      return NextResponse.json({ data: null, error: err.message }, { status: err.statusCode });
-    }
-    console.error("[POST /api/dar/[id]/approve]", err);
-    return NextResponse.json({ data: null, error: "Internal server error" }, { status: 500 });
+    return handleApiError(err);
   }
 }

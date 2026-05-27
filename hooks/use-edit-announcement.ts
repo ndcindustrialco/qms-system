@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import type { AnnouncementRow } from "@/services/announcement";
+import type { AnnouncementRow } from "@/services/announcementService";
 
 export type EditFormData = {
   title: string;

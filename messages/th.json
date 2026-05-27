@@ -19,7 +19,8 @@
     "close": "ปิด",
     "success": "สำเร็จ",
     "irreversible": "การกระทำนี้ไม่สามารถย้อนกลับได้",
-    "serverError": "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้"
+    "serverError": "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้",
+    "optional": "(ไม่บังคับ)"
   },
   "nav": {
     "dar": "คำขอเอกสาร (DAR)",
@@ -52,6 +53,9 @@
   "dar": {
     "title": "คำขอเอกสาร",
     "new": "สร้างคำขอใหม่",
+    "editTitle": "แก้ไขคำขอเอกสาร",
+    "noDepartmentTitle": "ไม่สามารถสร้างคำขอได้",
+    "noDepartmentDesc": "บัญชีของคุณยังไม่ได้ผูกกับแผนก กรุณาติดต่อ IT",
     "status": {
       "DRAFT": "ร่าง",
       "SUBMITTED": "รอดำเนินการ",
@@ -173,6 +177,15 @@
       "floatPending": "รอการดำเนินการของคุณ",
       "floatAction": "ดำเนินการ"
     },
+    "approve": {
+      "bannerTitle": "คุณได้รับคำขออนุมัติจากผู้ตรวจสอบ",
+      "bannerDesc": "กรุณาตรวจสอบรายละเอียดทั้งหมดด้านล่าง จากนั้นลงลายมือชื่อเพื่ออนุมัติหรือส่งคืน",
+      "breadcrumb": "อนุมัติ"
+    },
+    "signModal": {
+      "title": "ลงลายมือชื่อยืนยันคำขอ",
+      "subtitle": "กรุณาลงลายมือชื่อของคุณก่อนส่งคำขอ DAR"
+    },
     "attachment": {
       "download": "ดาวน์โหลด",
       "preview": "ดูตัวอย่าง",
@@ -203,7 +216,28 @@
       "manage": "จัดการแผนก",
       "noDepts": "ยังไม่มีแผนกในระบบ",
       "empty": "ยังไม่มีแผนก",
-      "emptyDesc": "เพิ่มแผนกแรกโดยกดปุ่มด้านบน"
+      "emptyDesc": "เพิ่มแผนกแรกโดยกดปุ่มด้านบน",
+      "noGroupEmail": "ไม่มีอีเมลกลุ่ม",
+      "active": "ใช้งาน",
+      "inactive": "ปิดใช้งาน",
+      "membersAll": "สมาชิกทั้งหมด",
+      "membersAllUnit": "คน",
+      "connectedM365": "เชื่อม M365",
+      "hasEmpId": "มีรหัสพนักงาน",
+      "specialRole": "Role พิเศษ",
+      "specialRoleHint": "คน (QMS / MR / IT)",
+      "emptyMembers": "ยังไม่มีสมาชิกในแผนกนี้",
+      "emptyMembersDesc": "ไปที่หน้าจัดการผู้ใช้เพื่อกำหนดแผนกให้ผู้ใช้",
+      "goToUsers": "ไปหน้าผู้ใช้",
+      "colName": "ชื่อ",
+      "colEmail": "อีเมล",
+      "colEmpId": "รหัสพนักงาน",
+      "colRole": "Role",
+      "colM365": "M365",
+      "connected": "เชื่อมแล้ว",
+      "notConnected": "ยังไม่เชื่อม",
+      "empIdPrefix": "รหัส",
+      "m365Prefix": "M365"
     },
     "syncBtn": "ซิงค์ผู้ใช้จาก M365",
     "syncBtnShort": "ซิงค์จาก M365",
@@ -283,7 +317,44 @@
     "updateSuccess": "อัปเดตประกาศสำเร็จ",
     "deleteSuccess": "ลบประกาศสำเร็จ",
     "updateFail": "อัปเดตประกาศไม่สำเร็จ",
-    "deleteFail": "ลบประกาศไม่สำเร็จ"
+    "deleteFail": "ลบประกาศไม่สำเร็จ",
+    "details": "รายละเอียดประกาศ",
+    "placeholderTitle": "กรอกหัวข้อประกาศ",
+    "placeholderContent": "กรอกเนื้อหาประกาศ...",
+    "publishBtn": "เผยแพร่ประกาศ",
+    "displayTypeList": "รายการมาตรฐาน (หน้าหลัก)",
+    "displayTypeScrolling": "ข้อความวิ่ง (แถบด้านบน)",
+    "unauthorized": "ไม่มีสิทธิ์เข้าถึง",
+    "uploadFail": "อัปเดตไฟล์แนบไม่สำเร็จ",
+    "saveFail": "บันทึกประกาศไม่สำเร็จ"
+  },
+  "profile": {
+    "title": "โปรไฟล์ของฉัน",
+    "subtitle": "ดูและแก้ไขข้อมูลโปรไฟล์",
+    "infoSection": "ข้อมูลโปรไฟล์",
+    "sigSection": "ลายมือชื่อที่บันทึก",
+    "sigSectionDesc": "ลายมือชื่อของคุณจะถูกโหลดล่วงหน้าเมื่อลงนามคำขอ DAR",
+    "fieldName": "ชื่อ-นามสกุล",
+    "fieldEmpId": "รหัสพนักงาน",
+    "fieldDept": "แผนก",
+    "fieldPosition": "ตำแหน่ง",
+    "placeholderPosition": "เช่น วิศวกรอาวุโส",
+    "btnSave": "บันทึกการแก้ไข",
+    "nameRequired": "กรุณากรอกชื่อ",
+    "saveSuccess": "บันทึกโปรไฟล์สำเร็จ",
+    "saveFail": "บันทึกโปรไฟล์ไม่สำเร็จ",
+    "sigSaved": "บันทึกลายมือชื่อสำเร็จ",
+    "sigSaveFail": "บันทึกลายมือชื่อไม่สำเร็จ",
+    "sigRemoved": "ลบลายมือชื่อสำเร็จ",
+    "sigRemoveFail": "ลบลายมือชื่อไม่สำเร็จ",
+    "sigCurrentLabel": "ลายมือชื่อที่บันทึก",
+    "sigCurrentType": "ประเภท",
+    "btnChange": "เปลี่ยน",
+    "btnRemove": "ลบ",
+    "btnSaveSig": "บันทึกลายมือชื่อ",
+    "tabDraw": "วาด",
+    "tabType": "พิมพ์",
+    "tabImage": "อัปโหลด"
   },
   "error": {
     "title": "เกิดข้อผิดพลาด",

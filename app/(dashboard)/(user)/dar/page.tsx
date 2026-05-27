@@ -1,11 +1,14 @@
 
 import { Suspense } from "react";
 import { requireAuth } from "@/lib/auth";
-import { getDarsByRequesterId } from "@/services/dar";
-import { getActiveDepartments } from "@/services/department";
+import { DarService } from "@/services/darService";
+import { DepartmentService } from "@/services/departmentService";
 import DarTableSkeleton from "@/components/dar/DarTableSkeleton";
 import DarListClient from "@/components/dar/(user)/DarListClient";
 import type { DarSummary } from "@/types/dar";
+
+const darService = new DarService();
+const deptService = new DepartmentService();
 
 async function DarList({
   requesterId,
@@ -19,7 +22,7 @@ async function DarList({
     requestDate: string;
   };
 }) {
-  const { dars } = await getDarsByRequesterId(requesterId, 1, 20);
+  const { dars } = await darService.getDarsByRequesterId(requesterId, 1, 20);
 
   return <DarListClient dars={dars as DarSummary[]} requesterInfo={requesterInfo} />;
 }
@@ -29,8 +32,8 @@ export default async function DarPage() {
 
   let departmentName: string | null = null;
   if (session.user.departmentId) {
-    const departments = await getActiveDepartments();
-    departmentName = departments.find((d) => d.id === session.user.departmentId)?.name ?? null;
+    const departments = await deptService.getActiveDepartments();
+    departmentName = departments.find((d: { id: string; name: string }) => d.id === session.user.departmentId)?.name ?? null;
   }
 
   const requesterInfo = {

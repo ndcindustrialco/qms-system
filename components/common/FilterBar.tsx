@@ -4,6 +4,13 @@ import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import type { ReactNode } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export type FilterOption = { label: string; value: string };
 
@@ -54,10 +61,6 @@ type Props = {
   children?: ReactNode;
   className?: string;
 };
-
-const SELECT_CLS =
-  "h-8 w-full px-2 py-1 text-[13px] rounded-lg border border-slate-200 bg-white " +
-  "focus:outline-none focus:border-[#0F1059] focus:ring-1 focus:ring-[#0F1059]/20 transition-colors";
 
 /**
  * Standard filter bar: debounced search input + generic select dropdowns +
@@ -141,18 +144,22 @@ export default function FilterBar({
       {filters.map((f) => (
         <div key={f.key} style={{ minWidth: f.minWidth ?? "10rem" }}>
           <label className="text-[11px] text-neutral mb-1 block">{f.label}</label>
-          <select
-            className={SELECT_CLS}
-            value={filterValues[f.key] ?? ""}
-            onChange={(e) => onFilterChange?.(f.key, e.target.value)}
+          <Select
+            value={filterValues[f.key] || "ALL"}
+            onValueChange={(val) => onFilterChange?.(f.key, val === "ALL" ? "" : val)}
           >
-            <option value="">{f.allLabel ?? `All ${f.label}`}</option>
-            {f.options.map((o) => (
-              <option key={o.value} value={o.value}>
-                {o.label}
-              </option>
-            ))}
-          </select>
+            <SelectTrigger className="h-8">
+              <SelectValue placeholder={f.allLabel ?? `All ${f.label}`} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">{f.allLabel ?? `All ${f.label}`}</SelectItem>
+              {f.options.map((o) => (
+                <SelectItem key={o.value} value={o.value}>
+                  {o.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       ))}
 

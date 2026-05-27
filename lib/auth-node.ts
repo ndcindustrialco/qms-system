@@ -1,21 +1,21 @@
-﻿import NextAuth from "next-auth";
-import { db } from "@/lib/db";
+import NextAuth from "next-auth";
+import { UserRepository } from "@/repositories/userRepository";
+import { DepartmentRepository } from "@/repositories/departmentRepository";
 import { authConfig } from "@/lib/auth.config";
+import { randomUUID } from "crypto";
+
+const userRepo = new UserRepository();
+const deptRepo = new DepartmentRepository();
 
 async function syncDepartment(userId: string, deptName: string | null | undefined): Promise<string | null> {
   if (!deptName?.trim()) {
-    await db.user.update({ where: { id: userId }, data: { departmentId: null } });
+    await userRepo.update(userId, { departmentId: null });
     return null;
   }
 
-  const dept = await db.department.upsert({
-    where: { name: deptName },
-    update: {},
-    create: { name: deptName },
-    select: { id: true },
-  });
+  const dept = await deptRepo.upsertDepartment(deptName);
 
-  await db.user.update({ where: { id: userId }, data: { departmentId: dept.id } });
+  await userRepo.update(userId, { departmentId: dept.id });
   return dept.id;
 }
 
@@ -33,7 +33,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           try {
             const res = await fetch(
               "https://graph.microsoft.com/v1.0/me?$select=id,displayName,givenName,surname,userPrincipalName,mail,businessPhones,jobTitle,officeLocation,preferredLanguage,mobilePhone,employeeId,department,identities,streetAddress,city,state,postalCode,country",
-              { headers: { Authorization: `Bearer ${account.access_token}` } },
+              { headers: { Authorization: `Bearer ${account.access_token}` } }
             );
             if (res.ok) {
               const data = await res.json() as { department?: string | null; employeeId?: string | null };
@@ -45,22 +45,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           }
         }
 
-        const dbUser = await db.user.upsert({
-          where: { email: user.email },
-          update: {
-            msUserId,
-            name: user.name,
-            image: user.image,
-            ...(msEmployeeId ? { employeeId: msEmployeeId } : {}),
-          },
-          create: {
-            email: user.email,
-            name: user.name,
-            image: user.image,
-            msUserId,
-            role: "USER",
-          },
-          select: { id: true, role: true, msUserId: true, employeeId: true, departmentId: true },
+        const dbUser = await userRepo.upsertUser(user.email, {
+          email: user.email,
+          name: user.name,
+          image: user.image,
+          msUserId,
+          employeeId: msEmployeeId ?? undefined,
+          role: "USER",
         });
 
         const departmentId = await syncDepartment(dbUser.id, msDepartment);
@@ -74,9 +65,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.accessToken = account.access_token;
         token.refreshToken = account.refresh_token;
         token.accessTokenExpires = account.expires_at ? account.expires_at * 1000 : undefined;
+        // Unique session ID for blocklist-based force logout
+        token.jti = randomUUID();
       }
       return token;
     },
   },
 });
-

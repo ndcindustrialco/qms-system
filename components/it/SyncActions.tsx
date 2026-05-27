@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import type { SyncResult } from "@/services/user";
+import type { SyncResult } from "@/types/user";
 import { useT } from "@/lib/i18n";
 import { useLocale } from "@/lib/locale-context";
 

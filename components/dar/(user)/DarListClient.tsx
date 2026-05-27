@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
 import type { DarSummary } from "@/types/dar";
 import { OBJECTIVE_LABELS, DOC_TYPE_LABELS, DAR_STATUS_LABELS } from "@/types/dar";
 import type { DarStatus, DarObjective, DarDocType } from "@/types/dar";
@@ -50,7 +51,17 @@ const DOC_TYPE_LABELS_EN: Record<DarDocType, string> = {
   OTHER: "Other",
 };
 
-export default function DarListClient({ dars, requesterInfo }: Props) {
+export default function DarListClient({ dars: initialDars, requesterInfo }: Props) {
+  const { data: dars = [] } = useQuery<DarSummary[]>({
+    queryKey: ["dars", "user"],
+    queryFn: async () => {
+      const res = await fetch("/api/dar");
+      const json = await res.json();
+      return json.data ?? [];
+    },
+    initialData: initialDars,
+  });
+
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [editDarId, setEditDarId] = useState<string | null>(null);
   const [sortKey, setSortKey] = useState<SortKey>("requestDate");

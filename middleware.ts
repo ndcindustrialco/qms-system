@@ -3,6 +3,10 @@ import { authConfig } from "@/lib/auth.config";
 import { NextResponse, type NextRequest } from "next/server";
 import { rateLimit } from "@/lib/rate-limit";
 import { getToken } from "next-auth/jwt";
+import { isJwtBlocked } from "@/lib/jwt-blocklist";
+
+// ioredis requires Node.js TCP sockets — not available in Edge Runtime
+export const runtime = "nodejs";
 
 const { auth } = NextAuth(authConfig);
 
@@ -46,7 +50,7 @@ export default auth(async (req) => {
       const token = await getToken({ req, secret: process.env.AUTH_SECRET! });
       if (token?.sub) rateLimitKey = `api:user:${token.sub}:${path}`;
     }
-    const result = rateLimit(rateLimitKey, config);
+    const result = await rateLimit(rateLimitKey, config);
     if (!result.allowed) return tooManyRequests(result.resetAt);
 
     const res = NextResponse.next();
@@ -68,6 +72,15 @@ export default auth(async (req) => {
   if (!session?.user) {
     const url = new URL("/auth/login", req.url);
     url.searchParams.set("callbackUrl", path);
+    return NextResponse.redirect(url);
+  }
+
+  // ── JWT Blocklist check (force logout) ────────────────────────────────────
+  const jti = session.user.jti;
+  if (jti && (await isJwtBlocked(jti))) {
+    const url = new URL("/auth/login", req.url);
+    url.searchParams.set("callbackUrl", path);
+    url.searchParams.set("reason", "session_revoked");
     return NextResponse.redirect(url);
   }
 

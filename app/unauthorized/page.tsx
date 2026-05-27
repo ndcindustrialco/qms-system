@@ -1,15 +1,15 @@
+"use client";
 
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { useT } from "@/lib/i18n";
+import { Suspense } from "react";
 
-type SearchParams = Promise<{ reason?: string; from?: string }>;
-
-export default async function UnauthorizedPage({
-  searchParams,
-}: {
-  searchParams: SearchParams;
-}) {
-  const { reason } = await searchParams;
+function UnauthorizedContent() {
+  const searchParams = useSearchParams();
+  const reason = searchParams.get("reason");
+  const t = useT();
 
   const isNoM365 = reason === "no_m365_account";
   const isInsufficientRole = reason === "insufficient_role";
@@ -41,17 +41,14 @@ export default async function UnauthorizedPage({
 
           {/* Text content */}
           <div className="flex flex-col gap-2">
-            <p className="text-xl font-bold text-primary">
-              ไม่มีสิทธิ์เข้าถึง
-            </p>
+            <h1 className="text-xl font-bold text-primary">
+              {t("unauthorized.title")}
+            </h1>
 
             {isNoM365 ? (
               <>
                 <p className="text-xs md:text-sm text-gray-500 leading-relaxed">
-                  บัญชีของคุณไม่ได้เชื่อมต่อกับ Microsoft 365 (Entra ID) ขององค์กร
-                </p>
-                <p className="text-xs md:text-sm text-gray-500 leading-relaxed">
-                  ระบบ QMS อนุญาตเฉพาะพนักงานที่มีอีเมลบริษัทบน Microsoft 365 เท่านั้น
+                  {t("unauthorized.noM365")}
                 </p>
                 <p className="text-[11px] md:text-xs text-gray-500/70 mt-1">
                   กรุณาติดต่อฝ่าย IT เพื่อขอสิทธิ์การเข้าถึง
@@ -60,7 +57,7 @@ export default async function UnauthorizedPage({
             ) : isInsufficientRole ? (
               <>
                 <p className="text-xs md:text-sm text-gray-500 leading-relaxed">
-                  บัญชีของคุณไม่มีสิทธิ์เข้าถึงส่วนนี้ของระบบ
+                  {t("unauthorized.insufficientRole")}
                 </p>
                 <p className="text-[11px] md:text-xs text-gray-500/70 mt-1">
                   กรุณาติดต่อฝ่าย IT เพื่อขอปรับสิทธิ์การใช้งาน
@@ -82,7 +79,7 @@ export default async function UnauthorizedPage({
           <div className="flex flex-col gap-2 w-full pt-1">
             {isInsufficientRole ? (
               <Button asChild className="w-full h-10 text-[13.5px]">
-                <Link href="/">กลับหน้าหลัก</Link>
+                <Link href="/">{t("unauthorized.goHome")}</Link>
               </Button>
             ) : (
               <Button asChild className="w-full h-10 text-[13.5px]">
@@ -90,11 +87,19 @@ export default async function UnauthorizedPage({
               </Button>
             )}
             <Button variant="ghost" size="sm" asChild className="text-neutral text-[12.5px]">
-              <a href="mailto:it@ndcindustrial.co.th">ติดต่อฝ่าย IT</a>
+              <a href="mailto:it@ndcindustrial.co.th">{t("unauthorized.contactIT")}</a>
             </Button>
           </div>
         </div>
       </div>
     </div>
+  );
+}
+
+export default function UnauthorizedPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-base-200 flex items-center justify-center text-sm">Loading...</div>}>
+      <UnauthorizedContent />
+    </Suspense>
   );
 }

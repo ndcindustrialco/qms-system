@@ -19,6 +19,9 @@ export const metadata: Metadata = {
   description: "Quality Management System",
 };
 
+import QueryProvider from "@/components/common/QueryProvider";
+import { Toaster } from "sonner";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -29,7 +32,12 @@ export default function RootLayout({
       lang="th"
       className={`${inter.variable} ${sarabun.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-sans">{children}</body>
+      <body className="min-h-full flex flex-col font-sans">
+        <QueryProvider>{children}</QueryProvider>
+        <Toaster position="top-right" richColors />
+      </body>
     </html>
   );
 }
+
+

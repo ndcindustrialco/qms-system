@@ -19,7 +19,8 @@
     "close": "Close",
     "success": "Success",
     "irreversible": "This action cannot be undone.",
-    "serverError": "Could not connect to server"
+    "serverError": "Could not connect to server",
+    "optional": "(Optional)"
   },
   "nav": {
     "dar": "Document Approval Request",
@@ -52,6 +53,9 @@
   "dar": {
     "title": "Document Approval Request",
     "new": "New Request",
+    "editTitle": "Edit Document Request",
+    "noDepartmentTitle": "Cannot create request",
+    "noDepartmentDesc": "Your account is not linked to any department. Please contact IT.",
     "status": {
       "DRAFT": "Draft",
       "SUBMITTED": "Pending",
@@ -174,6 +178,15 @@
       "floatPending": "Awaiting your action",
       "floatAction": "Take Action"
     },
+    "approve": {
+      "bannerTitle": "You have received an approval request from the reviewer",
+      "bannerDesc": "Please review all details below, then sign to approve or return.",
+      "breadcrumb": "Approve"
+    },
+    "signModal": {
+      "title": "Sign to Confirm Request",
+      "subtitle": "Please sign before submitting your DAR request"
+    },
     "attachment": {
       "download": "Download",
       "preview": "Preview",
@@ -204,7 +217,28 @@
       "manage": "Manage Departments",
       "noDepts": "No departments yet",
       "empty": "No departments",
-      "emptyDesc": "Add the first department using the button above."
+      "emptyDesc": "Add the first department using the button above.",
+      "noGroupEmail": "No group email",
+      "active": "Active",
+      "inactive": "Inactive",
+      "membersAll": "All Members",
+      "membersAllUnit": "person(s)",
+      "connectedM365": "Linked M365",
+      "hasEmpId": "Employee ID Set",
+      "specialRole": "Special Role",
+      "specialRoleHint": "person(s) (QMS / MR / IT)",
+      "emptyMembers": "No members in this department yet",
+      "emptyMembersDesc": "Go to User Management to assign departments to users.",
+      "goToUsers": "Go to Users",
+      "colName": "Name",
+      "colEmail": "Email",
+      "colEmpId": "Emp ID",
+      "colRole": "Role",
+      "colM365": "M365",
+      "connected": "Connected",
+      "notConnected": "Not Connected",
+      "empIdPrefix": "ID",
+      "m365Prefix": "M365"
     },
     "syncBtn": "Sync Users from M365",
     "syncBtnShort": "Sync from M365",
@@ -284,7 +318,44 @@
     "updateSuccess": "Announcement updated successfully",
     "deleteSuccess": "Announcement deleted",
     "updateFail": "Failed to update announcement",
-    "deleteFail": "Failed to delete announcement"
+    "deleteFail": "Failed to delete announcement",
+    "details": "Announcement Details",
+    "placeholderTitle": "Enter announcement title",
+    "placeholderContent": "Enter announcement content...",
+    "publishBtn": "Publish Announcement",
+    "displayTypeList": "Standard List (Main Page)",
+    "displayTypeScrolling": "Scrolling Ticker (Top Bar)",
+    "unauthorized": "Unauthorized",
+    "uploadFail": "Failed to upload file",
+    "saveFail": "Failed to save announcement"
+  },
+  "profile": {
+    "title": "My Profile",
+    "subtitle": "View and edit your profile information",
+    "infoSection": "Profile Information",
+    "sigSection": "Saved Signature",
+    "sigSectionDesc": "Your signature will be pre-loaded when signing DAR requests.",
+    "fieldName": "Full Name",
+    "fieldEmpId": "Employee ID",
+    "fieldDept": "Department",
+    "fieldPosition": "Position",
+    "placeholderPosition": "e.g. Senior Engineer",
+    "btnSave": "Save Changes",
+    "nameRequired": "Name is required",
+    "saveSuccess": "Profile updated",
+    "saveFail": "Failed to save profile",
+    "sigSaved": "Signature saved",
+    "sigSaveFail": "Failed to save signature",
+    "sigRemoved": "Signature removed",
+    "sigRemoveFail": "Failed to remove signature",
+    "sigCurrentLabel": "Saved signature",
+    "sigCurrentType": "Type",
+    "btnChange": "Change",
+    "btnRemove": "Remove",
+    "btnSaveSig": "Save Signature",
+    "tabDraw": "Draw",
+    "tabType": "Type",
+    "tabImage": "Upload"
   },
   "error": {
     "title": "Something went wrong",

@@ -1,12 +1,14 @@
 import { requireRole } from "@/lib/auth";
-import { getAllDepartments } from "@/services/department";
+import { DepartmentService } from "@/services/departmentService";
 import DepartmentTable from "@/components/it/DepartmentTable";
 import LocalizedEmptyState from "@/components/common/LocalizedEmptyState";
 import PageHeader from "@/components/common/PageHeader";
 
+const deptService = new DepartmentService();
+
 export default async function ItDepartmentsPage() {
   await requireRole("IT");
-  const departments = await getAllDepartments();
+  const departments = await deptService.getAllDepartments();
 
   return (
     <div className="max-w-350 mx-auto px-4 md:px-8">

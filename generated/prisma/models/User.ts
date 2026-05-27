@@ -33,6 +33,7 @@ export type UserMinAggregateOutputType = {
   emailVerified: Date | null
   image: string | null
   role: $Enums.UserRole | null
+  position: string | null
   savedSignatureUrl: string | null
   signatureType: $Enums.SignatureType | null
   departmentId: string | null
@@ -49,6 +50,7 @@ export type UserMaxAggregateOutputType = {
   emailVerified: Date | null
   image: string | null
   role: $Enums.UserRole | null
+  position: string | null
   savedSignatureUrl: string | null
   signatureType: $Enums.SignatureType | null
   departmentId: string | null
@@ -65,6 +67,7 @@ export type UserCountAggregateOutputType = {
   emailVerified: number
   image: number
   role: number
+  position: number
   savedSignatureUrl: number
   signatureType: number
   departmentId: number
@@ -83,6 +86,7 @@ export type UserMinAggregateInputType = {
   emailVerified?: true
   image?: true
   role?: true
+  position?: true
   savedSignatureUrl?: true
   signatureType?: true
   departmentId?: true
@@ -99,6 +103,7 @@ export type UserMaxAggregateInputType = {
   emailVerified?: true
   image?: true
   role?: true
+  position?: true
   savedSignatureUrl?: true
   signatureType?: true
   departmentId?: true
@@ -115,6 +120,7 @@ export type UserCountAggregateInputType = {
   emailVerified?: true
   image?: true
   role?: true
+  position?: true
   savedSignatureUrl?: true
   signatureType?: true
   departmentId?: true
@@ -204,6 +210,7 @@ export type UserGroupByOutputType = {
   emailVerified: Date | null
   image: string | null
   role: $Enums.UserRole
+  position: string | null
   savedSignatureUrl: string | null
   signatureType: $Enums.SignatureType | null
   departmentId: string | null
@@ -241,6 +248,7 @@ export type UserWhereInput = {
   emailVerified?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   image?: Prisma.StringNullableFilter<"User"> | string | null
   role?: Prisma.EnumUserRoleFilter<"User"> | $Enums.UserRole
+  position?: Prisma.StringNullableFilter<"User"> | string | null
   savedSignatureUrl?: Prisma.StringNullableFilter<"User"> | string | null
   signatureType?: Prisma.EnumSignatureTypeNullableFilter<"User"> | $Enums.SignatureType | null
   departmentId?: Prisma.StringNullableFilter<"User"> | string | null
@@ -264,6 +272,7 @@ export type UserOrderByWithRelationInput = {
   emailVerified?: Prisma.SortOrderInput | Prisma.SortOrder
   image?: Prisma.SortOrderInput | Prisma.SortOrder
   role?: Prisma.SortOrder
+  position?: Prisma.SortOrderInput | Prisma.SortOrder
   savedSignatureUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   signatureType?: Prisma.SortOrderInput | Prisma.SortOrder
   departmentId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -290,6 +299,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   emailVerified?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   image?: Prisma.StringNullableFilter<"User"> | string | null
   role?: Prisma.EnumUserRoleFilter<"User"> | $Enums.UserRole
+  position?: Prisma.StringNullableFilter<"User"> | string | null
   savedSignatureUrl?: Prisma.StringNullableFilter<"User"> | string | null
   signatureType?: Prisma.EnumSignatureTypeNullableFilter<"User"> | $Enums.SignatureType | null
   departmentId?: Prisma.StringNullableFilter<"User"> | string | null
@@ -313,6 +323,7 @@ export type UserOrderByWithAggregationInput = {
   emailVerified?: Prisma.SortOrderInput | Prisma.SortOrder
   image?: Prisma.SortOrderInput | Prisma.SortOrder
   role?: Prisma.SortOrder
+  position?: Prisma.SortOrderInput | Prisma.SortOrder
   savedSignatureUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   signatureType?: Prisma.SortOrderInput | Prisma.SortOrder
   departmentId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -335,6 +346,7 @@ export type UserScalarWhereWithAggregatesInput = {
   emailVerified?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
   image?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   role?: Prisma.EnumUserRoleWithAggregatesFilter<"User"> | $Enums.UserRole
+  position?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   savedSignatureUrl?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   signatureType?: Prisma.EnumSignatureTypeNullableWithAggregatesFilter<"User"> | $Enums.SignatureType | null
   departmentId?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
@@ -351,6 +363,7 @@ export type UserCreateInput = {
   emailVerified?: Date | string | null
   image?: string | null
   role?: $Enums.UserRole
+  position?: string | null
   savedSignatureUrl?: string | null
   signatureType?: $Enums.SignatureType | null
   createdAt?: Date | string
@@ -373,6 +386,7 @@ export type UserUncheckedCreateInput = {
   emailVerified?: Date | string | null
   image?: string | null
   role?: $Enums.UserRole
+  position?: string | null
   savedSignatureUrl?: string | null
   signatureType?: $Enums.SignatureType | null
   departmentId?: string | null
@@ -395,6 +409,7 @@ export type UserUpdateInput = {
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  position?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   savedSignatureUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   signatureType?: Prisma.NullableEnumSignatureTypeFieldUpdateOperationsInput | $Enums.SignatureType | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -417,6 +432,7 @@ export type UserUncheckedUpdateInput = {
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  position?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   savedSignatureUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   signatureType?: Prisma.NullableEnumSignatureTypeFieldUpdateOperationsInput | $Enums.SignatureType | null
   departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -439,6 +455,7 @@ export type UserCreateManyInput = {
   emailVerified?: Date | string | null
   image?: string | null
   role?: $Enums.UserRole
+  position?: string | null
   savedSignatureUrl?: string | null
   signatureType?: $Enums.SignatureType | null
   departmentId?: string | null
@@ -455,6 +472,7 @@ export type UserUpdateManyMutationInput = {
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  position?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   savedSignatureUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   signatureType?: Prisma.NullableEnumSignatureTypeFieldUpdateOperationsInput | $Enums.SignatureType | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -470,6 +488,7 @@ export type UserUncheckedUpdateManyInput = {
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  position?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   savedSignatureUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   signatureType?: Prisma.NullableEnumSignatureTypeFieldUpdateOperationsInput | $Enums.SignatureType | null
   departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -496,6 +515,7 @@ export type UserCountOrderByAggregateInput = {
   emailVerified?: Prisma.SortOrder
   image?: Prisma.SortOrder
   role?: Prisma.SortOrder
+  position?: Prisma.SortOrder
   savedSignatureUrl?: Prisma.SortOrder
   signatureType?: Prisma.SortOrder
   departmentId?: Prisma.SortOrder
@@ -512,6 +532,7 @@ export type UserMaxOrderByAggregateInput = {
   emailVerified?: Prisma.SortOrder
   image?: Prisma.SortOrder
   role?: Prisma.SortOrder
+  position?: Prisma.SortOrder
   savedSignatureUrl?: Prisma.SortOrder
   signatureType?: Prisma.SortOrder
   departmentId?: Prisma.SortOrder
@@ -528,6 +549,7 @@ export type UserMinOrderByAggregateInput = {
   emailVerified?: Prisma.SortOrder
   image?: Prisma.SortOrder
   role?: Prisma.SortOrder
+  position?: Prisma.SortOrder
   savedSignatureUrl?: Prisma.SortOrder
   signatureType?: Prisma.SortOrder
   departmentId?: Prisma.SortOrder
@@ -687,6 +709,7 @@ export type UserCreateWithoutDepartmentInput = {
   emailVerified?: Date | string | null
   image?: string | null
   role?: $Enums.UserRole
+  position?: string | null
   savedSignatureUrl?: string | null
   signatureType?: $Enums.SignatureType | null
   createdAt?: Date | string
@@ -708,6 +731,7 @@ export type UserUncheckedCreateWithoutDepartmentInput = {
   emailVerified?: Date | string | null
   image?: string | null
   role?: $Enums.UserRole
+  position?: string | null
   savedSignatureUrl?: string | null
   signatureType?: $Enums.SignatureType | null
   createdAt?: Date | string
@@ -758,6 +782,7 @@ export type UserScalarWhereInput = {
   emailVerified?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   image?: Prisma.StringNullableFilter<"User"> | string | null
   role?: Prisma.EnumUserRoleFilter<"User"> | $Enums.UserRole
+  position?: Prisma.StringNullableFilter<"User"> | string | null
   savedSignatureUrl?: Prisma.StringNullableFilter<"User"> | string | null
   signatureType?: Prisma.EnumSignatureTypeNullableFilter<"User"> | $Enums.SignatureType | null
   departmentId?: Prisma.StringNullableFilter<"User"> | string | null
@@ -774,6 +799,7 @@ export type UserCreateWithoutAnnouncementsInput = {
   emailVerified?: Date | string | null
   image?: string | null
   role?: $Enums.UserRole
+  position?: string | null
   savedSignatureUrl?: string | null
   signatureType?: $Enums.SignatureType | null
   createdAt?: Date | string
@@ -795,6 +821,7 @@ export type UserUncheckedCreateWithoutAnnouncementsInput = {
   emailVerified?: Date | string | null
   image?: string | null
   role?: $Enums.UserRole
+  position?: string | null
   savedSignatureUrl?: string | null
   signatureType?: $Enums.SignatureType | null
   departmentId?: string | null
@@ -832,6 +859,7 @@ export type UserUpdateWithoutAnnouncementsInput = {
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  position?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   savedSignatureUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   signatureType?: Prisma.NullableEnumSignatureTypeFieldUpdateOperationsInput | $Enums.SignatureType | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -853,6 +881,7 @@ export type UserUncheckedUpdateWithoutAnnouncementsInput = {
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  position?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   savedSignatureUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   signatureType?: Prisma.NullableEnumSignatureTypeFieldUpdateOperationsInput | $Enums.SignatureType | null
   departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -874,6 +903,7 @@ export type UserCreateWithoutDarMastersInput = {
   emailVerified?: Date | string | null
   image?: string | null
   role?: $Enums.UserRole
+  position?: string | null
   savedSignatureUrl?: string | null
   signatureType?: $Enums.SignatureType | null
   createdAt?: Date | string
@@ -895,6 +925,7 @@ export type UserUncheckedCreateWithoutDarMastersInput = {
   emailVerified?: Date | string | null
   image?: string | null
   role?: $Enums.UserRole
+  position?: string | null
   savedSignatureUrl?: string | null
   signatureType?: $Enums.SignatureType | null
   departmentId?: string | null
@@ -932,6 +963,7 @@ export type UserUpdateWithoutDarMastersInput = {
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  position?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   savedSignatureUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   signatureType?: Prisma.NullableEnumSignatureTypeFieldUpdateOperationsInput | $Enums.SignatureType | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -953,6 +985,7 @@ export type UserUncheckedUpdateWithoutDarMastersInput = {
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  position?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   savedSignatureUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   signatureType?: Prisma.NullableEnumSignatureTypeFieldUpdateOperationsInput | $Enums.SignatureType | null
   departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -974,6 +1007,7 @@ export type UserCreateWithoutDarAttachmentsInput = {
   emailVerified?: Date | string | null
   image?: string | null
   role?: $Enums.UserRole
+  position?: string | null
   savedSignatureUrl?: string | null
   signatureType?: $Enums.SignatureType | null
   createdAt?: Date | string
@@ -995,6 +1029,7 @@ export type UserUncheckedCreateWithoutDarAttachmentsInput = {
   emailVerified?: Date | string | null
   image?: string | null
   role?: $Enums.UserRole
+  position?: string | null
   savedSignatureUrl?: string | null
   signatureType?: $Enums.SignatureType | null
   departmentId?: string | null
@@ -1032,6 +1067,7 @@ export type UserUpdateWithoutDarAttachmentsInput = {
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  position?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   savedSignatureUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   signatureType?: Prisma.NullableEnumSignatureTypeFieldUpdateOperationsInput | $Enums.SignatureType | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1053,6 +1089,7 @@ export type UserUncheckedUpdateWithoutDarAttachmentsInput = {
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  position?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   savedSignatureUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   signatureType?: Prisma.NullableEnumSignatureTypeFieldUpdateOperationsInput | $Enums.SignatureType | null
   departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1074,6 +1111,7 @@ export type UserCreateWithoutDarApprovalsInput = {
   emailVerified?: Date | string | null
   image?: string | null
   role?: $Enums.UserRole
+  position?: string | null
   savedSignatureUrl?: string | null
   signatureType?: $Enums.SignatureType | null
   createdAt?: Date | string
@@ -1095,6 +1133,7 @@ export type UserUncheckedCreateWithoutDarApprovalsInput = {
   emailVerified?: Date | string | null
   image?: string | null
   role?: $Enums.UserRole
+  position?: string | null
   savedSignatureUrl?: string | null
   signatureType?: $Enums.SignatureType | null
   departmentId?: string | null
@@ -1132,6 +1171,7 @@ export type UserUpdateWithoutDarApprovalsInput = {
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  position?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   savedSignatureUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   signatureType?: Prisma.NullableEnumSignatureTypeFieldUpdateOperationsInput | $Enums.SignatureType | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1153,6 +1193,7 @@ export type UserUncheckedUpdateWithoutDarApprovalsInput = {
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  position?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   savedSignatureUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   signatureType?: Prisma.NullableEnumSignatureTypeFieldUpdateOperationsInput | $Enums.SignatureType | null
   departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1174,6 +1215,7 @@ export type UserCreateWithoutQmsProcessingsInput = {
   emailVerified?: Date | string | null
   image?: string | null
   role?: $Enums.UserRole
+  position?: string | null
   savedSignatureUrl?: string | null
   signatureType?: $Enums.SignatureType | null
   createdAt?: Date | string
@@ -1195,6 +1237,7 @@ export type UserUncheckedCreateWithoutQmsProcessingsInput = {
   emailVerified?: Date | string | null
   image?: string | null
   role?: $Enums.UserRole
+  position?: string | null
   savedSignatureUrl?: string | null
   signatureType?: $Enums.SignatureType | null
   departmentId?: string | null
@@ -1232,6 +1275,7 @@ export type UserUpdateWithoutQmsProcessingsInput = {
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  position?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   savedSignatureUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   signatureType?: Prisma.NullableEnumSignatureTypeFieldUpdateOperationsInput | $Enums.SignatureType | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1253,6 +1297,7 @@ export type UserUncheckedUpdateWithoutQmsProcessingsInput = {
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  position?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   savedSignatureUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   signatureType?: Prisma.NullableEnumSignatureTypeFieldUpdateOperationsInput | $Enums.SignatureType | null
   departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1274,6 +1319,7 @@ export type UserCreateWithoutKpiApprovalLogsInput = {
   emailVerified?: Date | string | null
   image?: string | null
   role?: $Enums.UserRole
+  position?: string | null
   savedSignatureUrl?: string | null
   signatureType?: $Enums.SignatureType | null
   createdAt?: Date | string
@@ -1295,6 +1341,7 @@ export type UserUncheckedCreateWithoutKpiApprovalLogsInput = {
   emailVerified?: Date | string | null
   image?: string | null
   role?: $Enums.UserRole
+  position?: string | null
   savedSignatureUrl?: string | null
   signatureType?: $Enums.SignatureType | null
   departmentId?: string | null
@@ -1332,6 +1379,7 @@ export type UserUpdateWithoutKpiApprovalLogsInput = {
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  position?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   savedSignatureUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   signatureType?: Prisma.NullableEnumSignatureTypeFieldUpdateOperationsInput | $Enums.SignatureType | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1353,6 +1401,7 @@ export type UserUncheckedUpdateWithoutKpiApprovalLogsInput = {
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  position?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   savedSignatureUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   signatureType?: Prisma.NullableEnumSignatureTypeFieldUpdateOperationsInput | $Enums.SignatureType | null
   departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1374,6 +1423,7 @@ export type UserCreateManyDepartmentInput = {
   emailVerified?: Date | string | null
   image?: string | null
   role?: $Enums.UserRole
+  position?: string | null
   savedSignatureUrl?: string | null
   signatureType?: $Enums.SignatureType | null
   createdAt?: Date | string
@@ -1389,6 +1439,7 @@ export type UserUpdateWithoutDepartmentInput = {
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  position?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   savedSignatureUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   signatureType?: Prisma.NullableEnumSignatureTypeFieldUpdateOperationsInput | $Enums.SignatureType | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1410,6 +1461,7 @@ export type UserUncheckedUpdateWithoutDepartmentInput = {
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  position?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   savedSignatureUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   signatureType?: Prisma.NullableEnumSignatureTypeFieldUpdateOperationsInput | $Enums.SignatureType | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1431,6 +1483,7 @@ export type UserUncheckedUpdateManyWithoutDepartmentInput = {
   emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  position?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   savedSignatureUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   signatureType?: Prisma.NullableEnumSignatureTypeFieldUpdateOperationsInput | $Enums.SignatureType | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1522,6 +1575,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   emailVerified?: boolean
   image?: boolean
   role?: boolean
+  position?: boolean
   savedSignatureUrl?: boolean
   signatureType?: boolean
   departmentId?: boolean
@@ -1546,6 +1600,7 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   emailVerified?: boolean
   image?: boolean
   role?: boolean
+  position?: boolean
   savedSignatureUrl?: boolean
   signatureType?: boolean
   departmentId?: boolean
@@ -1563,6 +1618,7 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   emailVerified?: boolean
   image?: boolean
   role?: boolean
+  position?: boolean
   savedSignatureUrl?: boolean
   signatureType?: boolean
   departmentId?: boolean
@@ -1580,6 +1636,7 @@ export type UserSelectScalar = {
   emailVerified?: boolean
   image?: boolean
   role?: boolean
+  position?: boolean
   savedSignatureUrl?: boolean
   signatureType?: boolean
   departmentId?: boolean
@@ -1587,7 +1644,7 @@ export type UserSelectScalar = {
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "employeeId" | "msUserId" | "name" | "email" | "emailVerified" | "image" | "role" | "savedSignatureUrl" | "signatureType" | "departmentId" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "employeeId" | "msUserId" | "name" | "email" | "emailVerified" | "image" | "role" | "position" | "savedSignatureUrl" | "signatureType" | "departmentId" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   announcements?: boolean | Prisma.User$announcementsArgs<ExtArgs>
   darApprovals?: boolean | Prisma.User$darApprovalsArgs<ExtArgs>
@@ -1625,6 +1682,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     emailVerified: Date | null
     image: string | null
     role: $Enums.UserRole
+    position: string | null
     savedSignatureUrl: string | null
     signatureType: $Enums.SignatureType | null
     departmentId: string | null
@@ -2068,6 +2126,7 @@ export interface UserFieldRefs {
   readonly emailVerified: Prisma.FieldRef<"User", 'DateTime'>
   readonly image: Prisma.FieldRef<"User", 'String'>
   readonly role: Prisma.FieldRef<"User", 'UserRole'>
+  readonly position: Prisma.FieldRef<"User", 'String'>
   readonly savedSignatureUrl: Prisma.FieldRef<"User", 'String'>
   readonly signatureType: Prisma.FieldRef<"User", 'SignatureType'>
   readonly departmentId: Prisma.FieldRef<"User", 'String'>

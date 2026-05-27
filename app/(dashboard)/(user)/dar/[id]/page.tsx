@@ -1,8 +1,12 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { requireAuth } from "@/lib/auth";
-import { getDarById, getSavedSignature } from "@/services/dar";
+import { DarService } from "@/services/darService";
 import DarReadOnlyDetail from "@/components/dar/DarReadOnlyDetail";
+import DarReviewLayout from "@/components/dar/DarReviewLayout";
+import type { DarApprovalRow } from "@/types/dar";
+
+const darService = new DarService();
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -12,11 +16,38 @@ export default async function DarDetailPage({ params }: Props) {
 
   try {
     const [dar, savedSig] = await Promise.all([
-      getDarById(id, session.user.id, isPrivileged),
-      getSavedSignature(session.user.id),
+      darService.getDarById(id, session.user.id, isPrivileged),
+      darService.getSavedSignature(session.user.id),
     ]);
 
     const isQms = session.user.role === "QMS" || session.user.role === "MR";
+
+    // Check if current user has a pending approval step (reviewer or MR)
+    const myPendingStep = dar.approvals.find(
+      (a: DarApprovalRow) =>
+        a.assignedUser.id === session.user.id &&
+        a.action === "PENDING" &&
+        a.stepRole !== "PREPARER",
+    );
+
+    // Use the two-column layout (like review page) when user has a pending action
+    if (myPendingStep) {
+      const isMrStep = myPendingStep.stepRole === "APPROVER_MR";
+      return (
+        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-6">
+          <DarReviewLayout
+            dar={dar}
+            darId={id}
+            darNo={dar.darNo}
+            currentUserId={session.user.id}
+            savedSignatureUrl={savedSig?.url ?? null}
+            savedSignatureType={savedSig?.type ?? null}
+            isAssignedReviewer={true}
+            isMrApprove={isMrStep}
+          />
+        </div>
+      );
+    }
 
     return (
       <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-6">

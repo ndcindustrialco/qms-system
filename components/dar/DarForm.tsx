@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import { useDarForm } from "@/hooks/use-dar-form";
-import { useToast } from "@/hooks/use-toast";
-import Toast from "@/components/common/Toast";
+import { toast } from "sonner";
 import DarRequesterSection from "./DarRequesterSection";
 import DarObjectiveSection from "./DarObjectiveSection";
 import DarItemsSection from "./DarItemsSection";
@@ -29,11 +28,12 @@ type Props = {
   };
   tempId: string;
   hideSubmit?: boolean;
+  savedSignatureUrl?: string | null;
+  savedSignatureType?: SignatureType | null;
 };
 
-export default function DarForm({ mode, initialData, departments, requesterInfo, tempId, hideSubmit = false }: Props) {
+export default function DarForm({ mode, initialData, departments, requesterInfo, tempId, hideSubmit = false, savedSignatureUrl, savedSignatureType }: Props) {
   const t = useT();
-  const { toast, showToast, hideToast } = useToast();
 
   const {
     state, errors, isSaving, isSubmitting,
@@ -42,22 +42,22 @@ export default function DarForm({ mode, initialData, departments, requesterInfo,
   } = useDarForm(
     mode,
     initialData,
-    (msg) => showToast("success", msg),
-    (msg) => showToast("error", msg),
+    (msg) => toast.success(msg),
+    (msg) => toast.error(msg),
   );
 
   // Multi-step submit flow state
   const [showSignModal, setShowSignModal] = useState(false);
   const [showReviewerModal, setShowReviewerModal] = useState(false);
-  const [pendingSignature, setPendingSignature] = useState<{ dataUrl: string; type: SignatureType } | null>(null);
+  const [pendingSignature, setPendingSignature] = useState<{ dataUrl: string; type: SignatureType; saveToProfile: boolean } | null>(null);
 
   function handleSubmitClick() {
     if (!validateAndStart()) return;
     setShowSignModal(true);
   }
 
-  function handleSignConfirm(dataUrl: string, type: SignatureType) {
-    setPendingSignature({ dataUrl, type });
+  function handleSignConfirm(dataUrl: string, type: SignatureType, saveToProfile: boolean) {
+    setPendingSignature({ dataUrl, type, saveToProfile });
     setShowSignModal(false);
     setShowReviewerModal(true);
   }
@@ -73,7 +73,7 @@ export default function DarForm({ mode, initialData, departments, requesterInfo,
 
   async function handleSend(reviewer: ReviewerUser) {
     if (!pendingSignature) return;
-    await submitWithReviewer(pendingSignature.dataUrl, pendingSignature.type, reviewer);
+    await submitWithReviewer(pendingSignature.dataUrl, pendingSignature.type, pendingSignature.saveToProfile, reviewer);
     setShowReviewerModal(false);
   }
 
@@ -157,6 +157,8 @@ export default function DarForm({ mode, initialData, departments, requesterInfo,
         open={showSignModal}
         onConfirm={handleSignConfirm}
         onCancel={handleSignCancel}
+        savedSignatureUrl={savedSignatureUrl}
+        savedSignatureType={savedSignatureType}
       />
 
       <DarReviewerSelectModal
@@ -166,7 +168,6 @@ export default function DarForm({ mode, initialData, departments, requesterInfo,
         onSend={handleSend}
       />
 
-      {toast && <Toast type={toast.type} message={toast.message} onClose={hideToast} />}
     </div>
   );
 }

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useT } from "@/lib/i18n";
-import type { AnnouncementRow } from "@/services/announcement";
+import type { AnnouncementRow } from "@/services/announcementService";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 

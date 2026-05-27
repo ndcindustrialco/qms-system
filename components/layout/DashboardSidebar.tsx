@@ -83,10 +83,19 @@ function UserStarIcon() {
   );
 }
 
+function ProfileIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-4.5 w-4.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.6} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+    </svg>
+  );
+}
+
 function getSections(role: UserRole, locale: "th" | "en"): { label: string; items: NavItem[] }[] {
   const userItems: NavItem[] = [
     { labelTh: "หน้าหลัก", labelEn: "Dashboard", href: "/", icon: <HomeIcon /> },
     { labelTh: "คำขอเอกสาร", labelEn: "My Requests", href: "/dar", icon: <FileIcon /> },
+    { labelTh: "โปรไฟล์ของฉัน", labelEn: "My Profile", href: "/profile", icon: <ProfileIcon /> },
   ];
   const qmsItems: NavItem[] = [
     { labelTh: "จัดการข่าวสาร", labelEn: "Manage Announcements", href: "/qms/announcements", icon: <MegaphoneIcon /> },
@@ -218,7 +227,7 @@ export default function DashboardSidebar({ role, name, email, image, isOpen, onC
           className="px-4 py-5 mt-auto shrink-0"
           style={{ borderTop: "1px solid var(--sidebar-border)" }}
         >
-          <div className="flex items-center gap-3.5 px-1 min-w-0 mb-4">
+          <Link href="/profile" onClick={onClose} className="flex items-center gap-3.5 px-1 min-w-0 mb-4 rounded-lg py-1 hover:bg-white/5 transition-colors group">
             {image ? (
               <Image
                 src={image}
@@ -246,7 +255,7 @@ export default function DashboardSidebar({ role, name, email, image, isOpen, onC
                 {email}
               </p>
             </div>
-          </div>
+          </Link>
           <SignOutButton label={signOutLabel} />
         </div>
       </aside>

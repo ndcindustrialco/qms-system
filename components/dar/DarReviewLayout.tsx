@@ -16,6 +16,7 @@ interface Props {
   isAssignedReviewer: boolean;
   darNo: string | null;
   darId: string;
+  isMrApprove?: boolean;
 }
 
 export default function DarReviewLayout({
@@ -26,6 +27,7 @@ export default function DarReviewLayout({
   isAssignedReviewer,
   darNo,
   darId,
+  isMrApprove = false,
 }: Props) {
   const t = useT();
   const [dar, setDar] = useState<DarDetail>(initialDar);
@@ -36,9 +38,13 @@ export default function DarReviewLayout({
   );
   const canAct = !!myPendingStep;
 
+  const resolvedBannerTitle = isMrApprove ? t("dar.approve.bannerTitle") : t("dar.review.bannerTitle");
+  const resolvedBannerDesc = isMrApprove ? t("dar.approve.bannerDesc") : t("dar.review.bannerDesc");
+  const resolvedBreadcrumb = isMrApprove ? t("dar.approve.breadcrumb") : t("dar.review.breadcrumb");
+
   return (
     <div className="flex flex-col gap-5">
-      {/* Review banner */}
+      {/* Banner */}
       {isAssignedReviewer && (
         <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-2xl px-5 py-4">
           <div className="w-9 h-9 rounded-full bg-amber-100 flex items-center justify-center shrink-0 mt-0.5">
@@ -47,8 +53,8 @@ export default function DarReviewLayout({
             </svg>
           </div>
           <div>
-            <p className="text-sm font-semibold text-amber-800">{t("dar.review.bannerTitle")}</p>
-            <p className="text-xs text-amber-700 mt-0.5">{t("dar.review.bannerDesc")}</p>
+            <p className="text-sm font-semibold text-amber-800">{resolvedBannerTitle}</p>
+            <p className="text-xs text-amber-700 mt-0.5">{resolvedBannerDesc}</p>
           </div>
         </div>
       )}
@@ -65,7 +71,7 @@ export default function DarReviewLayout({
         <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
         </svg>
-        <span className="text-slate-600 font-medium">{t("dar.review.breadcrumb")}</span>
+        <span className="text-slate-600 font-medium">{resolvedBreadcrumb}</span>
       </nav>
 
       <>

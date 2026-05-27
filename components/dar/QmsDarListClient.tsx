@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import type { DarSummary } from "@/types/dar";
 import { OBJECTIVE_LABELS, DOC_TYPE_LABELS, DAR_STATUS_LABELS } from "@/types/dar";
 import type { DarStatus, DarObjective } from "@/types/dar";
@@ -13,6 +14,13 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useLocale } from "@/lib/locale-context";
 import { useUrlFilters } from "@/hooks/use-url-filters";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const OBJECTIVE_LABELS_EN: Record<DarObjective, string> = {
   PREPARE_NEW: "Prepare New Doc",
@@ -54,9 +62,18 @@ type SortDir = "asc" | "desc";
 export default function QmsDarListClient({ dars: initialDars }: { dars: DarSummary[] }) {
   const locale = useLocale();
   const isTh = locale === "th";
-  const router = useRouter();
+  const queryClient = useQueryClient();
 
-  const [dars, setDars] = useState(initialDars);
+  const { data: dars = [] } = useQuery<DarSummary[]>({
+    queryKey: ["dars", "all"],
+    queryFn: async () => {
+      const res = await fetch("/api/dar?all=true");
+      const json = await res.json();
+      return json.data ?? [];
+    },
+    initialData: initialDars,
+  });
+
   const [sortKey, setSortKey] = useState<SortKey>("requestDate");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
 
@@ -65,25 +82,31 @@ export default function QmsDarListClient({ dars: initialDars }: { dars: DarSumma
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
-  async function confirmDelete() {
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const res = await fetch(`/api/dar/${id}`, { method: "DELETE" });
+      const json = await res.json();
+      if (!res.ok || json.error) throw new Error(json.error ?? "Delete failed");
+      return id;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["dars"] });
+      setPendingDelete(null);
+      toast.success(isTh ? "ลบคำขอสำเร็จ" : "Delete successful");
+    },
+    onError: (err: Error) => {
+      setDeleteError(err.message ?? "เกิดข้อผิดพลาด");
+    },
+    onSettled: () => {
+      setDeleting(false);
+    }
+  });
+
+  function confirmDelete() {
     if (!pendingDelete) return;
     setDeleting(true);
     setDeleteError(null);
-    try {
-      const res = await fetch(`/api/dar/${pendingDelete.id}`, { method: "DELETE" });
-      const json = await res.json() as { error: string | null };
-      if (!res.ok || json.error) {
-        setDeleteError(json.error ?? "เกิดข้อผิดพลาด");
-        return;
-      }
-      setDars((prev) => prev.filter((d) => d.id !== pendingDelete.id));
-      setPendingDelete(null);
-      router.refresh();
-    } catch {
-      setDeleteError("เกิดข้อผิดพลาด กรุณาลองใหม่");
-    } finally {
-      setDeleting(false);
-    }
+    deleteMutation.mutate(pendingDelete.id);
   }
 
   // ── URL-bound filters ──────────────────────────────────────────────────────
@@ -217,15 +240,19 @@ export default function QmsDarListClient({ dars: initialDars }: { dars: DarSumma
         >
           {/* Sort controls */}
           <div className="flex items-center gap-1.5 self-end">
-            <select
+            <Select
               value={sortKey}
-              onChange={(e) => setSortKey(e.target.value as SortKey)}
-              className="h-8 px-2 py-1 text-[13px] rounded-lg border border-slate-200 bg-white focus:outline-none focus:border-[#0F1059] transition-colors"
+              onValueChange={(val) => setSortKey(val as SortKey)}
             >
-              <option value="requestDate">{isTh ? "วันที่ขอ" : "Date"}</option>
-              <option value="darNo">{isTh ? "เลขที่ DAR" : "DAR No."}</option>
-              <option value="status">{isTh ? "สถานะ" : "Status"}</option>
-            </select>
+              <SelectTrigger className="h-8 w-28">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="requestDate">{isTh ? "วันที่ขอ" : "Date"}</SelectItem>
+                <SelectItem value="darNo">{isTh ? "เลขที่ DAR" : "DAR No."}</SelectItem>
+                <SelectItem value="status">{isTh ? "สถานะ" : "Status"}</SelectItem>
+              </SelectContent>
+            </Select>
             <button
               onClick={() => setSortDir((d) => (d === "asc" ? "desc" : "asc"))}
               className="h-8 w-8 flex items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-[#0F1059] transition-colors"

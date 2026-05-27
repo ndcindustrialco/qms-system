@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useT } from "@/lib/i18n";
-import type { AnnouncementRow } from "@/services/announcement";
+import type { AnnouncementRow } from "@/services/announcementService";
 import AnnouncementViewFields from "@/components/announcements/AnnouncementViewFields";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";

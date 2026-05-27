@@ -1,10 +1,13 @@
 
 import { notFound, redirect } from "next/navigation";
 import { requireAuth } from "@/lib/auth";
-import { getDarById } from "@/services/dar";
-import { getActiveDepartments } from "@/services/department";
+import { DarService } from "@/services/darService";
+import { DepartmentService } from "@/services/departmentService";
 import DarForm from "@/components/dar/DarForm";
-import Link from "next/link";
+import DarEditHeader from "@/components/dar/DarEditHeader";
+
+const darService = new DarService();
+const deptService = new DepartmentService();
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -14,7 +17,7 @@ export default async function DarEditPage({ params }: Props) {
 
   let dar;
   try {
-    dar = await getDarById(id, session.user.id, isPrivileged);
+    dar = await darService.getDarById(id, session.user.id, isPrivileged);
   } catch {
     notFound();
   }
@@ -22,21 +25,15 @@ export default async function DarEditPage({ params }: Props) {
   // Non-QMS users can only edit DRAFT
   if (!isPrivileged && dar.status !== "DRAFT") redirect(`/dar/${id}`);
 
-  const departments = await getActiveDepartments();
+  const [departments, savedSig] = await Promise.all([
+    deptService.getActiveDepartments(),
+    darService.getSavedSignature(session.user.id),
+  ]);
   const isDraft = dar.status === "DRAFT";
 
   return (
     <div className="max-w-[1400px] mx-auto px-4 md:px-8">
-      <div className="flex items-center gap-2 text-[11px] md:text-xs text-neutral mb-4">
-        <Link href="/dar" className="hover:text-neutral transition-colors">คำขอเอกสาร</Link>
-        <span>/</span>
-        <Link href={`/dar/${id}`} className="hover:text-neutral transition-colors">
-          {dar.darNo ?? "ฉบับร่าง"}
-        </Link>
-        <span>/</span>
-        <span className="text-neutral font-medium">แก้ไข</span>
-      </div>
-      <h1 className="text-xl md:text-2xl font-bold text-primary mb-6">แก้ไขคำขอเอกสาร</h1>
+      <DarEditHeader darNo={dar.darNo} darId={id} />
       <DarForm
         mode="edit"
         tempId={"temp_" + Math.random().toString(36).substring(2, 15) + "_" + Date.now()}
@@ -49,6 +46,8 @@ export default async function DarEditPage({ params }: Props) {
           department: dar.requester.department?.name ?? null,
           requestDate: dar.requestDate,
         }}
+        savedSignatureUrl={savedSig?.url ?? null}
+        savedSignatureType={savedSig?.type ?? null}
       />
     </div>
   );

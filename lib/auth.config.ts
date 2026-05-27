@@ -30,6 +30,7 @@ export const authConfig: NextAuthConfig = {
         session.user.employeeId = token.employeeId as string | undefined;
         session.user.departmentId = token.departmentId as string | undefined;
         session.user.accessToken = token.accessToken as string | undefined;
+        session.user.jti = token.jti as string | undefined;
       }
       return session;
     },
@@ -51,6 +52,8 @@ declare module "next-auth" {
       employeeId?: string;
       departmentId?: string;
       accessToken?: string;
+      /** Unique session ID used for JWT blocklist (force logout) */
+      jti?: string;
     };
   }
 }

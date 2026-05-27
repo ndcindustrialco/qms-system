@@ -1,15 +1,19 @@
 
 import { requireAuth } from "@/lib/auth";
-import { getActiveDepartments } from "@/services/department";
+import { DepartmentService } from "@/services/departmentService";
+import { DarService } from "@/services/darService";
 import DarForm from "@/components/dar/DarForm";
 import DarNewHeader from "@/components/dar/DarNewHeader";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import DarNoDepartment from "@/components/dar/DarNoDepartment";
+
+const deptService = new DepartmentService();
+const darService = new DarService();
 
 export default async function DarNewPage() {
   const session = await requireAuth();
-  const [departments, tempId] = await Promise.all([
-    getActiveDepartments(),
+  const [departments, savedSig, tempId] = await Promise.all([
+    deptService.getActiveDepartments(),
+    darService.getSavedSignature(session.user.id),
     Promise.resolve("temp_" + Math.random().toString(36).substring(2, 15) + "_" + Date.now()),
   ]);
 
@@ -27,23 +31,12 @@ export default async function DarNewPage() {
         requesterInfo={{
           name: session.user.name ?? null,
           employeeId: session.user.employeeId ?? null,
-          department: departments.find((d) => d.id === session.user.departmentId)?.name ?? null,
+          department: departments.find((d: { id: string; name: string }) => d.id === session.user.departmentId)?.name ?? null,
           requestDate: new Date().toISOString(),
         }}
+        savedSignatureUrl={savedSig?.url ?? null}
+        savedSignatureType={savedSig?.type ?? null}
       />
-    </div>
-  );
-}
-
-// Rendered server-side — uses a simple static fallback (no locale needed here)
-function DarNoDepartment() {
-  return (
-    <div className="max-w-lg mx-auto mt-12 card-premium px-5 py-4 border border-base-300 rounded-xl shadow-sm text-center">
-      <p className="text-sm md:text-base font-bold text-primary">ไม่สามารถสร้างคำขอได้</p>
-      <p className="text-xs md:text-sm text-gray-500 mt-2">บัญชีของคุณยังไม่ได้ผูกกับแผนก กรุณาติดต่อ IT</p>
-      <Button variant="ghost" size="sm" asChild className="mt-4">
-        <Link href="/dar">ย้อนกลับ</Link>
-      </Button>
     </div>
   );
 }

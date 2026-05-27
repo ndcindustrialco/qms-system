@@ -1,15 +1,16 @@
-
-import { NextResponse, type NextRequest } from "next/server";
-import { z } from "zod";
-import { revalidateTag } from "next/cache";
 import { requireAuth } from "@/lib/auth";
-import { AppError } from "@/lib/errors";
-import { assignReviewer } from "@/services/dar";
+import { DarService } from "@/services/darService";
+import { UserRepository } from "@/repositories/userRepository";
 import { sendReviewerAssignedEmail } from "@/services/email";
 import { OBJECTIVE_LABELS, DOC_TYPE_LABELS } from "@/types/dar";
-import { db } from "@/lib/db";
-import type { ApiResponse } from "@/types/api";
-import type { DarDetail } from "@/types/dar";
+import { sendSuccess } from "@/lib/apiResponse";
+import { handleApiError } from "@/lib/apiErrorHandler";
+import { type NextRequest } from "next/server";
+import { z } from "zod";
+import { revalidateTag } from "next/cache";
+
+const darService = new DarService();
+const userRepo = new UserRepository();
 
 const schema = z.object({
   reviewerUserId: z.string().uuid(),
@@ -17,28 +18,21 @@ const schema = z.object({
 
 type Params = { params: Promise<{ id: string }> };
 
-export async function POST(req: NextRequest, { params }: Params): Promise<NextResponse<ApiResponse<DarDetail>>> {
+export async function POST(req: NextRequest, { params }: Params) {
   try {
     const session = await requireAuth();
     const { id } = await params;
 
     const body = await req.json();
-    const parsed = schema.safeParse(body);
-    if (!parsed.success) {
-      const error = parsed.error.issues[0]?.message ?? "Invalid request body";
-      return NextResponse.json({ data: null, error }, { status: 400 });
-    }
+    const parsed = schema.parse(body);
 
-    const dar = await assignReviewer(id, session.user.id, parsed.data.reviewerUserId);
+    const dar = await darService.assignReviewer(id, session.user.id, parsed.reviewerUserId);
 
     revalidateTag(`dar-${id}`);
     revalidateTag("dar-list");
 
     // Send email notification to reviewer (fire-and-forget — don't fail the request)
-    const reviewerUser = await db.user.findUnique({
-      where: { id: parsed.data.reviewerUserId },
-      select: { name: true, email: true },
-    });
+    const reviewerUser = await userRepo.findById(parsed.reviewerUserId);
 
     if (reviewerUser?.email && dar.darNo) {
       sendReviewerAssignedEmail({
@@ -62,12 +56,8 @@ export async function POST(req: NextRequest, { params }: Params): Promise<NextRe
       }).catch((e) => console.error("[email] Failed to send reviewer notification:", e));
     }
 
-    return NextResponse.json({ data: dar, error: null });
+    return sendSuccess(dar, "Reviewer assigned successfully");
   } catch (err) {
-    if (err instanceof AppError) {
-      return NextResponse.json({ data: null, error: err.message }, { status: err.statusCode });
-    }
-    console.error("[POST /api/dar/[id]/assign-reviewer]", err);
-    return NextResponse.json({ data: null, error: "Internal server error" }, { status: 500 });
+    return handleApiError(err);
   }
 }

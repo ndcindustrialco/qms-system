@@ -1663,6 +1663,7 @@ export const UserScalarFieldEnum = {
   emailVerified: 'emailVerified',
   image: 'image',
   role: 'role',
+  position: 'position',
   savedSignatureUrl: 'savedSignatureUrl',
   signatureType: 'signatureType',
   departmentId: 'departmentId',

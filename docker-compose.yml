@@ -1,5 +1,18 @@
 services:
 
+  redis:
+    image: redis:7-alpine
+    container_name: qms-redis
+    restart: unless-stopped
+    command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru --save ""
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   qms:
     image: qms-system:latest
     build:
@@ -7,6 +20,9 @@ services:
       dockerfile: Dockerfile
     container_name: qms
     restart: unless-stopped
+    depends_on:
+      redis:
+        condition: service_healthy
     ports:
       - "3000:3000"
     env_file:
@@ -24,8 +40,9 @@ services:
       AZURE_AD_CLIENT_SECRET: ${AZURE_AD_CLIENT_SECRET}
       AZURE_AD_TENANT_ID: ${AZURE_AD_TENANT_ID}
       SHAREPOINT_SITE_ID: ${SHAREPOINT_SITE_ID}
+      REDIS_URL: redis://redis:6379
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
+      test: ["CMD-SHELL", "wget -qO- $${NEXTAUTH_URL}/api/health || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -35,3 +52,6 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+
+volumes:
+  redis_data:
