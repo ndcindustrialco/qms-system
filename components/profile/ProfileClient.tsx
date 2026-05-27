@@ -116,7 +116,7 @@ function DrawPad({ onChange }: { onChange: (url: string | null) => void }) {
 function TypePad({ onChange }: { onChange: (url: string | null) => void }) {
   const t = useT();
   const [text, setText] = useState("");
-  const [font, setFont] = useState(TYPE_FONTS[0].value);
+  const [font, setFont] = useState<string>(TYPE_FONTS[0].value);
 
   const renderToCanvas = useCallback((txt: string, f: string): string | null => {
     if (!txt.trim()) return null;
