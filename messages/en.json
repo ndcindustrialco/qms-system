@@ -360,5 +360,219 @@
   "error": {
     "title": "Something went wrong",
     "retryBtn": "Try Again"
+  },
+  "kpi": {
+    "periodType": {
+      "YEARLY": "Yearly",
+      "QUARTERLY": "Quarterly"
+    },
+    "reference": {
+      "title": "KPI Reference",
+      "add": "Add KPI Reference",
+      "searchPlaceholder": "Search KPI...",
+      "confirmDeleteTitle": "Delete KPI Reference",
+      "confirmDeleteMessage": "Are you sure you want to delete this KPI reference? This action cannot be undone.",
+      "table": {
+        "year": "Year",
+        "period": "Period",
+        "objective": "Objective Details",
+        "department": "Department",
+        "target": "Target Value",
+        "empty": "No KPI records found",
+        "pageInfo": "Page {page} of {totalPages} ({total} total)",
+        "totalItems": "items"
+      },
+      "form": {
+        "year": "Year",
+        "periodType": "Period Type",
+        "objectiveDetails": "Objective Details",
+        "measurementFrequency": "Measurement Frequency",
+        "calculationFormula": "Calculation Formula",
+        "guidelines": "Guidelines",
+        "trackingRecords": "Tracking Records",
+        "targetValue": "Target Value",
+        "departmentId": "Department",
+        "departmentPlaceholder": "Select Department"
+      },
+      "messages": {
+        "createSuccess": "KPI created successfully",
+        "updateSuccess": "KPI updated successfully",
+        "deleteSuccess": "KPI deleted successfully"
+      },
+      "action": {
+        "edit": "Edit",
+        "delete": "Delete"
+      }
+    },
+    "form": {
+      "year": "Year",
+      "periodType": "Period Type",
+      "objectiveDetails": "Objective Details",
+      "measurementFrequency": "Measurement Frequency",
+      "calculationFormula": "Calculation Formula",
+      "guidelines": "Guidelines",
+      "trackingRecords": "Tracking Records",
+      "targetValue": "Target Value",
+      "departmentId": "Department"
+    },
+    "messages": {
+      "createSuccess": "KPI created successfully",
+      "updateSuccess": "KPI updated successfully",
+      "deleteSuccess": "KPI deleted successfully"
+    },
+    "action": {
+      "edit": "Edit",
+      "delete": "Delete"
+    }
+  },
+  "documentCategory": {
+    "title": "Document Categories",
+    "new": "New Category",
+    "editTitle": "Edit Category",
+    "list": "Category List",
+    "empty": "No categories found",
+    "emptyDesc": "Create a new category to get started.",
+    "deleteConfirm": "Delete Category",
+    "deleteMsg": "Are you sure you want to delete this category? This action cannot be undone.",
+    "field": {
+      "name": "Category Name",
+      "description": "Description",
+      "order": "Display Order"
+    },
+    "placeholder": {
+      "name": "e.g. SOP, Manual, Format",
+      "description": "Optional description"
+    },
+    "button": {
+      "add": "Add Category"
+    },
+    "messages": {
+      "createSuccess": "Category created successfully",
+      "updateSuccess": "Category updated successfully",
+      "deleteSuccess": "Category deleted successfully"
+    }
+  },
+  "documentControl": {
+    "title": "Document Control",
+    "new": "New Document",
+    "editTitle": "Edit Document",
+    "viewTitle": "View Document",
+    "list": "Document List",
+    "empty": "No documents found",
+    "emptyDesc": "Create a new document to get started.",
+    "deleteConfirm": "Delete Document",
+    "deleteMsg": "Are you sure you want to delete this document? This action cannot be undone.",
+    "status": {
+      "DRAFT": "Draft",
+      "ACTIVE": "Active",
+      "OBSOLETE": "Obsolete"
+    },
+    "docType": {
+      "MANUAL": "Manual",
+      "FORMAT": "Format",
+      "DRAWING": "Drawing",
+      "PROCEDURE": "Procedure",
+      "SOP": "SOP",
+      "SIP": "SIP",
+      "IPQC": "IPQC",
+      "WORK_INSTRUCTION": "Work Instruction",
+      "OTHER": "Other"
+    },
+    "field": {
+      "docNumber": "Document Number",
+      "docName": "Document Name",
+      "revision": "Revision",
+      "category": "Category",
+      "description": "Description",
+      "docType": "Document Type",
+      "status": "Status",
+      "effectiveDate": "Effective Date",
+      "fileName": "File Name",
+      "fileSize": "File Size",
+      "mimeType": "File Type",
+      "createdBy": "Created By",
+      "createdAt": "Created Date",
+      "updatedBy": "Last Modified By",
+      "updatedAt": "Last Modified Date"
+    },
+    "placeholder": {
+      "search": "Search by document number or name...",
+      "category": "Enter category",
+      "description": "Enter document description",
+      "docNumber": "e.g. FM-IT-01"
+    },
+    "button": {
+      "create": "Create Document",
+      "edit": "Edit",
+      "delete": "Delete",
+      "download": "Download",
+      "upload": "Upload File",
+      "replace": "Replace File",
+      "uploadRevision": "Upload Revision"
+    },
+    "messages": {
+      "createSuccess": "Document created successfully",
+      "updateSuccess": "Document updated successfully",
+      "deleteSuccess": "Document deleted successfully",
+      "uploadSuccess": "File uploaded successfully",
+      "docNumberExists": "Document number already exists",
+      "invalidFile": "Invalid file. Please check the file type and size.",
+      "fileRequired": "File is required"
+    },
+    "table": {
+      "colNumber": "Doc Number",
+      "colName": "Document Name",
+      "colType": "Type",
+      "colStatus": "Status",
+      "colCreated": "Created",
+      "colActions": "Actions"
+    },
+    "filterBar": {
+      "search": "Search documents",
+      "docType": "Document Type",
+      "status": "Status",
+      "allTypes": "All Types",
+      "allStatuses": "All Statuses"
+    },
+    "section": {
+      "metadata": "Record Information",
+      "fileInfo": "File Information",
+      "revisionHistory": "Revision History",
+      "noRevisions": "No revision history found"
+    },
+    "uploadRevisionDesc": "Upload the document file and specify its revision details below.",
+    "fileHint": "PDF, Word, Excel, Images — max 20 MB",
+    "pagination": {
+      "page": "Page",
+      "of": "of",
+      "items": "items"
+    }
+  },
+  "documentDepartment": {
+    "title": "Document Departments",
+    "new": "New Department",
+    "editTitle": "Edit Department",
+    "list": "Department List",
+    "empty": "No departments found",
+    "emptyDesc": "Create a new department to get started.",
+    "deleteConfirm": "Delete Department",
+    "deleteMsg": "Are you sure you want to delete this department? This action cannot be undone.",
+    "field": {
+      "name": "Department Name",
+      "emailGroup": "Group Email",
+      "isActive": "Is Active"
+    },
+    "placeholder": {
+      "name": "e.g. Production, QA, HR",
+      "emailGroup": "e.g. production-dept@company.com"
+    },
+    "button": {
+      "add": "Add Department"
+    },
+    "messages": {
+      "createSuccess": "Department created successfully",
+      "updateSuccess": "Department updated successfully",
+      "deleteSuccess": "Department deleted successfully"
+    }
   }
 }

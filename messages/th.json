@@ -359,5 +359,219 @@
   "error": {
     "title": "เกิดข้อผิดพลาด",
     "retryBtn": "ลองใหม่อีกครั้ง"
+  },
+  "kpi": {
+    "periodType": {
+      "YEARLY": "รายปี",
+      "QUARTERLY": "รายไตรมาส"
+    },
+    "reference": {
+      "title": "ข้อมูลอ้างอิง KPI",
+      "add": "เพิ่มข้อมูล KPI",
+      "searchPlaceholder": "ค้นหา KPI...",
+      "confirmDeleteTitle": "ยืนยันการลบข้อมูล KPI",
+      "confirmDeleteMessage": "คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูล KPI อ้างอิงนี้? การกระทำนี้ไม่สามารถย้อนกลับได้",
+      "table": {
+        "year": "ปี",
+        "period": "ระยะเวลา",
+        "objective": "รายละเอียดวัตถุประสงค์",
+        "department": "แผนก",
+        "target": "ค่าเป้าหมาย",
+        "empty": "ไม่พบข้อมูล KPI",
+        "pageInfo": "หน้า {page} จาก {totalPages} (ทั้งหมด {total} รายการ)",
+        "totalItems": "รายการ"
+      },
+      "form": {
+        "year": "ปี",
+        "periodType": "ระยะเวลา",
+        "objectiveDetails": "รายละเอียดวัตถุประสงค์",
+        "measurementFrequency": "ความถี่ในการวัดผล",
+        "calculationFormula": "สูตรการคำนวณ",
+        "guidelines": "แนวทางปฏิบัติ",
+        "trackingRecords": "บันทึกข้อมูลติดตาม",
+        "targetValue": "ค่าเป้าหมาย",
+        "departmentId": "แผนก",
+        "departmentPlaceholder": "เลือกแผนก"
+      },
+      "messages": {
+        "createSuccess": "สร้างข้อมูล KPI สำเร็จ",
+        "updateSuccess": "อัปเดตข้อมูล KPI สำเร็จ",
+        "deleteSuccess": "ลบข้อมูล KPI สำเร็จ"
+      },
+      "action": {
+        "edit": "แก้ไข",
+        "delete": "ลบ"
+      }
+    },
+    "form": {
+      "year": "ปี",
+      "periodType": "ระยะเวลา",
+      "objectiveDetails": "รายละเอียดวัตถุประสงค์",
+      "measurementFrequency": "ความถี่ในการวัดผล",
+      "calculationFormula": "สูตรการคำนวณ",
+      "guidelines": "แนวทางปฏิบัติ",
+      "trackingRecords": "บันทึกข้อมูลติดตาม",
+      "targetValue": "ค่าเป้าหมาย",
+      "departmentId": "แผนก"
+    },
+    "messages": {
+      "createSuccess": "สร้างข้อมูล KPI สำเร็จ",
+      "updateSuccess": "อัปเดตข้อมูล KPI สำเร็จ",
+      "deleteSuccess": "ลบข้อมูล KPI สำเร็จ"
+    },
+    "action": {
+      "edit": "แก้ไข",
+      "delete": "ลบ"
+    }
+  },
+  "documentCategory": {
+    "title": "หมวดหมู่เอกสาร",
+    "new": "หมวดหมู่ใหม่",
+    "editTitle": "แก้ไขหมวดหมู่",
+    "list": "รายการหมวดหมู่",
+    "empty": "ไม่พบหมวดหมู่",
+    "emptyDesc": "สร้างหมวดหมู่ใหม่เพื่อเริ่มต้น",
+    "deleteConfirm": "ลบหมวดหมู่",
+    "deleteMsg": "คุณแน่ใจหรือว่าต้องการลบหมวดหมู่นี้ ไม่สามารถเลิกทำการกระทำนี้ได้",
+    "field": {
+      "name": "ชื่อหมวดหมู่",
+      "description": "คำอธิบาย",
+      "order": "ลำดับแสดงผล"
+    },
+    "placeholder": {
+      "name": "เช่น SOP, คู่มือ, แบบฟอร์ม",
+      "description": "คำอธิบาย (ไม่บังคับ)"
+    },
+    "button": {
+      "add": "เพิ่มหมวดหมู่"
+    },
+    "messages": {
+      "createSuccess": "สร้างหมวดหมู่สำเร็จ",
+      "updateSuccess": "อัปเดตหมวดหมู่สำเร็จ",
+      "deleteSuccess": "ลบหมวดหมู่สำเร็จ"
+    }
+  },
+  "documentControl": {
+    "title": "ควบคุมเอกสาร",
+    "new": "เอกสารใหม่",
+    "editTitle": "แก้ไขเอกสาร",
+    "viewTitle": "ดูเอกสาร",
+    "list": "รายการเอกสาร",
+    "empty": "ไม่พบเอกสาร",
+    "emptyDesc": "สร้างเอกสารใหม่เพื่อเริ่มต้น",
+    "deleteConfirm": "ลบเอกสาร",
+    "deleteMsg": "คุณแน่ใจหรือว่าต้องการลบเอกสารนี้ ไม่สามารถเลิกทำการกระทำนี้ได้",
+    "status": {
+      "DRAFT": "ร่าง",
+      "ACTIVE": "ใช้งาน",
+      "OBSOLETE": "ไม่ใช้แล้ว"
+    },
+    "docType": {
+      "MANUAL": "คู่มือ",
+      "FORMAT": "แบบฟอร์ม",
+      "DRAWING": "ภาพวาด",
+      "PROCEDURE": "ขั้นตอน",
+      "SOP": "SOP",
+      "SIP": "SIP",
+      "IPQC": "IPQC",
+      "WORK_INSTRUCTION": "คำสั่งการทำงาน",
+      "OTHER": "อื่น ๆ"
+    },
+    "field": {
+      "docNumber": "เลขที่เอกสาร",
+      "docName": "ชื่อเอกสาร",
+      "revision": "ฉบับแก้ไข",
+      "category": "หมวดหมู่",
+      "description": "คำอธิบาย",
+      "docType": "ประเภทเอกสาร",
+      "status": "สถานะ",
+      "effectiveDate": "วันที่มีผลบังคับใช้",
+      "fileName": "ชื่อไฟล์",
+      "fileSize": "ขนาดไฟล์",
+      "mimeType": "ประเภทไฟล์",
+      "createdBy": "สร้างโดย",
+      "createdAt": "วันที่สร้าง",
+      "updatedBy": "แก้ไขล่าสุดโดย",
+      "updatedAt": "วันที่แก้ไขล่าสุด"
+    },
+    "placeholder": {
+      "search": "ค้นหาด้วยเลขที่เอกสารหรือชื่อเอกสาร...",
+      "category": "ป้อนหมวดหมู่",
+      "description": "ป้อนคำอธิบายเอกสาร",
+      "docNumber": "เช่น FM-IT-01"
+    },
+    "button": {
+      "create": "สร้างเอกสาร",
+      "edit": "แก้ไข",
+      "delete": "ลบ",
+      "download": "ดาวน์โหลด",
+      "upload": "อัปโหลดไฟล์",
+      "replace": "แทนที่ไฟล์",
+      "uploadRevision": "อัปโหลดฉบับแก้ไข"
+    },
+    "messages": {
+      "createSuccess": "สร้างเอกสารสำเร็จ",
+      "updateSuccess": "อัปเดตเอกสารสำเร็จ",
+      "deleteSuccess": "ลบเอกสารสำเร็จ",
+      "uploadSuccess": "อัปโหลดไฟล์สำเร็จ",
+      "docNumberExists": "เลขที่เอกสารนี้มีอยู่แล้ว",
+      "invalidFile": "ไฟล์ไม่ถูกต้อง โปรดตรวจสอบประเภทและขนาดไฟล์",
+      "fileRequired": "ต้องมีไฟล์"
+    },
+    "table": {
+      "colNumber": "เลขที่",
+      "colName": "ชื่อเอกสาร",
+      "colType": "ประเภท",
+      "colStatus": "สถานะ",
+      "colCreated": "สร้าง",
+      "colActions": "การกระทำ"
+    },
+    "filterBar": {
+      "search": "ค้นหาเอกสาร",
+      "docType": "ประเภทเอกสาร",
+      "status": "สถานะ",
+      "allTypes": "ทั้งหมด",
+      "allStatuses": "สถานะทั้งหมด"
+    },
+    "section": {
+      "metadata": "ข้อมูลการบันทึก",
+      "fileInfo": "ข้อมูลไฟล์",
+      "revisionHistory": "ประวัติการแก้ไข",
+      "noRevisions": "ไม่มีประวัติการอัปโหลดไฟล์"
+    },
+    "uploadRevisionDesc": "อัปโหลดไฟล์เอกสารและระบุรายละเอียดฉบับแก้ไขด้านล่าง",
+    "fileHint": "PDF, Word, Excel, รูปภาพ — สูงสุด 20 MB",
+    "pagination": {
+      "page": "หน้า",
+      "of": "จาก",
+      "items": "รายการ"
+    }
+  },
+  "documentDepartment": {
+    "title": "แผนกเอกสาร",
+    "new": "แผนกใหม่",
+    "editTitle": "แก้ไขแผนก",
+    "list": "รายการแผนก",
+    "empty": "ไม่พบแผนก",
+    "emptyDesc": "สร้างแผนกใหม่เพื่อเริ่มต้น",
+    "deleteConfirm": "ลบแผนก",
+    "deleteMsg": "คุณแน่ใจหรือว่าต้องการลบแผนกนี้? การกระทำนี้ไม่สามารถย้อนกลับได้",
+    "field": {
+      "name": "ชื่อแผนก",
+      "emailGroup": "อีเมลกลุ่ม",
+      "isActive": "สถานะการใช้งาน"
+    },
+    "placeholder": {
+      "name": "เช่น Production, QA, HR",
+      "emailGroup": "เช่น production-dept@company.com"
+    },
+    "button": {
+      "add": "เพิ่มแผนก"
+    },
+    "messages": {
+      "createSuccess": "สร้างแผนกสำเร็จ",
+      "updateSuccess": "อัปเดตแผนกสำเร็จ",
+      "deleteSuccess": "ลบแผนกสำเร็จ"
+    }
   }
 }

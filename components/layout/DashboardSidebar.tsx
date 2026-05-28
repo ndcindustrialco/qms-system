@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -95,7 +95,9 @@ function getSections(role: UserRole, locale: "th" | "en"): { label: string; item
   const userItems: NavItem[] = [
     { labelTh: "หน้าหลัก", labelEn: "Dashboard", href: "/", icon: <HomeIcon /> },
     { labelTh: "คำขอเอกสาร", labelEn: "My Requests", href: "/dar", icon: <FileIcon /> },
+    { labelTh: "ควบคุมเอกสาร", labelEn: "Document Control", href: "/qms/document-controls", icon: <FileIcon /> },
     { labelTh: "โปรไฟล์ของฉัน", labelEn: "My Profile", href: "/profile", icon: <ProfileIcon /> },
+    { labelTh: "KPI (In Development)", labelEn: "KPI", href: "/qms/kpi", icon: <FileIcon /> },
   ];
   const qmsItems: NavItem[] = [
     { labelTh: "จัดการข่าวสาร", labelEn: "Manage Announcements", href: "/qms/announcements", icon: <MegaphoneIcon /> },
@@ -113,10 +115,8 @@ function getSections(role: UserRole, locale: "th" | "en"): { label: string; item
 
   const setMrItem: NavItem = { labelTh: "กำหนด MR", labelEn: "Set MR", href: "/qms/mr", icon: <UserStarIcon /> };
 
-  if (role === "QMS") {
+  if (role === "QMS" || role === "MR") {
     sections.push({ label: "QMS", items: [...qmsItems, setMrItem] });
-  } else if (role === "MR") {
-    sections.push({ label: "QMS", items: qmsItems });
   } else if (role === "IT") {
     sections.push({ label: "QMS", items: [...qmsItems, setMrItem] });
     sections.push({ label: locale === "th" ? "ระบบ IT" : "IT Admin", items: itItems });

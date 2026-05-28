@@ -9,7 +9,7 @@ const userService = new UserService();
 
 export default async function QmsMrPage() {
   try {
-    await requireRole("QMS", "IT");
+    await requireRole("QMS", "IT", "MR");
   } catch (e) {
     if (e instanceof ForbiddenError) redirect("/unauthorized?reason=insufficient_role");
     throw e;
@@ -18,7 +18,7 @@ export default async function QmsMrPage() {
   const users = await userService.getAllUsers();
 
   return (
-    <div className="max-w-[1400px] mx-auto px-4 md:px-8">
+    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
       <MrManagementClient initialUsers={users} />
     </div>
   );

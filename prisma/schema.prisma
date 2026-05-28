@@ -8,42 +8,53 @@ datasource db {
 }
 
 model Department {
-  id               String            @id @default(uuid())
-  name             String            @unique
+  id               String             @id @default(uuid())
+  name             String             @unique
   emailGroup       String?
-  isActive         Boolean           @default(true)
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
+  isActive         Boolean            @default(true)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
   darDistributions DarDistribution[]
   darMasters       DarMaster[]
   kpiMasters       KpiMaster[]
   users            User[]
+  docControls      DocumentControl[]
+  docCategories    DocumentCategory[]
 
   @@map("Department")
 }
 
 model User {
-  id                String           @id @default(uuid())
-  employeeId        String?          @unique
-  msUserId          String?          @unique
-  name              String?
-  email             String           @unique
-  emailVerified     DateTime?
-  image             String?
-  role              UserRole         @default(USER)
-  position          String?
-  savedSignatureUrl String?
-  signatureType     SignatureType?
-  departmentId      String?
-  createdAt         DateTime         @default(now())
-  updatedAt         DateTime         @updatedAt
-  announcements     Announcement[]
-  darApprovals      DarApproval[]
-  darAttachments    DarAttachment[]
-  darMasters        DarMaster[]
-  kpiApprovalLogs   KpiApprovalLog[]
-  qmsProcessings    QmsProcessing[]
-  department        Department?      @relation(fields: [departmentId], references: [id])
+  id                    String                    @id @default(uuid())
+  employeeId            String?                   @unique
+  msUserId              String?                   @unique
+  name                  String?
+  email                 String                    @unique
+  emailVerified         DateTime?
+  image                 String?
+  role                  UserRole                  @default(USER)
+  position              String?
+  savedSignatureUrl     String?
+  signatureType         SignatureType?
+  departmentId          String?
+  createdAt             DateTime                  @default(now())
+  updatedAt             DateTime                  @updatedAt
+  announcements         Announcement[]
+  darApprovals          DarApproval[]
+  darAttachments        DarAttachment[]
+  darMasters            DarMaster[]
+  kpiApprovalLogs       KpiApprovalLog[]
+  kpiObjectivesApproved KpiMaster[]               @relation("KpiObjectiveApprovedBy")
+  kpiMonthlySubmitted   KpiMonthlyResult[]        @relation("KpiMonthlySubmittedBy")
+  kpiMonthlyApproved    KpiMonthlyResult[]        @relation("KpiMonthlyApprovedBy")
+  kpiMonthlyAttachments KpiMonthlyAttachment[]    @relation("KpiMonthlyAttachmentUploadedBy")
+  kpiSignatureLogs      KpiSignatureLog[]
+  kpiAuditLogs          KpiAuditLog[]
+  qmsProcessings        QmsProcessing[]
+  docControlsCreated    DocumentControl[]         @relation("DocCreatedBy")
+  docControlsUpdated    DocumentControl[]         @relation("DocUpdatedBy")
+  docRevisionsCreated   DocumentControlRevision[] @relation("DocRevCreatedBy")
+  department            Department?               @relation(fields: [departmentId], references: [id])
 
   @@index([role])
   @@index([departmentId])
@@ -241,34 +252,103 @@ model KpiMaster {
   targetValue          Decimal            @db.Decimal(5, 2)
   departmentId         String
   createdById          String?
+  objectiveStatus      KpiObjectiveStatus @default(DRAFT)
+  version              Int                @default(1)
+  approvedById         String?
+  approvedAt           DateTime?
   createdAt            DateTime           @default(now())
   updatedAt            DateTime           @updatedAt
   approvalLogs         KpiApprovalLog[]
   department           Department         @relation(fields: [departmentId], references: [id])
+  approvedBy           User?              @relation("KpiObjectiveApprovedBy", fields: [approvedById], references: [id])
   monthlyResults       KpiMonthlyResult[]
 
   @@map("KpiMaster")
 }
 
 model KpiMonthlyResult {
-  id                String                @id @default(uuid())
+  id                String                 @id @default(uuid())
+  periodYear        Int?
   month             Int
-  actualValue       Decimal?              @db.Decimal(5, 2)
-  isNa              Boolean               @default(false)
-  status            KpiMonthlyStatus      @default(PENDING)
-  approvalStatus    KpiApprovalStatus     @default(DRAFT)
+  actualValue       Decimal?               @db.Decimal(5, 2)
+  isNa              Boolean                @default(false)
+  status            KpiMonthlyStatus       @default(PENDING)
+  approvalStatus    KpiApprovalStatus      @default(DRAFT)
   spItemId          String?
   spWebUrl          String?
   spDownloadUrl     String?
   fileName          String?
+  submittedById     String?
+  submittedAt       DateTime?
+  approvedById      String?
+  approvedAt        DateTime?
+  rejectionReason   String?
+  closedAt          DateTime?
   kpiMasterId       String
-  createdAt         DateTime              @default(now())
-  updatedAt         DateTime              @updatedAt
+  createdAt         DateTime               @default(now())
+  updatedAt         DateTime               @updatedAt
   correctiveActions KpiCorrectiveAction[]
-  kpiMaster         KpiMaster             @relation(fields: [kpiMasterId], references: [id], onDelete: Cascade)
+  attachments       KpiMonthlyAttachment[]
+  signatures        KpiSignatureLog[]
+  auditLogs         KpiAuditLog[]
+  submittedBy       User?                  @relation("KpiMonthlySubmittedBy", fields: [submittedById], references: [id])
+  approvedBy        User?                  @relation("KpiMonthlyApprovedBy", fields: [approvedById], references: [id])
+  kpiMaster         KpiMaster              @relation(fields: [kpiMasterId], references: [id], onDelete: Cascade)
 
   @@unique([kpiMasterId, month])
+  @@unique([kpiMasterId, periodYear, month])
   @@map("KpiMonthlyResult")
+}
+
+model KpiMonthlyAttachment {
+  id                 String           @id @default(uuid())
+  kpiMonthlyResultId String
+  fileName           String
+  mimeType           String
+  fileSize           Int
+  spDriveId          String
+  spItemId           String
+  spWebUrl           String
+  uploadedById       String
+  createdAt          DateTime         @default(now())
+  kpiMonthlyResult   KpiMonthlyResult @relation(fields: [kpiMonthlyResultId], references: [id], onDelete: Cascade)
+  uploadedBy         User             @relation("KpiMonthlyAttachmentUploadedBy", fields: [uploadedById], references: [id])
+
+  @@index([kpiMonthlyResultId])
+  @@index([spItemId])
+  @@map("KpiMonthlyAttachment")
+}
+
+model KpiSignatureLog {
+  id                 String            @id @default(uuid())
+  kpiMonthlyResultId String
+  signerId           String
+  signerRole         KpiSignerRole
+  contentHash        String
+  action             KpiWorkflowAction
+  signedAt           DateTime          @default(now())
+  kpiMonthlyResult   KpiMonthlyResult  @relation(fields: [kpiMonthlyResultId], references: [id], onDelete: Cascade)
+  signer             User              @relation(fields: [signerId], references: [id])
+
+  @@index([kpiMonthlyResultId])
+  @@index([signerId])
+  @@map("KpiSignatureLog")
+}
+
+model KpiAuditLog {
+  id                 String            @id @default(uuid())
+  kpiMonthlyResultId String
+  actorUserId        String
+  action             KpiWorkflowAction
+  beforeJson         Json?
+  afterJson          Json?
+  createdAt          DateTime          @default(now())
+  kpiMonthlyResult   KpiMonthlyResult  @relation(fields: [kpiMonthlyResultId], references: [id], onDelete: Cascade)
+  actorUser          User              @relation(fields: [actorUserId], references: [id])
+
+  @@index([kpiMonthlyResultId])
+  @@index([actorUserId])
+  @@map("KpiAuditLog")
 }
 
 model KpiCorrectiveAction {
@@ -364,4 +444,112 @@ enum KpiApprovalStep {
   PREPARER
   REVIEWER
   QMS_VERIFIER
+}
+
+enum KpiObjectiveStatus {
+  DRAFT
+  PENDING_APPROVAL
+  APPROVED
+  REJECTED
+  ARCHIVED
+}
+
+enum KpiSignerRole {
+  SUBMITTER
+  APPROVER
+}
+
+enum KpiWorkflowAction {
+  SUBMIT
+  APPROVE
+  REJECT
+  CLOSE
+  REOPEN
+  ATTACH
+  DETACH
+}
+
+model DocumentControl {
+  id            String           @id @default(uuid())
+  docNumber     String           @unique
+  docName       String
+  revision      String?
+  description   String?
+  status        DocControlStatus @default(DRAFT)
+  effectiveDate DateTime?
+  spDriveId     String?
+  spItemId      String?
+  spWebUrl      String?
+  spDownloadUrl String?
+  spFolderPath  String?
+  fileName      String?
+  fileSize      Int?
+  mimeType      String?
+  createdById   String
+  updatedById   String?
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  // Relations
+  createdBy    User                      @relation("DocCreatedBy", fields: [createdById], references: [id])
+  updatedBy    User?                     @relation("DocUpdatedBy", fields: [updatedById], references: [id])
+  departmentId String?
+  department   Department?               @relation(fields: [departmentId], references: [id])
+  categoryId   String?
+  category     DocumentCategory?         @relation(fields: [categoryId], references: [id])
+  revisions    DocumentControlRevision[]
+
+  @@index([status])
+  @@index([categoryId])
+  @@index([createdById])
+  @@index([departmentId])
+  @@map("DocumentControl")
+}
+
+model DocumentCategory {
+  id           String   @id @default(uuid())
+  name         String
+  description  String?
+  order        Int      @default(0)
+  departmentId String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  department Department        @relation(fields: [departmentId], references: [id])
+  documents  DocumentControl[]
+
+  @@index([departmentId])
+  @@map("DocumentCategory")
+}
+
+model DocumentControlRevision {
+  id                String           @id @default(uuid())
+  documentControlId String
+  revision          String
+  effectiveDate     DateTime?
+  status            DocControlStatus @default(ACTIVE)
+  spDriveId         String?
+  spItemId          String?
+  spWebUrl          String?
+  spDownloadUrl     String?
+  spFolderPath      String?
+  fileName          String?
+  fileSize          Int?
+  mimeType          String?
+  createdById       String
+  createdAt         DateTime         @default(now())
+
+  // Relations
+  documentControl DocumentControl @relation(fields: [documentControlId], references: [id], onDelete: Cascade)
+  createdBy       User            @relation("DocRevCreatedBy", fields: [createdById], references: [id])
+
+  @@index([documentControlId])
+  @@index([status])
+  @@map("DocumentControlRevision")
+}
+
+enum DocControlStatus {
+  DRAFT
+  ACTIVE
+  OBSOLETE
 }

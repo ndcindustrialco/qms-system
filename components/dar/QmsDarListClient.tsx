@@ -9,6 +9,8 @@ import type { DarStatus, DarObjective } from "@/types/dar";
 import DarTable from "@/components/dar/DarTable";
 import DarCardList from "@/components/dar/DarCardList";
 import FilterBar from "@/components/common/FilterBar";
+import PageHeader from "@/components/common/PageHeader";
+import Pagination from "@/components/common/Pagination";
 import EmptyState from "@/components/common/EmptyState";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
@@ -64,15 +66,16 @@ export default function QmsDarListClient({ dars: initialDars }: { dars: DarSumma
   const isTh = locale === "th";
   const queryClient = useQueryClient();
 
-  const { data: dars = [] } = useQuery<DarSummary[]>({
+  const queryResult = useQuery<DarSummary[]>({
     queryKey: ["dars", "all"],
     queryFn: async () => {
       const res = await fetch("/api/dar?all=true");
       const json = await res.json();
-      return json.data ?? [];
+      return (json.data ?? []) as DarSummary[];
     },
     initialData: initialDars,
   });
+  const dars = (queryResult.data ?? []) as DarSummary[];
 
   const [sortKey, setSortKey] = useState<SortKey>("requestDate");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
@@ -111,7 +114,7 @@ export default function QmsDarListClient({ dars: initialDars }: { dars: DarSumma
 
   // ── URL-bound filters ──────────────────────────────────────────────────────
   const { params, rawValues, setParam, clearAll, hasFilters } = useUrlFilters({
-    keys: ["search", "status", "objective"] as const,
+    keys: ["search", "status", "objective", "page"] as const,
     searchKey: "search",
     debounceMs: 300,
   });
@@ -127,7 +130,7 @@ export default function QmsDarListClient({ dars: initialDars }: { dars: DarSumma
 
   const counts = useMemo(
     () =>
-      dars.reduce<Record<string, number>>((acc, d) => {
+      dars.reduce<Record<string, number>>((acc: Record<string, number>, d: DarSummary) => {
         acc[d.status] = (acc[d.status] ?? 0) + 1;
         return acc;
       }, {}),
@@ -137,7 +140,7 @@ export default function QmsDarListClient({ dars: initialDars }: { dars: DarSumma
   const filtered = useMemo(() => {
     const q = params.search.trim().toLowerCase();
     return dars
-      .filter((d) => {
+      .filter((d: DarSummary) => {
         if (params.status && d.status !== (params.status as DarStatus)) return false;
         if (params.objective && d.objective !== (params.objective as DarObjective)) return false;
         if (q) {
@@ -145,13 +148,13 @@ export default function QmsDarListClient({ dars: initialDars }: { dars: DarSumma
             d.darNo ?? "",
             objectiveLabel(d.objective),
             (DOC_TYPE_LABELS as Record<string, string>)[d.docType] ?? d.docType,
-            DAR_STATUS_LABELS[d.status],
+            (DAR_STATUS_LABELS as Record<string, string>)[d.status] ?? d.status,
           ].join(" ").toLowerCase();
           if (!haystack.includes(q)) return false;
         }
         return true;
       })
-      .sort((a, b) => {
+      .sort((a: DarSummary, b: DarSummary) => {
         let cmp = 0;
         if (sortKey === "requestDate") cmp = new Date(a.requestDate).getTime() - new Date(b.requestDate).getTime();
         else if (sortKey === "darNo") cmp = (a.darNo ?? "").localeCompare(b.darNo ?? "");
@@ -162,6 +165,13 @@ export default function QmsDarListClient({ dars: initialDars }: { dars: DarSumma
   }, [dars, params.search, params.status, params.objective, sortKey, sortDir, isTh]);
 
   const isFilteredEmpty = dars.length > 0 && filtered.length === 0;
+
+  // ── Client-side pagination ────────────────────────────────────────────────
+  const PAGE_SIZE = 20;
+  const currentPage = Math.max(1, parseInt(params.page || "1", 10));
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const safePage = Math.min(currentPage, totalPages);
+  const paginated = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
 
   const statusOptions = [
     { value: "DRAFT",           label: isTh ? "ฉบับร่าง"     : "Draft" },
@@ -178,7 +188,13 @@ export default function QmsDarListClient({ dars: initialDars }: { dars: DarSumma
   }));
 
   return (
-    <>
+    <div className="space-y-6">
+      {/* Page Header */}
+      <PageHeader
+        title={isTh ? "จัดการคำขอเอกสาร (DAR)" : "Manage Document Requests (DAR)"}
+        subtitle={isTh ? "ภาพรวมคำขอเอกสารทั้งหมดในระบบ" : "Overview of all document requests"}
+      />
+
       {/* Status count cards — clickable, synced to URL */}
       <div className="grid grid-cols-3 md:grid-cols-6 gap-2 mb-6">
         {ORDERED_STATUSES.map((s) => {
@@ -255,7 +271,7 @@ export default function QmsDarListClient({ dars: initialDars }: { dars: DarSumma
             </Select>
             <button
               onClick={() => setSortDir((d) => (d === "asc" ? "desc" : "asc"))}
-              className="h-8 w-8 flex items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-[#0F1059] transition-colors"
+              className="h-8 w-8 flex items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-primary transition-colors"
               title={sortDir === "asc" ? (isTh ? "น้อย → มาก" : "Ascending") : (isTh ? "มาก → น้อย" : "Descending")}
             >
               {sortDir === "asc" ? (
@@ -295,13 +311,20 @@ export default function QmsDarListClient({ dars: initialDars }: { dars: DarSumma
       ) : (
         <>
           <DarTable
-            dars={filtered}
+            dars={paginated}
             onSort={toggleSort}
             sortKey={sortKey}
             sortDir={sortDir}
             onDelete={(id, darNo) => { setPendingDelete({ id, darNo }); setDeleteError(null); }}
           />
-          <DarCardList dars={filtered} />
+          <DarCardList dars={paginated} />
+          <Pagination
+            page={safePage}
+            totalPages={totalPages}
+            total={filtered.length}
+            countLabel={isTh ? "รายการ" : "items"}
+            onPageChange={(p) => setParam("page", String(p))}
+          />
         </>
       )}
 
@@ -352,6 +375,6 @@ export default function QmsDarListClient({ dars: initialDars }: { dars: DarSumma
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </>
+    </div>
   );
 }

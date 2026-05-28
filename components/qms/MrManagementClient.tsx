@@ -10,6 +10,8 @@ import { useLocale } from "@/lib/locale-context";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import PageHeader from "@/components/common/PageHeader";
 import FilterBar from "@/components/common/FilterBar";
+import Pagination from "@/components/common/Pagination";
+import { Button } from "@/components/ui/button";
 import { useUrlFilters } from "@/hooks/use-url-filters";
 import { useState } from "react";
 
@@ -26,7 +28,7 @@ export default function MrManagementClient({ initialUsers }: Props) {
 
   // ── URL-bound search (debounced) ───────────────────────────────────────────
   const { params, rawValues, setParam } = useUrlFilters({
-    keys: ["search"] as const,
+    keys: ["search", "page"] as const,
     searchKey: "search",
     debounceMs: 300,
   });
@@ -38,6 +40,13 @@ export default function MrManagementClient({ initialUsers }: Props) {
       [u.name, u.email, u.department?.name].join(" ").toLowerCase().includes(q),
     );
   }, [initialUsers, params.search]);
+
+  // ── Client-side pagination ────────────────────────────────────────────────
+  const PAGE_SIZE = 20;
+  const currentPage = Math.max(1, parseInt(params.page || "1", 10));
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const safePage = Math.min(currentPage, totalPages);
+  const paginated = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
 
   async function handleToggle(userId: string, newRole: "MR" | "USER") {
     setLoadingId(userId);
@@ -109,8 +118,79 @@ export default function MrManagementClient({ initialUsers }: Props) {
         countLabel={isTh ? "คน" : "users"}
       />
 
-      {/* Table */}
-      <div className="card-premium overflow-hidden shadow-sm">
+      {/* Mobile Card List */}
+      <div className="lg:hidden space-y-3">
+        {filtered.length === 0 ? (
+          <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-12 text-center">
+            <p className="text-slate-500 text-sm">{isTh ? "ไม่พบผู้ใช้" : "No users found"}</p>
+          </div>
+        ) : (
+          paginated.map((user) => {
+            const isMr = user.role === "MR";
+            const canToggle = user.role === "USER" || user.role === "MR";
+            return (
+              <div
+                key={user.id}
+                className="bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-4 flex flex-col gap-3"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm font-bold shrink-0">
+                        {((user.name ?? user.email) || "-").charAt(0).toUpperCase()}
+                      </div>
+                      <div>
+                        <p className="font-semibold text-sm text-slate-800 leading-tight">
+                          {user.name ?? "—"}
+                          {isMr && (
+                            <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wide bg-amber-100 text-amber-700">
+                              MR
+                            </span>
+                          )}
+                        </p>
+                        <p className="text-xs text-slate-400 font-mono truncate">{user.email}</p>
+                      </div>
+                    </div>
+                  </div>
+                  <span className={`text-xs font-semibold px-2.5 py-1 rounded-full shrink-0 ${
+                    isMr ? "bg-amber-50 text-amber-700" : "bg-slate-100 text-slate-500"
+                  }`}>
+                    {isTh ? (isMr ? "ผู้แทนฝ่ายบริหาร" : "ผู้ใช้งาน") : (isMr ? "Mgmt. Rep." : "User")}
+                  </span>
+                </div>
+
+                {user.department && (
+                  <p className="text-xs text-slate-500 pl-10">{user.department.name}</p>
+                )}
+
+                {canToggle && (
+                  <div className="pt-2 border-t border-slate-100">
+                    <Button
+                      size="sm"
+                      variant={isMr ? "outline" : "default"}
+                      disabled={loadingId === user.id}
+                      onClick={() => handleToggle(user.id, isMr ? "USER" : "MR")}
+                      className={`w-full gap-1.5 ${
+                        isMr ? "text-amber-600 border-amber-200 hover:bg-amber-50" : ""
+                      }`}
+                    >
+                      {loadingId === user.id && (
+                        <span className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                      )}
+                      {isMr
+                        ? (isTh ? "ยกเลิก MR" : "Remove MR")
+                        : (isTh ? "ตั้งเป็น MR" : "Set as MR")}
+                    </Button>
+                  </div>
+                )}
+              </div>
+            );
+          })
+        )}
+      </div>
+
+      {/* Desktop Table */}
+      <div className="card-premium overflow-hidden shadow-sm hidden lg:block">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
@@ -130,7 +210,7 @@ export default function MrManagementClient({ initialUsers }: Props) {
                   </TableCell>
                 </TableRow>
               ) : (
-                filtered.map((user) => (
+                paginated.map((user) => (
                   <MrUserRow
                     key={user.id}
                     user={user}
@@ -144,6 +224,14 @@ export default function MrManagementClient({ initialUsers }: Props) {
           </Table>
         </div>
       </div>
+
+      <Pagination
+        page={safePage}
+        totalPages={totalPages}
+        total={filtered.length}
+        countLabel={isTh ? "คน" : "users"}
+        onPageChange={(p) => setParam("page", String(p))}
+      />
 
       {toast && (
         <Toast

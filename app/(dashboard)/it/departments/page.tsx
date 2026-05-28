@@ -11,7 +11,7 @@ export default async function ItDepartmentsPage() {
   const departments = await deptService.getAllDepartments();
 
   return (
-    <div className="max-w-350 mx-auto px-4 md:px-8">
+    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
       {departments.length === 0 ? (
         <>
           <PageHeader title="Manage Departments" subtitle="No departments yet" />

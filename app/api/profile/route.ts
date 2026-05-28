@@ -33,6 +33,7 @@ export async function GET() {
 
 const patchSchema = z.object({
   name: z.string().min(1).max(255).optional(),
+  employeeId: z.string().max(255).optional().nullable(),
   position: z.string().max(255).optional().nullable(),
   savedSignatureUrl: z
     .string()
@@ -50,8 +51,9 @@ export async function PATCH(req: NextRequest) {
     const body = await req.json();
     const parsed = patchSchema.parse(body);
 
-    const updateData: { name?: string; position?: string | null; savedSignatureUrl?: string | null; signatureType?: SignatureType | null } = {};
+    const updateData: { name?: string; employeeId?: string | null; position?: string | null; savedSignatureUrl?: string | null; signatureType?: SignatureType | null } = {};
     if (parsed.name !== undefined) updateData.name = parsed.name;
+    if (parsed.employeeId !== undefined) updateData.employeeId = parsed.employeeId;
     if (parsed.position !== undefined) updateData.position = parsed.position;
 
     if (parsed.clearSignature) {

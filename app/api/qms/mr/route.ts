@@ -8,7 +8,7 @@ const userService = new UserService();
 
 export async function GET() {
   try {
-    await requireRole("QMS", "IT");
+    await requireRole("QMS", "IT", "MR");
     const users = await userService.getAllUsers();
     return sendSuccess(users, "Users retrieved successfully");
   } catch (err) {

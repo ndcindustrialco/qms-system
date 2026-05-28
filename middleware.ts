@@ -98,7 +98,7 @@ export default auth(async (req) => {
     return NextResponse.redirect(new URL("/unauthorized?reason=insufficient_role", req.url));
   }
 
-  if (path.startsWith("/qms/") && role !== "QMS" && role !== "MR" && role !== "IT") {
+  if (path.startsWith("/qms/") && !path.startsWith("/qms/document-controls") && !path.startsWith("/qms/kpi") && role !== "QMS" && role !== "MR" && role !== "IT") {
     return NextResponse.redirect(new URL("/unauthorized?reason=insufficient_role", req.url));
   }
 

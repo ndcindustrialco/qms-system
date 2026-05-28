@@ -1,6 +1,7 @@
 import { requireAuth } from "@/lib/auth";
 import { UserRepository } from "@/repositories/userRepository";
 import { DepartmentService } from "@/services/departmentService";
+import { t } from "@/lib/i18n";
 import PageHeader from "@/components/common/PageHeader";
 import ProfileClient from "@/components/profile/ProfileClient";
 
@@ -35,7 +36,10 @@ export default async function ProfilePage() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 md:px-8">
-      <PageHeader title="My Profile" subtitle="View and edit your profile information" />
+      <PageHeader
+        title={t("profile.title", "th")}
+        subtitle={t("profile.subtitle", "th")}
+      />
       <ProfileClient profile={profile} departmentName={departmentName} />
     </div>
   );

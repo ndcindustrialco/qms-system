@@ -14,7 +14,7 @@ type Params = { params: Promise<{ id: string }> };
 
 export async function PATCH(req: NextRequest, { params }: Params): Promise<NextResponse<ApiResponse<{ id: string; role: string }>>> {
   try {
-    await requireRole("QMS", "IT");
+    await requireRole("QMS", "IT", "MR");
     const { id } = await params;
 
     const body = await req.json();

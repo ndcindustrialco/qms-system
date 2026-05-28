@@ -88,6 +88,21 @@ export type KpiMaster = Prisma.KpiMasterModel
  */
 export type KpiMonthlyResult = Prisma.KpiMonthlyResultModel
 /**
+ * Model KpiMonthlyAttachment
+ * 
+ */
+export type KpiMonthlyAttachment = Prisma.KpiMonthlyAttachmentModel
+/**
+ * Model KpiSignatureLog
+ * 
+ */
+export type KpiSignatureLog = Prisma.KpiSignatureLogModel
+/**
+ * Model KpiAuditLog
+ * 
+ */
+export type KpiAuditLog = Prisma.KpiAuditLogModel
+/**
  * Model KpiCorrectiveAction
  * 
  */
@@ -97,3 +112,18 @@ export type KpiCorrectiveAction = Prisma.KpiCorrectiveActionModel
  * 
  */
 export type KpiApprovalLog = Prisma.KpiApprovalLogModel
+/**
+ * Model DocumentControl
+ * 
+ */
+export type DocumentControl = Prisma.DocumentControlModel
+/**
+ * Model DocumentCategory
+ * 
+ */
+export type DocumentCategory = Prisma.DocumentCategoryModel
+/**
+ * Model DocumentControlRevision
+ * 
+ */
+export type DocumentControlRevision = Prisma.DocumentControlRevisionModel

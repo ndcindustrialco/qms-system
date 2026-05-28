@@ -11,6 +11,7 @@ import DarCardList from "@/components/dar/DarCardList";
 import DarDrawer from "@/components/dar/DarDrawer";
 import DarEditDrawer from "@/components/dar/DarEditDrawer";
 import FilterBar from "@/components/common/FilterBar";
+import Pagination from "@/components/common/Pagination";
 import EmptyState from "@/components/common/EmptyState";
 import { Button } from "@/components/ui/button";
 import { useT } from "@/lib/i18n";
@@ -52,15 +53,16 @@ const DOC_TYPE_LABELS_EN: Record<DarDocType, string> = {
 };
 
 export default function DarListClient({ dars: initialDars, requesterInfo }: Props) {
-  const { data: dars = [] } = useQuery<DarSummary[]>({
+  const queryResult = useQuery<DarSummary[]>({
     queryKey: ["dars", "user"],
     queryFn: async () => {
       const res = await fetch("/api/dar");
       const json = await res.json();
-      return json.data ?? [];
+      return (json.data ?? []) as DarSummary[];
     },
     initialData: initialDars,
   });
+  const dars = (queryResult.data ?? []) as DarSummary[];
 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [editDarId, setEditDarId] = useState<string | null>(null);
@@ -73,7 +75,7 @@ export default function DarListClient({ dars: initialDars, requesterInfo }: Prop
 
   // ── URL-bound filters (search debounced, others immediate) ─────────────────
   const { params, rawValues, setParam, clearAll, hasFilters } = useUrlFilters({
-    keys: ["search", "status", "objective"] as const,
+    keys: ["search", "status", "objective", "page"] as const,
     searchKey: "search",
     debounceMs: 300,
   });
@@ -94,7 +96,7 @@ export default function DarListClient({ dars: initialDars, requesterInfo }: Prop
   const filtered = useMemo(() => {
     const q = params.search.trim().toLowerCase();
     return dars
-      .filter((d) => {
+      .filter((d: DarSummary) => {
         if (params.status && d.status !== (params.status as DarStatus)) return false;
         if (params.objective && d.objective !== (params.objective as DarObjective)) return false;
         if (q) {
@@ -108,7 +110,7 @@ export default function DarListClient({ dars: initialDars, requesterInfo }: Prop
         }
         return true;
       })
-      .sort((a, b) => {
+      .sort((a: DarSummary, b: DarSummary) => {
         let cmp = 0;
         if (sortKey === "requestDate") cmp = new Date(a.requestDate).getTime() - new Date(b.requestDate).getTime();
         else if (sortKey === "darNo") cmp = (a.darNo ?? "").localeCompare(b.darNo ?? "");
@@ -120,6 +122,13 @@ export default function DarListClient({ dars: initialDars, requesterInfo }: Prop
 
   const isAllEmpty = dars.length === 0;
   const isFilteredEmpty = !isAllEmpty && filtered.length === 0;
+
+  // ── Client-side pagination ────────────────────────────────────────────────
+  const PAGE_SIZE = 20;
+  const currentPage = Math.max(1, parseInt(params.page || "1", 10));
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const safePage = Math.min(currentPage, totalPages);
+  const paginated = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
 
   const statusOptions = [
     { value: "DRAFT",           label: isTh ? "ฉบับร่าง"     : "Draft" },
@@ -191,8 +200,15 @@ export default function DarListClient({ dars: initialDars, requesterInfo }: Prop
         </div>
       ) : (
         <>
-          <DarTable dars={filtered} onSort={toggleSort} sortKey={sortKey} sortDir={sortDir} onEdit={setEditDarId} />
-          <DarCardList dars={filtered} onEdit={setEditDarId} />
+          <DarTable dars={paginated} onSort={toggleSort} sortKey={sortKey} sortDir={sortDir} onEdit={setEditDarId} />
+          <DarCardList dars={paginated} onEdit={setEditDarId} />
+          <Pagination
+            page={safePage}
+            totalPages={totalPages}
+            total={filtered.length}
+            countLabel={isTh ? "รายการ" : "items"}
+            onPageChange={(p) => setParam("page", String(p))}
+          />
         </>
       )}
 

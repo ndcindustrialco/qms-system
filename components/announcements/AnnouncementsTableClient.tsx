@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useT } from "@/lib/i18n";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -10,11 +10,15 @@ import AnnouncementViewDrawer from "@/components/announcements/AnnouncementViewD
 import AnnouncementEditDrawer from "@/components/announcements/AnnouncementEditDrawer";
 import AnnouncementDeleteModal from "@/components/announcements/AnnouncementDeleteModal";
 import AnnouncementCreateDrawer from "@/components/announcements/AnnouncementCreateDrawer";
+import AnnouncementCard from "@/components/announcements/AnnouncementCard";
 import PageHeader from "@/components/common/PageHeader";
+import FilterBar from "@/components/common/FilterBar";
+import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useUrlFilters } from "@/hooks/use-url-filters";
+
+const PAGE_SIZE = 10;
 
 type FilterStatus = "all" | "active" | "inactive" | "scrolling";
 
@@ -46,36 +50,59 @@ export default function AnnouncementsTableClient({ rows: initialRows }: { rows: 
 
   // ── URL-bound filters ──────────────────────────────────────────────────────
   const { params, rawValues, setParam } = useUrlFilters({
-    keys: ["search", "status"] as const,
+    keys: ["search", "status", "sort", "page"] as const,
     searchKey: "search",
     debounceMs: 300,
   });
 
   const filter = (params.status || "all") as FilterStatus;
+  const sort   = params.sort || "newest";
   const debouncedSearch = useDebounce(rawValues.search, 300);
+  const currentPage = Math.max(1, parseInt(params.page || "1", 10));
+
+  // Reset page to 1 whenever filter, sort or search changes
+  useEffect(() => {
+    setParam("page", "1");
+  }, [filter, sort, debouncedSearch]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Stats ──────────────────────────────────────────────────────────────────
   const totalCount = rows.length;
   const activeCount = useMemo(() => rows.filter(getIsActive).length, [rows]);
-  const scrollingCount = useMemo(() => rows.filter((r) => r.displayType === "SCROLLING").length, [rows]);
+  const scrollingCount = useMemo(() => rows.filter((r: AnnouncementRow) => r.displayType === "SCROLLING").length, [rows]);
 
-  // ── Filtered rows ──────────────────────────────────────────────────────────
+  // ── Filtered + sorted rows ────────────────────────────────────────────────
   const filteredRows = useMemo(() => {
     let result = rows;
     if (filter === "active") result = result.filter(getIsActive);
-    else if (filter === "inactive") result = result.filter((r) => !getIsActive(r));
-    else if (filter === "scrolling") result = result.filter((r) => r.displayType === "SCROLLING");
+    else if (filter === "inactive") result = result.filter((r: AnnouncementRow) => !getIsActive(r));
+    else if (filter === "scrolling") result = result.filter((r: AnnouncementRow) => r.displayType === "SCROLLING");
     if (debouncedSearch.trim()) {
       const q = debouncedSearch.toLowerCase();
       result = result.filter(
-        (r) =>
+        (r: AnnouncementRow) =>
           r.title.toLowerCase().includes(q) ||
           r.sourceSystem.toLowerCase().includes(q) ||
           (r.createdBy.name ?? "").toLowerCase().includes(q),
       );
     }
+    // Sort
+    result = [...result].sort((a, b) => {
+      if (sort === "oldest")     return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      if (sort === "title_asc")  return a.title.localeCompare(b.title, "th");
+      if (sort === "title_desc") return b.title.localeCompare(a.title, "th");
+      if (sort === "status")     return (b.status === "ACTIVE" ? 1 : 0) - (a.status === "ACTIVE" ? 1 : 0);
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(); // newest (default)
+    });
     return result;
-  }, [rows, filter, debouncedSearch]);
+  }, [rows, filter, sort, debouncedSearch]);
+
+  // ── Pagination ─────────────────────────────────────────────────────────────
+  const totalPages = Math.max(1, Math.ceil(filteredRows.length / PAGE_SIZE));
+  const safePage = Math.min(currentPage, totalPages);
+  const paginatedRows = useMemo(
+    () => filteredRows.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE),
+    [filteredRows, safePage],
+  );
 
   // ── Handlers ───────────────────────────────────────────────────────────────
   function handleView(row: AnnouncementRow) { setViewItem(row); setViewOpen(true); }
@@ -152,103 +179,102 @@ export default function AnnouncementsTableClient({ rows: initialRows }: { rows: 
         }
       />
 
-      {/* Stats row */}
-      <div className="grid grid-cols-3 gap-4">
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-5 flex items-center gap-4">
-          <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
-            <svg className="w-5 h-5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      {/* Stats row — 3 cols always, compact on mobile */}
+      <div className="grid grid-cols-3 gap-2 sm:gap-4">
+        {/* Total */}
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-3 sm:p-5 flex items-center gap-2 sm:gap-4">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
+            <svg className="w-4 h-4 sm:w-5 sm:h-5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
             </svg>
           </div>
-          <div>
-            <p className="text-2xl font-bold text-slate-800 leading-none">{totalCount}</p>
-            <p className="text-xs text-slate-400 mt-1">ประกาศทั้งหมด</p>
+          <div className="min-w-0">
+            <p className="text-xl sm:text-2xl font-bold text-slate-800 leading-none">{totalCount}</p>
+            <p className="text-[10px] sm:text-xs text-slate-400 mt-1 truncate">ประกาศทั้งหมด</p>
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-5 flex items-center gap-4">
-          <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0">
-            <svg className="w-5 h-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        {/* Active */}
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-3 sm:p-5 flex items-center gap-2 sm:gap-4">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0">
+            <svg className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
-          <div>
-            <p className="text-2xl font-bold text-emerald-600 leading-none">{activeCount}</p>
-            <p className="text-xs text-slate-400 mt-1">{t("announcement.statusActive")}</p>
+          <div className="min-w-0">
+            <p className="text-xl sm:text-2xl font-bold text-emerald-600 leading-none">{activeCount}</p>
+            <p className="text-[10px] sm:text-xs text-slate-400 mt-1 truncate">{t("announcement.statusActive")}</p>
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-5 flex items-center gap-4">
-          <div className="w-10 h-10 rounded-xl bg-sky-50 flex items-center justify-center shrink-0">
-            <svg className="w-5 h-5 text-sky-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        {/* Scrolling */}
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-3 sm:p-5 flex items-center gap-2 sm:gap-4">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-sky-50 flex items-center justify-center shrink-0">
+            <svg className="w-4 h-4 sm:w-5 sm:h-5 text-sky-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
           </div>
-          <div>
-            <p className="text-2xl font-bold text-sky-600 leading-none">{scrollingCount}</p>
-            <p className="text-xs text-slate-400 mt-1">Scrolling Ticker</p>
+          <div className="min-w-0">
+            <p className="text-xl sm:text-2xl font-bold text-sky-600 leading-none">{scrollingCount}</p>
+            <p className="text-[10px] sm:text-xs text-slate-400 mt-1 truncate">Scrolling</p>
           </div>
         </div>
       </div>
 
-      {/* Toolbar */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-4 flex flex-wrap items-center gap-3">
+      {/* FilterBar — search + sort */}
+      <FilterBar
+        searchValue={rawValues.search}
+        onSearchChange={(v) => setParam("search", v)}
+        searchPlaceholder="ค้นหาชื่อ, ระบบ, ผู้สร้าง..."
+        hasActiveFilters={!!rawValues.search}
+        onClearAll={() => setParam("search", "")}
+        resultCount={filteredRows.length}
+        totalCount={totalCount}
+        countLabel="รายการ"
+      >
         {/* Filter tabs */}
-        <div className="flex items-center gap-1 bg-slate-100 rounded-xl p-1 shrink-0">
-          {filterTabs.map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => setParam("status", tab.key === "all" ? "" : tab.key)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all ${
-                filter === tab.key
-                  ? "bg-white shadow-sm text-[#0F1059]"
-                  : "text-slate-500 hover:text-slate-700"
-              }`}
-            >
-              {tab.label}
-              <span className={`inline-flex items-center justify-center min-w-[1.125rem] h-[1.125rem] px-1 rounded-full text-[10px] font-bold ${
-                filter === tab.key ? "bg-[#0F1059]/10 text-[#0F1059]" : "bg-slate-200 text-slate-500"
-              }`}>
-                {tab.count}
-              </span>
-            </button>
-          ))}
+        <div className="flex-1 overflow-x-auto scrollbar-none self-end">
+          <div className="flex items-center gap-1 bg-slate-100 rounded-xl p-1 w-max">
+            {filterTabs.map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => setParam("status", tab.key === "all" ? "" : tab.key)}
+                className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all ${
+                  filter === tab.key
+                    ? "bg-white shadow-sm text-primary"
+                    : "text-slate-500 hover:text-slate-700"
+                }`}
+              >
+                {tab.label}
+                <span className={`inline-flex items-center justify-center min-w-4.5 h-4.5 px-1 rounded-full text-[10px] font-bold ${
+                  filter === tab.key ? "bg-primary/10 text-primary" : "bg-slate-200 text-slate-500"
+                }`}>
+                  {tab.count}
+                </span>
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Search */}
-        <div className="relative flex-1 min-w-48">
-          <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-          <Input
-            type="text"
-            placeholder="ค้นหาชื่อ, ระบบ, ผู้สร้าง..."
-            value={rawValues.search}
-            onChange={(e) => setParam("search", e.target.value)}
-            className="pl-9 h-9 text-sm"
-          />
-          {rawValues.search && (
-            <button
-              onClick={() => setParam("search", "")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
-            >
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          )}
-        </div>
+        {/* Sort select */}
+        <select
+          value={sort}
+          onChange={(e) => setParam("sort", e.target.value)}
+          className="h-8 shrink-0 self-end rounded-xl border border-slate-200 bg-slate-50/50 px-2.5 text-xs font-medium text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+        >
+          <option value="newest">ใหม่สุด</option>
+          <option value="oldest">เก่าสุด</option>
+          <option value="title_asc">ชื่อ A→Z</option>
+          <option value="title_desc">ชื่อ Z→A</option>
+          <option value="status">สถานะ</option>
+        </select>
+      </FilterBar>
 
-        <span className="text-xs text-slate-400 shrink-0 ml-auto">
-          {filteredRows.length} / {totalCount} รายการ
-        </span>
-      </div>
-
-      {/* Table card */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
+      {/* Desktop: Table */}
+      <div className="hidden lg:block bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
         <div className="overflow-x-auto">
           <AnnouncementsTable
-            rows={filteredRows}
+            rows={paginatedRows}
             onView={handleView}
             onEdit={handleEdit}
             onDelete={handleDelete}
@@ -256,6 +282,65 @@ export default function AnnouncementsTableClient({ rows: initialRows }: { rows: 
           />
         </div>
       </div>
+
+      {/* Mobile: Cards */}
+      <div className="lg:hidden space-y-3">
+        {paginatedRows.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-16 bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+            <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mb-4">
+              <svg className="w-6 h-6 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+              </svg>
+            </div>
+            <p className="text-slate-800 font-semibold text-base mb-1">{t("announcement.empty")}</p>
+            <p className="text-slate-400 text-sm">ยังไม่มีประกาศในระบบ</p>
+          </div>
+        ) : (
+          paginatedRows.map((row: AnnouncementRow) => (
+            <AnnouncementCard
+              key={row.id}
+              row={row}
+              onView={handleView}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              onToggle={handleToggle}
+            />
+          ))
+        )}
+      </div>
+
+      {/* Pagination — shared below both views */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between px-4 py-3 bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+          <p className="text-sm text-slate-500">
+            {safePage} / {totalPages}
+            <span className="text-slate-400 ml-2">({filteredRows.length} รายการ)</span>
+          </p>
+          <div className="flex items-center gap-1.5">
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 w-8 p-0 border-slate-200"
+              disabled={safePage === 1}
+              onClick={() => setParam("page", String(safePage - 1))}
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </Button>
+            <span className="text-sm font-medium text-slate-700 px-2">
+              {safePage} / {totalPages}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 w-8 p-0 border-slate-200"
+              disabled={safePage >= totalPages}
+              onClick={() => setParam("page", String(safePage + 1))}
+            >
+              <ChevronRight className="w-4 h-4" />
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Drawers & Modals */}
       <AnnouncementViewDrawer item={viewItem} open={viewOpen} onClose={() => setViewOpen(false)} onEdit={(item) => { setViewOpen(false); handleEdit(item); }} />

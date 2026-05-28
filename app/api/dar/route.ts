@@ -21,8 +21,8 @@ export async function GET(req: NextRequest) {
     }
 
     const parsed = darQuerySchema.parse({
-      page: searchParams.get("page"),
-      limit: searchParams.get("limit"),
+      page: searchParams.get("page") || undefined,
+      limit: searchParams.get("limit") || undefined,
     });
 
     const { page, limit } = parsed;

@@ -11,6 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import FilterBar from "@/components/common/FilterBar";
+import Pagination from "@/components/common/Pagination";
 import { useUrlFilters } from "@/hooks/use-url-filters";
 
 const ROLE_LABELS_TH: Record<UserRole, string> = {
@@ -155,7 +156,7 @@ export default function ItUserTable({ users, departments }: Props) {
 
   // ── URL-bound filters (search debounced, others immediate) ─────────────────
   const { params, rawValues, setParam, clearAll, hasFilters } = useUrlFilters({
-    keys: ["search", "role", "dept", "ms365"] as const,
+    keys: ["search", "role", "dept", "ms365", "page"] as const,
     searchKey: "search",
     debounceMs: 300,
   });
@@ -201,6 +202,13 @@ export default function ItUserTable({ users, departments }: Props) {
 
   const m365Ids = useMemo(() => new Set(sorted.filter((u) => u.msUserId).map((u) => u.id)), [sorted]);
   const allChecked = m365Ids.size > 0 && [...m365Ids].every((id) => selected.has(id));
+
+  // ── Client-side pagination ────────────────────────────────────────────────
+  const PAGE_SIZE = 25;
+  const currentPage = Math.max(1, parseInt(params.page || "1", 10));
+  const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
+  const safePage = Math.min(currentPage, totalPages);
+  const paginatedSorted = sorted.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
 
   function toggleAll() {
     setSelected((prev) => {
@@ -384,7 +392,7 @@ export default function ItUserTable({ users, departments }: Props) {
           <TableBody>
             {sorted.length === 0 ? (
               <TableRow><TableCell colSpan={9} className="py-12 text-center text-xs md:text-sm text-gray-500">{t.noUsers}</TableCell></TableRow>
-            ) : sorted.map((user) => (
+            ) : paginatedSorted.map((user) => (
               <TableRow key={user.id} className={`transition-colors duration-100 ${selected.has(user.id) ? "bg-primary/5" : "hover:bg-base-200"}`}>
                 <TableCell>
                   {user.msUserId
@@ -495,7 +503,7 @@ export default function ItUserTable({ users, departments }: Props) {
       <div className="md:hidden flex flex-col gap-3">
         {sorted.length === 0 ? (
           <div className="text-center py-10 text-xs md:text-sm text-gray-500">{t.noUsers}</div>
-        ) : sorted.map((user) => (
+        ) : paginatedSorted.map((user) => (
           <div key={user.id} className={`card-premium p-4 border rounded-xl shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 ${selected.has(user.id) ? "border-primary" : "border-base-300"}`}>
             <div className="flex items-start gap-2 mb-1">
               {user.msUserId && (
@@ -588,6 +596,14 @@ export default function ItUserTable({ users, departments }: Props) {
       </div>
 
       {toast && <Toast type={toast.type} message={toast.message} onClose={hideToast} />}
+
+      <Pagination
+        page={safePage}
+        totalPages={totalPages}
+        total={sorted.length}
+        countLabel={locale === "th" ? "คน" : "users"}
+        onPageChange={(p) => setParam("page", String(p))}
+      />
     </>
   );
 }

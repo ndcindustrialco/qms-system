@@ -21,7 +21,7 @@ export async function PATCH(
   { params }: Params,
 ) {
   try {
-    await requireRole("IT");
+    await requireRole("IT", "QMS", "MR");
     const { id } = await params;
     const body = await req.json();
     const validated = updateSchema.parse(body);
@@ -37,7 +37,7 @@ export async function DELETE(
   { params }: Params,
 ) {
   try {
-    await requireRole("IT");
+    await requireRole("IT", "QMS", "MR");
     const { id } = await params;
     await deptService.deleteDepartment(id);
     return sendSuccess({ id }, "Department deleted successfully");

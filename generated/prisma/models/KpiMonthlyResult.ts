@@ -27,17 +27,20 @@ export type AggregateKpiMonthlyResult = {
 }
 
 export type KpiMonthlyResultAvgAggregateOutputType = {
+  periodYear: number | null
   month: number | null
   actualValue: runtime.Decimal | null
 }
 
 export type KpiMonthlyResultSumAggregateOutputType = {
+  periodYear: number | null
   month: number | null
   actualValue: runtime.Decimal | null
 }
 
 export type KpiMonthlyResultMinAggregateOutputType = {
   id: string | null
+  periodYear: number | null
   month: number | null
   actualValue: runtime.Decimal | null
   isNa: boolean | null
@@ -47,6 +50,12 @@ export type KpiMonthlyResultMinAggregateOutputType = {
   spWebUrl: string | null
   spDownloadUrl: string | null
   fileName: string | null
+  submittedById: string | null
+  submittedAt: Date | null
+  approvedById: string | null
+  approvedAt: Date | null
+  rejectionReason: string | null
+  closedAt: Date | null
   kpiMasterId: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -54,6 +63,7 @@ export type KpiMonthlyResultMinAggregateOutputType = {
 
 export type KpiMonthlyResultMaxAggregateOutputType = {
   id: string | null
+  periodYear: number | null
   month: number | null
   actualValue: runtime.Decimal | null
   isNa: boolean | null
@@ -63,6 +73,12 @@ export type KpiMonthlyResultMaxAggregateOutputType = {
   spWebUrl: string | null
   spDownloadUrl: string | null
   fileName: string | null
+  submittedById: string | null
+  submittedAt: Date | null
+  approvedById: string | null
+  approvedAt: Date | null
+  rejectionReason: string | null
+  closedAt: Date | null
   kpiMasterId: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -70,6 +86,7 @@ export type KpiMonthlyResultMaxAggregateOutputType = {
 
 export type KpiMonthlyResultCountAggregateOutputType = {
   id: number
+  periodYear: number
   month: number
   actualValue: number
   isNa: number
@@ -79,6 +96,12 @@ export type KpiMonthlyResultCountAggregateOutputType = {
   spWebUrl: number
   spDownloadUrl: number
   fileName: number
+  submittedById: number
+  submittedAt: number
+  approvedById: number
+  approvedAt: number
+  rejectionReason: number
+  closedAt: number
   kpiMasterId: number
   createdAt: number
   updatedAt: number
@@ -87,17 +110,20 @@ export type KpiMonthlyResultCountAggregateOutputType = {
 
 
 export type KpiMonthlyResultAvgAggregateInputType = {
+  periodYear?: true
   month?: true
   actualValue?: true
 }
 
 export type KpiMonthlyResultSumAggregateInputType = {
+  periodYear?: true
   month?: true
   actualValue?: true
 }
 
 export type KpiMonthlyResultMinAggregateInputType = {
   id?: true
+  periodYear?: true
   month?: true
   actualValue?: true
   isNa?: true
@@ -107,6 +133,12 @@ export type KpiMonthlyResultMinAggregateInputType = {
   spWebUrl?: true
   spDownloadUrl?: true
   fileName?: true
+  submittedById?: true
+  submittedAt?: true
+  approvedById?: true
+  approvedAt?: true
+  rejectionReason?: true
+  closedAt?: true
   kpiMasterId?: true
   createdAt?: true
   updatedAt?: true
@@ -114,6 +146,7 @@ export type KpiMonthlyResultMinAggregateInputType = {
 
 export type KpiMonthlyResultMaxAggregateInputType = {
   id?: true
+  periodYear?: true
   month?: true
   actualValue?: true
   isNa?: true
@@ -123,6 +156,12 @@ export type KpiMonthlyResultMaxAggregateInputType = {
   spWebUrl?: true
   spDownloadUrl?: true
   fileName?: true
+  submittedById?: true
+  submittedAt?: true
+  approvedById?: true
+  approvedAt?: true
+  rejectionReason?: true
+  closedAt?: true
   kpiMasterId?: true
   createdAt?: true
   updatedAt?: true
@@ -130,6 +169,7 @@ export type KpiMonthlyResultMaxAggregateInputType = {
 
 export type KpiMonthlyResultCountAggregateInputType = {
   id?: true
+  periodYear?: true
   month?: true
   actualValue?: true
   isNa?: true
@@ -139,6 +179,12 @@ export type KpiMonthlyResultCountAggregateInputType = {
   spWebUrl?: true
   spDownloadUrl?: true
   fileName?: true
+  submittedById?: true
+  submittedAt?: true
+  approvedById?: true
+  approvedAt?: true
+  rejectionReason?: true
+  closedAt?: true
   kpiMasterId?: true
   createdAt?: true
   updatedAt?: true
@@ -233,6 +279,7 @@ export type KpiMonthlyResultGroupByArgs<ExtArgs extends runtime.Types.Extensions
 
 export type KpiMonthlyResultGroupByOutputType = {
   id: string
+  periodYear: number | null
   month: number
   actualValue: runtime.Decimal | null
   isNa: boolean
@@ -242,6 +289,12 @@ export type KpiMonthlyResultGroupByOutputType = {
   spWebUrl: string | null
   spDownloadUrl: string | null
   fileName: string | null
+  submittedById: string | null
+  submittedAt: Date | null
+  approvedById: string | null
+  approvedAt: Date | null
+  rejectionReason: string | null
+  closedAt: Date | null
   kpiMasterId: string
   createdAt: Date
   updatedAt: Date
@@ -272,6 +325,7 @@ export type KpiMonthlyResultWhereInput = {
   OR?: Prisma.KpiMonthlyResultWhereInput[]
   NOT?: Prisma.KpiMonthlyResultWhereInput | Prisma.KpiMonthlyResultWhereInput[]
   id?: Prisma.StringFilter<"KpiMonthlyResult"> | string
+  periodYear?: Prisma.IntNullableFilter<"KpiMonthlyResult"> | number | null
   month?: Prisma.IntFilter<"KpiMonthlyResult"> | number
   actualValue?: Prisma.DecimalNullableFilter<"KpiMonthlyResult"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isNa?: Prisma.BoolFilter<"KpiMonthlyResult"> | boolean
@@ -281,15 +335,27 @@ export type KpiMonthlyResultWhereInput = {
   spWebUrl?: Prisma.StringNullableFilter<"KpiMonthlyResult"> | string | null
   spDownloadUrl?: Prisma.StringNullableFilter<"KpiMonthlyResult"> | string | null
   fileName?: Prisma.StringNullableFilter<"KpiMonthlyResult"> | string | null
+  submittedById?: Prisma.StringNullableFilter<"KpiMonthlyResult"> | string | null
+  submittedAt?: Prisma.DateTimeNullableFilter<"KpiMonthlyResult"> | Date | string | null
+  approvedById?: Prisma.StringNullableFilter<"KpiMonthlyResult"> | string | null
+  approvedAt?: Prisma.DateTimeNullableFilter<"KpiMonthlyResult"> | Date | string | null
+  rejectionReason?: Prisma.StringNullableFilter<"KpiMonthlyResult"> | string | null
+  closedAt?: Prisma.DateTimeNullableFilter<"KpiMonthlyResult"> | Date | string | null
   kpiMasterId?: Prisma.StringFilter<"KpiMonthlyResult"> | string
   createdAt?: Prisma.DateTimeFilter<"KpiMonthlyResult"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"KpiMonthlyResult"> | Date | string
   correctiveActions?: Prisma.KpiCorrectiveActionListRelationFilter
+  attachments?: Prisma.KpiMonthlyAttachmentListRelationFilter
+  signatures?: Prisma.KpiSignatureLogListRelationFilter
+  auditLogs?: Prisma.KpiAuditLogListRelationFilter
+  submittedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  approvedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   kpiMaster?: Prisma.XOR<Prisma.KpiMasterScalarRelationFilter, Prisma.KpiMasterWhereInput>
 }
 
 export type KpiMonthlyResultOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  periodYear?: Prisma.SortOrderInput | Prisma.SortOrder
   month?: Prisma.SortOrder
   actualValue?: Prisma.SortOrderInput | Prisma.SortOrder
   isNa?: Prisma.SortOrder
@@ -299,19 +365,32 @@ export type KpiMonthlyResultOrderByWithRelationInput = {
   spWebUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   spDownloadUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   fileName?: Prisma.SortOrderInput | Prisma.SortOrder
+  submittedById?: Prisma.SortOrderInput | Prisma.SortOrder
+  submittedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  approvedById?: Prisma.SortOrderInput | Prisma.SortOrder
+  approvedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  rejectionReason?: Prisma.SortOrderInput | Prisma.SortOrder
+  closedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   kpiMasterId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   correctiveActions?: Prisma.KpiCorrectiveActionOrderByRelationAggregateInput
+  attachments?: Prisma.KpiMonthlyAttachmentOrderByRelationAggregateInput
+  signatures?: Prisma.KpiSignatureLogOrderByRelationAggregateInput
+  auditLogs?: Prisma.KpiAuditLogOrderByRelationAggregateInput
+  submittedBy?: Prisma.UserOrderByWithRelationInput
+  approvedBy?: Prisma.UserOrderByWithRelationInput
   kpiMaster?: Prisma.KpiMasterOrderByWithRelationInput
 }
 
 export type KpiMonthlyResultWhereUniqueInput = Prisma.AtLeast<{
   id?: string
   kpiMasterId_month?: Prisma.KpiMonthlyResultKpiMasterIdMonthCompoundUniqueInput
+  kpiMasterId_periodYear_month?: Prisma.KpiMonthlyResultKpiMasterIdPeriodYearMonthCompoundUniqueInput
   AND?: Prisma.KpiMonthlyResultWhereInput | Prisma.KpiMonthlyResultWhereInput[]
   OR?: Prisma.KpiMonthlyResultWhereInput[]
   NOT?: Prisma.KpiMonthlyResultWhereInput | Prisma.KpiMonthlyResultWhereInput[]
+  periodYear?: Prisma.IntNullableFilter<"KpiMonthlyResult"> | number | null
   month?: Prisma.IntFilter<"KpiMonthlyResult"> | number
   actualValue?: Prisma.DecimalNullableFilter<"KpiMonthlyResult"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isNa?: Prisma.BoolFilter<"KpiMonthlyResult"> | boolean
@@ -321,15 +400,27 @@ export type KpiMonthlyResultWhereUniqueInput = Prisma.AtLeast<{
   spWebUrl?: Prisma.StringNullableFilter<"KpiMonthlyResult"> | string | null
   spDownloadUrl?: Prisma.StringNullableFilter<"KpiMonthlyResult"> | string | null
   fileName?: Prisma.StringNullableFilter<"KpiMonthlyResult"> | string | null
+  submittedById?: Prisma.StringNullableFilter<"KpiMonthlyResult"> | string | null
+  submittedAt?: Prisma.DateTimeNullableFilter<"KpiMonthlyResult"> | Date | string | null
+  approvedById?: Prisma.StringNullableFilter<"KpiMonthlyResult"> | string | null
+  approvedAt?: Prisma.DateTimeNullableFilter<"KpiMonthlyResult"> | Date | string | null
+  rejectionReason?: Prisma.StringNullableFilter<"KpiMonthlyResult"> | string | null
+  closedAt?: Prisma.DateTimeNullableFilter<"KpiMonthlyResult"> | Date | string | null
   kpiMasterId?: Prisma.StringFilter<"KpiMonthlyResult"> | string
   createdAt?: Prisma.DateTimeFilter<"KpiMonthlyResult"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"KpiMonthlyResult"> | Date | string
   correctiveActions?: Prisma.KpiCorrectiveActionListRelationFilter
+  attachments?: Prisma.KpiMonthlyAttachmentListRelationFilter
+  signatures?: Prisma.KpiSignatureLogListRelationFilter
+  auditLogs?: Prisma.KpiAuditLogListRelationFilter
+  submittedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  approvedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   kpiMaster?: Prisma.XOR<Prisma.KpiMasterScalarRelationFilter, Prisma.KpiMasterWhereInput>
-}, "id" | "kpiMasterId_month">
+}, "id" | "kpiMasterId_month" | "kpiMasterId_periodYear_month">
 
 export type KpiMonthlyResultOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  periodYear?: Prisma.SortOrderInput | Prisma.SortOrder
   month?: Prisma.SortOrder
   actualValue?: Prisma.SortOrderInput | Prisma.SortOrder
   isNa?: Prisma.SortOrder
@@ -339,6 +430,12 @@ export type KpiMonthlyResultOrderByWithAggregationInput = {
   spWebUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   spDownloadUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   fileName?: Prisma.SortOrderInput | Prisma.SortOrder
+  submittedById?: Prisma.SortOrderInput | Prisma.SortOrder
+  submittedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  approvedById?: Prisma.SortOrderInput | Prisma.SortOrder
+  approvedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  rejectionReason?: Prisma.SortOrderInput | Prisma.SortOrder
+  closedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   kpiMasterId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -354,6 +451,7 @@ export type KpiMonthlyResultScalarWhereWithAggregatesInput = {
   OR?: Prisma.KpiMonthlyResultScalarWhereWithAggregatesInput[]
   NOT?: Prisma.KpiMonthlyResultScalarWhereWithAggregatesInput | Prisma.KpiMonthlyResultScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"KpiMonthlyResult"> | string
+  periodYear?: Prisma.IntNullableWithAggregatesFilter<"KpiMonthlyResult"> | number | null
   month?: Prisma.IntWithAggregatesFilter<"KpiMonthlyResult"> | number
   actualValue?: Prisma.DecimalNullableWithAggregatesFilter<"KpiMonthlyResult"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isNa?: Prisma.BoolWithAggregatesFilter<"KpiMonthlyResult"> | boolean
@@ -363,6 +461,12 @@ export type KpiMonthlyResultScalarWhereWithAggregatesInput = {
   spWebUrl?: Prisma.StringNullableWithAggregatesFilter<"KpiMonthlyResult"> | string | null
   spDownloadUrl?: Prisma.StringNullableWithAggregatesFilter<"KpiMonthlyResult"> | string | null
   fileName?: Prisma.StringNullableWithAggregatesFilter<"KpiMonthlyResult"> | string | null
+  submittedById?: Prisma.StringNullableWithAggregatesFilter<"KpiMonthlyResult"> | string | null
+  submittedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"KpiMonthlyResult"> | Date | string | null
+  approvedById?: Prisma.StringNullableWithAggregatesFilter<"KpiMonthlyResult"> | string | null
+  approvedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"KpiMonthlyResult"> | Date | string | null
+  rejectionReason?: Prisma.StringNullableWithAggregatesFilter<"KpiMonthlyResult"> | string | null
+  closedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"KpiMonthlyResult"> | Date | string | null
   kpiMasterId?: Prisma.StringWithAggregatesFilter<"KpiMonthlyResult"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"KpiMonthlyResult"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"KpiMonthlyResult"> | Date | string
@@ -370,6 +474,7 @@ export type KpiMonthlyResultScalarWhereWithAggregatesInput = {
 
 export type KpiMonthlyResultCreateInput = {
   id?: string
+  periodYear?: number | null
   month: number
   actualValue?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isNa?: boolean
@@ -379,14 +484,24 @@ export type KpiMonthlyResultCreateInput = {
   spWebUrl?: string | null
   spDownloadUrl?: string | null
   fileName?: string | null
+  submittedAt?: Date | string | null
+  approvedAt?: Date | string | null
+  rejectionReason?: string | null
+  closedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   correctiveActions?: Prisma.KpiCorrectiveActionCreateNestedManyWithoutKpiMonthlyResultInput
+  attachments?: Prisma.KpiMonthlyAttachmentCreateNestedManyWithoutKpiMonthlyResultInput
+  signatures?: Prisma.KpiSignatureLogCreateNestedManyWithoutKpiMonthlyResultInput
+  auditLogs?: Prisma.KpiAuditLogCreateNestedManyWithoutKpiMonthlyResultInput
+  submittedBy?: Prisma.UserCreateNestedOneWithoutKpiMonthlySubmittedInput
+  approvedBy?: Prisma.UserCreateNestedOneWithoutKpiMonthlyApprovedInput
   kpiMaster: Prisma.KpiMasterCreateNestedOneWithoutMonthlyResultsInput
 }
 
 export type KpiMonthlyResultUncheckedCreateInput = {
   id?: string
+  periodYear?: number | null
   month: number
   actualValue?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isNa?: boolean
@@ -396,14 +511,24 @@ export type KpiMonthlyResultUncheckedCreateInput = {
   spWebUrl?: string | null
   spDownloadUrl?: string | null
   fileName?: string | null
+  submittedById?: string | null
+  submittedAt?: Date | string | null
+  approvedById?: string | null
+  approvedAt?: Date | string | null
+  rejectionReason?: string | null
+  closedAt?: Date | string | null
   kpiMasterId: string
   createdAt?: Date | string
   updatedAt?: Date | string
   correctiveActions?: Prisma.KpiCorrectiveActionUncheckedCreateNestedManyWithoutKpiMonthlyResultInput
+  attachments?: Prisma.KpiMonthlyAttachmentUncheckedCreateNestedManyWithoutKpiMonthlyResultInput
+  signatures?: Prisma.KpiSignatureLogUncheckedCreateNestedManyWithoutKpiMonthlyResultInput
+  auditLogs?: Prisma.KpiAuditLogUncheckedCreateNestedManyWithoutKpiMonthlyResultInput
 }
 
 export type KpiMonthlyResultUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  periodYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   month?: Prisma.IntFieldUpdateOperationsInput | number
   actualValue?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isNa?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -413,14 +538,24 @@ export type KpiMonthlyResultUpdateInput = {
   spWebUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   spDownloadUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   correctiveActions?: Prisma.KpiCorrectiveActionUpdateManyWithoutKpiMonthlyResultNestedInput
+  attachments?: Prisma.KpiMonthlyAttachmentUpdateManyWithoutKpiMonthlyResultNestedInput
+  signatures?: Prisma.KpiSignatureLogUpdateManyWithoutKpiMonthlyResultNestedInput
+  auditLogs?: Prisma.KpiAuditLogUpdateManyWithoutKpiMonthlyResultNestedInput
+  submittedBy?: Prisma.UserUpdateOneWithoutKpiMonthlySubmittedNestedInput
+  approvedBy?: Prisma.UserUpdateOneWithoutKpiMonthlyApprovedNestedInput
   kpiMaster?: Prisma.KpiMasterUpdateOneRequiredWithoutMonthlyResultsNestedInput
 }
 
 export type KpiMonthlyResultUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  periodYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   month?: Prisma.IntFieldUpdateOperationsInput | number
   actualValue?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isNa?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -430,14 +565,24 @@ export type KpiMonthlyResultUncheckedUpdateInput = {
   spWebUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   spDownloadUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submittedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   kpiMasterId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   correctiveActions?: Prisma.KpiCorrectiveActionUncheckedUpdateManyWithoutKpiMonthlyResultNestedInput
+  attachments?: Prisma.KpiMonthlyAttachmentUncheckedUpdateManyWithoutKpiMonthlyResultNestedInput
+  signatures?: Prisma.KpiSignatureLogUncheckedUpdateManyWithoutKpiMonthlyResultNestedInput
+  auditLogs?: Prisma.KpiAuditLogUncheckedUpdateManyWithoutKpiMonthlyResultNestedInput
 }
 
 export type KpiMonthlyResultCreateManyInput = {
   id?: string
+  periodYear?: number | null
   month: number
   actualValue?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isNa?: boolean
@@ -447,6 +592,12 @@ export type KpiMonthlyResultCreateManyInput = {
   spWebUrl?: string | null
   spDownloadUrl?: string | null
   fileName?: string | null
+  submittedById?: string | null
+  submittedAt?: Date | string | null
+  approvedById?: string | null
+  approvedAt?: Date | string | null
+  rejectionReason?: string | null
+  closedAt?: Date | string | null
   kpiMasterId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -454,6 +605,7 @@ export type KpiMonthlyResultCreateManyInput = {
 
 export type KpiMonthlyResultUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  periodYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   month?: Prisma.IntFieldUpdateOperationsInput | number
   actualValue?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isNa?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -463,12 +615,17 @@ export type KpiMonthlyResultUpdateManyMutationInput = {
   spWebUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   spDownloadUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type KpiMonthlyResultUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  periodYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   month?: Prisma.IntFieldUpdateOperationsInput | number
   actualValue?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isNa?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -478,6 +635,12 @@ export type KpiMonthlyResultUncheckedUpdateManyInput = {
   spWebUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   spDownloadUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submittedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   kpiMasterId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -498,8 +661,15 @@ export type KpiMonthlyResultKpiMasterIdMonthCompoundUniqueInput = {
   month: number
 }
 
+export type KpiMonthlyResultKpiMasterIdPeriodYearMonthCompoundUniqueInput = {
+  kpiMasterId: string
+  periodYear: number
+  month: number
+}
+
 export type KpiMonthlyResultCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  periodYear?: Prisma.SortOrder
   month?: Prisma.SortOrder
   actualValue?: Prisma.SortOrder
   isNa?: Prisma.SortOrder
@@ -509,18 +679,26 @@ export type KpiMonthlyResultCountOrderByAggregateInput = {
   spWebUrl?: Prisma.SortOrder
   spDownloadUrl?: Prisma.SortOrder
   fileName?: Prisma.SortOrder
+  submittedById?: Prisma.SortOrder
+  submittedAt?: Prisma.SortOrder
+  approvedById?: Prisma.SortOrder
+  approvedAt?: Prisma.SortOrder
+  rejectionReason?: Prisma.SortOrder
+  closedAt?: Prisma.SortOrder
   kpiMasterId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type KpiMonthlyResultAvgOrderByAggregateInput = {
+  periodYear?: Prisma.SortOrder
   month?: Prisma.SortOrder
   actualValue?: Prisma.SortOrder
 }
 
 export type KpiMonthlyResultMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  periodYear?: Prisma.SortOrder
   month?: Prisma.SortOrder
   actualValue?: Prisma.SortOrder
   isNa?: Prisma.SortOrder
@@ -530,6 +708,12 @@ export type KpiMonthlyResultMaxOrderByAggregateInput = {
   spWebUrl?: Prisma.SortOrder
   spDownloadUrl?: Prisma.SortOrder
   fileName?: Prisma.SortOrder
+  submittedById?: Prisma.SortOrder
+  submittedAt?: Prisma.SortOrder
+  approvedById?: Prisma.SortOrder
+  approvedAt?: Prisma.SortOrder
+  rejectionReason?: Prisma.SortOrder
+  closedAt?: Prisma.SortOrder
   kpiMasterId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -537,6 +721,7 @@ export type KpiMonthlyResultMaxOrderByAggregateInput = {
 
 export type KpiMonthlyResultMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  periodYear?: Prisma.SortOrder
   month?: Prisma.SortOrder
   actualValue?: Prisma.SortOrder
   isNa?: Prisma.SortOrder
@@ -546,12 +731,19 @@ export type KpiMonthlyResultMinOrderByAggregateInput = {
   spWebUrl?: Prisma.SortOrder
   spDownloadUrl?: Prisma.SortOrder
   fileName?: Prisma.SortOrder
+  submittedById?: Prisma.SortOrder
+  submittedAt?: Prisma.SortOrder
+  approvedById?: Prisma.SortOrder
+  approvedAt?: Prisma.SortOrder
+  rejectionReason?: Prisma.SortOrder
+  closedAt?: Prisma.SortOrder
   kpiMasterId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type KpiMonthlyResultSumOrderByAggregateInput = {
+  periodYear?: Prisma.SortOrder
   month?: Prisma.SortOrder
   actualValue?: Prisma.SortOrder
 }
@@ -559,6 +751,90 @@ export type KpiMonthlyResultSumOrderByAggregateInput = {
 export type KpiMonthlyResultScalarRelationFilter = {
   is?: Prisma.KpiMonthlyResultWhereInput
   isNot?: Prisma.KpiMonthlyResultWhereInput
+}
+
+export type KpiMonthlyResultCreateNestedManyWithoutSubmittedByInput = {
+  create?: Prisma.XOR<Prisma.KpiMonthlyResultCreateWithoutSubmittedByInput, Prisma.KpiMonthlyResultUncheckedCreateWithoutSubmittedByInput> | Prisma.KpiMonthlyResultCreateWithoutSubmittedByInput[] | Prisma.KpiMonthlyResultUncheckedCreateWithoutSubmittedByInput[]
+  connectOrCreate?: Prisma.KpiMonthlyResultCreateOrConnectWithoutSubmittedByInput | Prisma.KpiMonthlyResultCreateOrConnectWithoutSubmittedByInput[]
+  createMany?: Prisma.KpiMonthlyResultCreateManySubmittedByInputEnvelope
+  connect?: Prisma.KpiMonthlyResultWhereUniqueInput | Prisma.KpiMonthlyResultWhereUniqueInput[]
+}
+
+export type KpiMonthlyResultCreateNestedManyWithoutApprovedByInput = {
+  create?: Prisma.XOR<Prisma.KpiMonthlyResultCreateWithoutApprovedByInput, Prisma.KpiMonthlyResultUncheckedCreateWithoutApprovedByInput> | Prisma.KpiMonthlyResultCreateWithoutApprovedByInput[] | Prisma.KpiMonthlyResultUncheckedCreateWithoutApprovedByInput[]
+  connectOrCreate?: Prisma.KpiMonthlyResultCreateOrConnectWithoutApprovedByInput | Prisma.KpiMonthlyResultCreateOrConnectWithoutApprovedByInput[]
+  createMany?: Prisma.KpiMonthlyResultCreateManyApprovedByInputEnvelope
+  connect?: Prisma.KpiMonthlyResultWhereUniqueInput | Prisma.KpiMonthlyResultWhereUniqueInput[]
+}
+
+export type KpiMonthlyResultUncheckedCreateNestedManyWithoutSubmittedByInput = {
+  create?: Prisma.XOR<Prisma.KpiMonthlyResultCreateWithoutSubmittedByInput, Prisma.KpiMonthlyResultUncheckedCreateWithoutSubmittedByInput> | Prisma.KpiMonthlyResultCreateWithoutSubmittedByInput[] | Prisma.KpiMonthlyResultUncheckedCreateWithoutSubmittedByInput[]
+  connectOrCreate?: Prisma.KpiMonthlyResultCreateOrConnectWithoutSubmittedByInput | Prisma.KpiMonthlyResultCreateOrConnectWithoutSubmittedByInput[]
+  createMany?: Prisma.KpiMonthlyResultCreateManySubmittedByInputEnvelope
+  connect?: Prisma.KpiMonthlyResultWhereUniqueInput | Prisma.KpiMonthlyResultWhereUniqueInput[]
+}
+
+export type KpiMonthlyResultUncheckedCreateNestedManyWithoutApprovedByInput = {
+  create?: Prisma.XOR<Prisma.KpiMonthlyResultCreateWithoutApprovedByInput, Prisma.KpiMonthlyResultUncheckedCreateWithoutApprovedByInput> | Prisma.KpiMonthlyResultCreateWithoutApprovedByInput[] | Prisma.KpiMonthlyResultUncheckedCreateWithoutApprovedByInput[]
+  connectOrCreate?: Prisma.KpiMonthlyResultCreateOrConnectWithoutApprovedByInput | Prisma.KpiMonthlyResultCreateOrConnectWithoutApprovedByInput[]
+  createMany?: Prisma.KpiMonthlyResultCreateManyApprovedByInputEnvelope
+  connect?: Prisma.KpiMonthlyResultWhereUniqueInput | Prisma.KpiMonthlyResultWhereUniqueInput[]
+}
+
+export type KpiMonthlyResultUpdateManyWithoutSubmittedByNestedInput = {
+  create?: Prisma.XOR<Prisma.KpiMonthlyResultCreateWithoutSubmittedByInput, Prisma.KpiMonthlyResultUncheckedCreateWithoutSubmittedByInput> | Prisma.KpiMonthlyResultCreateWithoutSubmittedByInput[] | Prisma.KpiMonthlyResultUncheckedCreateWithoutSubmittedByInput[]
+  connectOrCreate?: Prisma.KpiMonthlyResultCreateOrConnectWithoutSubmittedByInput | Prisma.KpiMonthlyResultCreateOrConnectWithoutSubmittedByInput[]
+  upsert?: Prisma.KpiMonthlyResultUpsertWithWhereUniqueWithoutSubmittedByInput | Prisma.KpiMonthlyResultUpsertWithWhereUniqueWithoutSubmittedByInput[]
+  createMany?: Prisma.KpiMonthlyResultCreateManySubmittedByInputEnvelope
+  set?: Prisma.KpiMonthlyResultWhereUniqueInput | Prisma.KpiMonthlyResultWhereUniqueInput[]
+  disconnect?: Prisma.KpiMonthlyResultWhereUniqueInput | Prisma.KpiMonthlyResultWhereUniqueInput[]
+  delete?: Prisma.KpiMonthlyResultWhereUniqueInput | Prisma.KpiMonthlyResultWhereUniqueInput[]
+  connect?: Prisma.KpiMonthlyResultWhereUniqueInput | Prisma.KpiMonthlyResultWhereUniqueInput[]
+  update?: Prisma.KpiMonthlyResultUpdateWithWhereUniqueWithoutSubmittedByInput | Prisma.KpiMonthlyResultUpdateWithWhereUniqueWithoutSubmittedByInput[]
+  updateMany?: Prisma.KpiMonthlyResultUpdateManyWithWhereWithoutSubmittedByInput | Prisma.KpiMonthlyResultUpdateManyWithWhereWithoutSubmittedByInput[]
+  deleteMany?: Prisma.KpiMonthlyResultScalarWhereInput | Prisma.KpiMonthlyResultScalarWhereInput[]
+}
+
+export type KpiMonthlyResultUpdateManyWithoutApprovedByNestedInput = {
+  create?: Prisma.XOR<Prisma.KpiMonthlyResultCreateWithoutApprovedByInput, Prisma.KpiMonthlyResultUncheckedCreateWithoutApprovedByInput> | Prisma.KpiMonthlyResultCreateWithoutApprovedByInput[] | Prisma.KpiMonthlyResultUncheckedCreateWithoutApprovedByInput[]
+  connectOrCreate?: Prisma.KpiMonthlyResultCreateOrConnectWithoutApprovedByInput | Prisma.KpiMonthlyResultCreateOrConnectWithoutApprovedByInput[]
+  upsert?: Prisma.KpiMonthlyResultUpsertWithWhereUniqueWithoutApprovedByInput | Prisma.KpiMonthlyResultUpsertWithWhereUniqueWithoutApprovedByInput[]
+  createMany?: Prisma.KpiMonthlyResultCreateManyApprovedByInputEnvelope
+  set?: Prisma.KpiMonthlyResultWhereUniqueInput | Prisma.KpiMonthlyResultWhereUniqueInput[]
+  disconnect?: Prisma.KpiMonthlyResultWhereUniqueInput | Prisma.KpiMonthlyResultWhereUniqueInput[]
+  delete?: Prisma.KpiMonthlyResultWhereUniqueInput | Prisma.KpiMonthlyResultWhereUniqueInput[]
+  connect?: Prisma.KpiMonthlyResultWhereUniqueInput | Prisma.KpiMonthlyResultWhereUniqueInput[]
+  update?: Prisma.KpiMonthlyResultUpdateWithWhereUniqueWithoutApprovedByInput | Prisma.KpiMonthlyResultUpdateWithWhereUniqueWithoutApprovedByInput[]
+  updateMany?: Prisma.KpiMonthlyResultUpdateManyWithWhereWithoutApprovedByInput | Prisma.KpiMonthlyResultUpdateManyWithWhereWithoutApprovedByInput[]
+  deleteMany?: Prisma.KpiMonthlyResultScalarWhereInput | Prisma.KpiMonthlyResultScalarWhereInput[]
+}
+
+export type KpiMonthlyResultUncheckedUpdateManyWithoutSubmittedByNestedInput = {
+  create?: Prisma.XOR<Prisma.KpiMonthlyResultCreateWithoutSubmittedByInput, Prisma.KpiMonthlyResultUncheckedCreateWithoutSubmittedByInput> | Prisma.KpiMonthlyResultCreateWithoutSubmittedByInput[] | Prisma.KpiMonthlyResultUncheckedCreateWithoutSubmittedByInput[]
+  connectOrCreate?: Prisma.KpiMonthlyResultCreateOrConnectWithoutSubmittedByInput | Prisma.KpiMonthlyResultCreateOrConnectWithoutSubmittedByInput[]
+  upsert?: Prisma.KpiMonthlyResultUpsertWithWhereUniqueWithoutSubmittedByInput | Prisma.KpiMonthlyResultUpsertWithWhereUniqueWithoutSubmittedByInput[]
+  createMany?: Prisma.KpiMonthlyResultCreateManySubmittedByInputEnvelope
+  set?: Prisma.KpiMonthlyResultWhereUniqueInput | Prisma.KpiMonthlyResultWhereUniqueInput[]
+  disconnect?: Prisma.KpiMonthlyResultWhereUniqueInput | Prisma.KpiMonthlyResultWhereUniqueInput[]
+  delete?: Prisma.KpiMonthlyResultWhereUniqueInput | Prisma.KpiMonthlyResultWhereUniqueInput[]
+  connect?: Prisma.KpiMonthlyResultWhereUniqueInput | Prisma.KpiMonthlyResultWhereUniqueInput[]
+  update?: Prisma.KpiMonthlyResultUpdateWithWhereUniqueWithoutSubmittedByInput | Prisma.KpiMonthlyResultUpdateWithWhereUniqueWithoutSubmittedByInput[]
+  updateMany?: Prisma.KpiMonthlyResultUpdateManyWithWhereWithoutSubmittedByInput | Prisma.KpiMonthlyResultUpdateManyWithWhereWithoutSubmittedByInput[]
+  deleteMany?: Prisma.KpiMonthlyResultScalarWhereInput | Prisma.KpiMonthlyResultScalarWhereInput[]
+}
+
+export type KpiMonthlyResultUncheckedUpdateManyWithoutApprovedByNestedInput = {
+  create?: Prisma.XOR<Prisma.KpiMonthlyResultCreateWithoutApprovedByInput, Prisma.KpiMonthlyResultUncheckedCreateWithoutApprovedByInput> | Prisma.KpiMonthlyResultCreateWithoutApprovedByInput[] | Prisma.KpiMonthlyResultUncheckedCreateWithoutApprovedByInput[]
+  connectOrCreate?: Prisma.KpiMonthlyResultCreateOrConnectWithoutApprovedByInput | Prisma.KpiMonthlyResultCreateOrConnectWithoutApprovedByInput[]
+  upsert?: Prisma.KpiMonthlyResultUpsertWithWhereUniqueWithoutApprovedByInput | Prisma.KpiMonthlyResultUpsertWithWhereUniqueWithoutApprovedByInput[]
+  createMany?: Prisma.KpiMonthlyResultCreateManyApprovedByInputEnvelope
+  set?: Prisma.KpiMonthlyResultWhereUniqueInput | Prisma.KpiMonthlyResultWhereUniqueInput[]
+  disconnect?: Prisma.KpiMonthlyResultWhereUniqueInput | Prisma.KpiMonthlyResultWhereUniqueInput[]
+  delete?: Prisma.KpiMonthlyResultWhereUniqueInput | Prisma.KpiMonthlyResultWhereUniqueInput[]
+  connect?: Prisma.KpiMonthlyResultWhereUniqueInput | Prisma.KpiMonthlyResultWhereUniqueInput[]
+  update?: Prisma.KpiMonthlyResultUpdateWithWhereUniqueWithoutApprovedByInput | Prisma.KpiMonthlyResultUpdateWithWhereUniqueWithoutApprovedByInput[]
+  updateMany?: Prisma.KpiMonthlyResultUpdateManyWithWhereWithoutApprovedByInput | Prisma.KpiMonthlyResultUpdateManyWithWhereWithoutApprovedByInput[]
+  deleteMany?: Prisma.KpiMonthlyResultScalarWhereInput | Prisma.KpiMonthlyResultScalarWhereInput[]
 }
 
 export type KpiMonthlyResultCreateNestedManyWithoutKpiMasterInput = {
@@ -603,6 +879,14 @@ export type KpiMonthlyResultUncheckedUpdateManyWithoutKpiMasterNestedInput = {
   deleteMany?: Prisma.KpiMonthlyResultScalarWhereInput | Prisma.KpiMonthlyResultScalarWhereInput[]
 }
 
+export type NullableIntFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
 export type NullableDecimalFieldUpdateOperationsInput = {
   set?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   increment?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -619,6 +903,48 @@ export type EnumKpiApprovalStatusFieldUpdateOperationsInput = {
   set?: $Enums.KpiApprovalStatus
 }
 
+export type KpiMonthlyResultCreateNestedOneWithoutAttachmentsInput = {
+  create?: Prisma.XOR<Prisma.KpiMonthlyResultCreateWithoutAttachmentsInput, Prisma.KpiMonthlyResultUncheckedCreateWithoutAttachmentsInput>
+  connectOrCreate?: Prisma.KpiMonthlyResultCreateOrConnectWithoutAttachmentsInput
+  connect?: Prisma.KpiMonthlyResultWhereUniqueInput
+}
+
+export type KpiMonthlyResultUpdateOneRequiredWithoutAttachmentsNestedInput = {
+  create?: Prisma.XOR<Prisma.KpiMonthlyResultCreateWithoutAttachmentsInput, Prisma.KpiMonthlyResultUncheckedCreateWithoutAttachmentsInput>
+  connectOrCreate?: Prisma.KpiMonthlyResultCreateOrConnectWithoutAttachmentsInput
+  upsert?: Prisma.KpiMonthlyResultUpsertWithoutAttachmentsInput
+  connect?: Prisma.KpiMonthlyResultWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.KpiMonthlyResultUpdateToOneWithWhereWithoutAttachmentsInput, Prisma.KpiMonthlyResultUpdateWithoutAttachmentsInput>, Prisma.KpiMonthlyResultUncheckedUpdateWithoutAttachmentsInput>
+}
+
+export type KpiMonthlyResultCreateNestedOneWithoutSignaturesInput = {
+  create?: Prisma.XOR<Prisma.KpiMonthlyResultCreateWithoutSignaturesInput, Prisma.KpiMonthlyResultUncheckedCreateWithoutSignaturesInput>
+  connectOrCreate?: Prisma.KpiMonthlyResultCreateOrConnectWithoutSignaturesInput
+  connect?: Prisma.KpiMonthlyResultWhereUniqueInput
+}
+
+export type KpiMonthlyResultUpdateOneRequiredWithoutSignaturesNestedInput = {
+  create?: Prisma.XOR<Prisma.KpiMonthlyResultCreateWithoutSignaturesInput, Prisma.KpiMonthlyResultUncheckedCreateWithoutSignaturesInput>
+  connectOrCreate?: Prisma.KpiMonthlyResultCreateOrConnectWithoutSignaturesInput
+  upsert?: Prisma.KpiMonthlyResultUpsertWithoutSignaturesInput
+  connect?: Prisma.KpiMonthlyResultWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.KpiMonthlyResultUpdateToOneWithWhereWithoutSignaturesInput, Prisma.KpiMonthlyResultUpdateWithoutSignaturesInput>, Prisma.KpiMonthlyResultUncheckedUpdateWithoutSignaturesInput>
+}
+
+export type KpiMonthlyResultCreateNestedOneWithoutAuditLogsInput = {
+  create?: Prisma.XOR<Prisma.KpiMonthlyResultCreateWithoutAuditLogsInput, Prisma.KpiMonthlyResultUncheckedCreateWithoutAuditLogsInput>
+  connectOrCreate?: Prisma.KpiMonthlyResultCreateOrConnectWithoutAuditLogsInput
+  connect?: Prisma.KpiMonthlyResultWhereUniqueInput
+}
+
+export type KpiMonthlyResultUpdateOneRequiredWithoutAuditLogsNestedInput = {
+  create?: Prisma.XOR<Prisma.KpiMonthlyResultCreateWithoutAuditLogsInput, Prisma.KpiMonthlyResultUncheckedCreateWithoutAuditLogsInput>
+  connectOrCreate?: Prisma.KpiMonthlyResultCreateOrConnectWithoutAuditLogsInput
+  upsert?: Prisma.KpiMonthlyResultUpsertWithoutAuditLogsInput
+  connect?: Prisma.KpiMonthlyResultWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.KpiMonthlyResultUpdateToOneWithWhereWithoutAuditLogsInput, Prisma.KpiMonthlyResultUpdateWithoutAuditLogsInput>, Prisma.KpiMonthlyResultUncheckedUpdateWithoutAuditLogsInput>
+}
+
 export type KpiMonthlyResultCreateNestedOneWithoutCorrectiveActionsInput = {
   create?: Prisma.XOR<Prisma.KpiMonthlyResultCreateWithoutCorrectiveActionsInput, Prisma.KpiMonthlyResultUncheckedCreateWithoutCorrectiveActionsInput>
   connectOrCreate?: Prisma.KpiMonthlyResultCreateOrConnectWithoutCorrectiveActionsInput
@@ -633,8 +959,9 @@ export type KpiMonthlyResultUpdateOneRequiredWithoutCorrectiveActionsNestedInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.KpiMonthlyResultUpdateToOneWithWhereWithoutCorrectiveActionsInput, Prisma.KpiMonthlyResultUpdateWithoutCorrectiveActionsInput>, Prisma.KpiMonthlyResultUncheckedUpdateWithoutCorrectiveActionsInput>
 }
 
-export type KpiMonthlyResultCreateWithoutKpiMasterInput = {
+export type KpiMonthlyResultCreateWithoutSubmittedByInput = {
   id?: string
+  periodYear?: number | null
   month: number
   actualValue?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isNa?: boolean
@@ -644,13 +971,205 @@ export type KpiMonthlyResultCreateWithoutKpiMasterInput = {
   spWebUrl?: string | null
   spDownloadUrl?: string | null
   fileName?: string | null
+  submittedAt?: Date | string | null
+  approvedAt?: Date | string | null
+  rejectionReason?: string | null
+  closedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   correctiveActions?: Prisma.KpiCorrectiveActionCreateNestedManyWithoutKpiMonthlyResultInput
+  attachments?: Prisma.KpiMonthlyAttachmentCreateNestedManyWithoutKpiMonthlyResultInput
+  signatures?: Prisma.KpiSignatureLogCreateNestedManyWithoutKpiMonthlyResultInput
+  auditLogs?: Prisma.KpiAuditLogCreateNestedManyWithoutKpiMonthlyResultInput
+  approvedBy?: Prisma.UserCreateNestedOneWithoutKpiMonthlyApprovedInput
+  kpiMaster: Prisma.KpiMasterCreateNestedOneWithoutMonthlyResultsInput
+}
+
+export type KpiMonthlyResultUncheckedCreateWithoutSubmittedByInput = {
+  id?: string
+  periodYear?: number | null
+  month: number
+  actualValue?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isNa?: boolean
+  status?: $Enums.KpiMonthlyStatus
+  approvalStatus?: $Enums.KpiApprovalStatus
+  spItemId?: string | null
+  spWebUrl?: string | null
+  spDownloadUrl?: string | null
+  fileName?: string | null
+  submittedAt?: Date | string | null
+  approvedById?: string | null
+  approvedAt?: Date | string | null
+  rejectionReason?: string | null
+  closedAt?: Date | string | null
+  kpiMasterId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  correctiveActions?: Prisma.KpiCorrectiveActionUncheckedCreateNestedManyWithoutKpiMonthlyResultInput
+  attachments?: Prisma.KpiMonthlyAttachmentUncheckedCreateNestedManyWithoutKpiMonthlyResultInput
+  signatures?: Prisma.KpiSignatureLogUncheckedCreateNestedManyWithoutKpiMonthlyResultInput
+  auditLogs?: Prisma.KpiAuditLogUncheckedCreateNestedManyWithoutKpiMonthlyResultInput
+}
+
+export type KpiMonthlyResultCreateOrConnectWithoutSubmittedByInput = {
+  where: Prisma.KpiMonthlyResultWhereUniqueInput
+  create: Prisma.XOR<Prisma.KpiMonthlyResultCreateWithoutSubmittedByInput, Prisma.KpiMonthlyResultUncheckedCreateWithoutSubmittedByInput>
+}
+
+export type KpiMonthlyResultCreateManySubmittedByInputEnvelope = {
+  data: Prisma.KpiMonthlyResultCreateManySubmittedByInput | Prisma.KpiMonthlyResultCreateManySubmittedByInput[]
+  skipDuplicates?: boolean
+}
+
+export type KpiMonthlyResultCreateWithoutApprovedByInput = {
+  id?: string
+  periodYear?: number | null
+  month: number
+  actualValue?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isNa?: boolean
+  status?: $Enums.KpiMonthlyStatus
+  approvalStatus?: $Enums.KpiApprovalStatus
+  spItemId?: string | null
+  spWebUrl?: string | null
+  spDownloadUrl?: string | null
+  fileName?: string | null
+  submittedAt?: Date | string | null
+  approvedAt?: Date | string | null
+  rejectionReason?: string | null
+  closedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  correctiveActions?: Prisma.KpiCorrectiveActionCreateNestedManyWithoutKpiMonthlyResultInput
+  attachments?: Prisma.KpiMonthlyAttachmentCreateNestedManyWithoutKpiMonthlyResultInput
+  signatures?: Prisma.KpiSignatureLogCreateNestedManyWithoutKpiMonthlyResultInput
+  auditLogs?: Prisma.KpiAuditLogCreateNestedManyWithoutKpiMonthlyResultInput
+  submittedBy?: Prisma.UserCreateNestedOneWithoutKpiMonthlySubmittedInput
+  kpiMaster: Prisma.KpiMasterCreateNestedOneWithoutMonthlyResultsInput
+}
+
+export type KpiMonthlyResultUncheckedCreateWithoutApprovedByInput = {
+  id?: string
+  periodYear?: number | null
+  month: number
+  actualValue?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isNa?: boolean
+  status?: $Enums.KpiMonthlyStatus
+  approvalStatus?: $Enums.KpiApprovalStatus
+  spItemId?: string | null
+  spWebUrl?: string | null
+  spDownloadUrl?: string | null
+  fileName?: string | null
+  submittedById?: string | null
+  submittedAt?: Date | string | null
+  approvedAt?: Date | string | null
+  rejectionReason?: string | null
+  closedAt?: Date | string | null
+  kpiMasterId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  correctiveActions?: Prisma.KpiCorrectiveActionUncheckedCreateNestedManyWithoutKpiMonthlyResultInput
+  attachments?: Prisma.KpiMonthlyAttachmentUncheckedCreateNestedManyWithoutKpiMonthlyResultInput
+  signatures?: Prisma.KpiSignatureLogUncheckedCreateNestedManyWithoutKpiMonthlyResultInput
+  auditLogs?: Prisma.KpiAuditLogUncheckedCreateNestedManyWithoutKpiMonthlyResultInput
+}
+
+export type KpiMonthlyResultCreateOrConnectWithoutApprovedByInput = {
+  where: Prisma.KpiMonthlyResultWhereUniqueInput
+  create: Prisma.XOR<Prisma.KpiMonthlyResultCreateWithoutApprovedByInput, Prisma.KpiMonthlyResultUncheckedCreateWithoutApprovedByInput>
+}
+
+export type KpiMonthlyResultCreateManyApprovedByInputEnvelope = {
+  data: Prisma.KpiMonthlyResultCreateManyApprovedByInput | Prisma.KpiMonthlyResultCreateManyApprovedByInput[]
+  skipDuplicates?: boolean
+}
+
+export type KpiMonthlyResultUpsertWithWhereUniqueWithoutSubmittedByInput = {
+  where: Prisma.KpiMonthlyResultWhereUniqueInput
+  update: Prisma.XOR<Prisma.KpiMonthlyResultUpdateWithoutSubmittedByInput, Prisma.KpiMonthlyResultUncheckedUpdateWithoutSubmittedByInput>
+  create: Prisma.XOR<Prisma.KpiMonthlyResultCreateWithoutSubmittedByInput, Prisma.KpiMonthlyResultUncheckedCreateWithoutSubmittedByInput>
+}
+
+export type KpiMonthlyResultUpdateWithWhereUniqueWithoutSubmittedByInput = {
+  where: Prisma.KpiMonthlyResultWhereUniqueInput
+  data: Prisma.XOR<Prisma.KpiMonthlyResultUpdateWithoutSubmittedByInput, Prisma.KpiMonthlyResultUncheckedUpdateWithoutSubmittedByInput>
+}
+
+export type KpiMonthlyResultUpdateManyWithWhereWithoutSubmittedByInput = {
+  where: Prisma.KpiMonthlyResultScalarWhereInput
+  data: Prisma.XOR<Prisma.KpiMonthlyResultUpdateManyMutationInput, Prisma.KpiMonthlyResultUncheckedUpdateManyWithoutSubmittedByInput>
+}
+
+export type KpiMonthlyResultScalarWhereInput = {
+  AND?: Prisma.KpiMonthlyResultScalarWhereInput | Prisma.KpiMonthlyResultScalarWhereInput[]
+  OR?: Prisma.KpiMonthlyResultScalarWhereInput[]
+  NOT?: Prisma.KpiMonthlyResultScalarWhereInput | Prisma.KpiMonthlyResultScalarWhereInput[]
+  id?: Prisma.StringFilter<"KpiMonthlyResult"> | string
+  periodYear?: Prisma.IntNullableFilter<"KpiMonthlyResult"> | number | null
+  month?: Prisma.IntFilter<"KpiMonthlyResult"> | number
+  actualValue?: Prisma.DecimalNullableFilter<"KpiMonthlyResult"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isNa?: Prisma.BoolFilter<"KpiMonthlyResult"> | boolean
+  status?: Prisma.EnumKpiMonthlyStatusFilter<"KpiMonthlyResult"> | $Enums.KpiMonthlyStatus
+  approvalStatus?: Prisma.EnumKpiApprovalStatusFilter<"KpiMonthlyResult"> | $Enums.KpiApprovalStatus
+  spItemId?: Prisma.StringNullableFilter<"KpiMonthlyResult"> | string | null
+  spWebUrl?: Prisma.StringNullableFilter<"KpiMonthlyResult"> | string | null
+  spDownloadUrl?: Prisma.StringNullableFilter<"KpiMonthlyResult"> | string | null
+  fileName?: Prisma.StringNullableFilter<"KpiMonthlyResult"> | string | null
+  submittedById?: Prisma.StringNullableFilter<"KpiMonthlyResult"> | string | null
+  submittedAt?: Prisma.DateTimeNullableFilter<"KpiMonthlyResult"> | Date | string | null
+  approvedById?: Prisma.StringNullableFilter<"KpiMonthlyResult"> | string | null
+  approvedAt?: Prisma.DateTimeNullableFilter<"KpiMonthlyResult"> | Date | string | null
+  rejectionReason?: Prisma.StringNullableFilter<"KpiMonthlyResult"> | string | null
+  closedAt?: Prisma.DateTimeNullableFilter<"KpiMonthlyResult"> | Date | string | null
+  kpiMasterId?: Prisma.StringFilter<"KpiMonthlyResult"> | string
+  createdAt?: Prisma.DateTimeFilter<"KpiMonthlyResult"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"KpiMonthlyResult"> | Date | string
+}
+
+export type KpiMonthlyResultUpsertWithWhereUniqueWithoutApprovedByInput = {
+  where: Prisma.KpiMonthlyResultWhereUniqueInput
+  update: Prisma.XOR<Prisma.KpiMonthlyResultUpdateWithoutApprovedByInput, Prisma.KpiMonthlyResultUncheckedUpdateWithoutApprovedByInput>
+  create: Prisma.XOR<Prisma.KpiMonthlyResultCreateWithoutApprovedByInput, Prisma.KpiMonthlyResultUncheckedCreateWithoutApprovedByInput>
+}
+
+export type KpiMonthlyResultUpdateWithWhereUniqueWithoutApprovedByInput = {
+  where: Prisma.KpiMonthlyResultWhereUniqueInput
+  data: Prisma.XOR<Prisma.KpiMonthlyResultUpdateWithoutApprovedByInput, Prisma.KpiMonthlyResultUncheckedUpdateWithoutApprovedByInput>
+}
+
+export type KpiMonthlyResultUpdateManyWithWhereWithoutApprovedByInput = {
+  where: Prisma.KpiMonthlyResultScalarWhereInput
+  data: Prisma.XOR<Prisma.KpiMonthlyResultUpdateManyMutationInput, Prisma.KpiMonthlyResultUncheckedUpdateManyWithoutApprovedByInput>
+}
+
+export type KpiMonthlyResultCreateWithoutKpiMasterInput = {
+  id?: string
+  periodYear?: number | null
+  month: number
+  actualValue?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isNa?: boolean
+  status?: $Enums.KpiMonthlyStatus
+  approvalStatus?: $Enums.KpiApprovalStatus
+  spItemId?: string | null
+  spWebUrl?: string | null
+  spDownloadUrl?: string | null
+  fileName?: string | null
+  submittedAt?: Date | string | null
+  approvedAt?: Date | string | null
+  rejectionReason?: string | null
+  closedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  correctiveActions?: Prisma.KpiCorrectiveActionCreateNestedManyWithoutKpiMonthlyResultInput
+  attachments?: Prisma.KpiMonthlyAttachmentCreateNestedManyWithoutKpiMonthlyResultInput
+  signatures?: Prisma.KpiSignatureLogCreateNestedManyWithoutKpiMonthlyResultInput
+  auditLogs?: Prisma.KpiAuditLogCreateNestedManyWithoutKpiMonthlyResultInput
+  submittedBy?: Prisma.UserCreateNestedOneWithoutKpiMonthlySubmittedInput
+  approvedBy?: Prisma.UserCreateNestedOneWithoutKpiMonthlyApprovedInput
 }
 
 export type KpiMonthlyResultUncheckedCreateWithoutKpiMasterInput = {
   id?: string
+  periodYear?: number | null
   month: number
   actualValue?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isNa?: boolean
@@ -660,9 +1179,18 @@ export type KpiMonthlyResultUncheckedCreateWithoutKpiMasterInput = {
   spWebUrl?: string | null
   spDownloadUrl?: string | null
   fileName?: string | null
+  submittedById?: string | null
+  submittedAt?: Date | string | null
+  approvedById?: string | null
+  approvedAt?: Date | string | null
+  rejectionReason?: string | null
+  closedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   correctiveActions?: Prisma.KpiCorrectiveActionUncheckedCreateNestedManyWithoutKpiMonthlyResultInput
+  attachments?: Prisma.KpiMonthlyAttachmentUncheckedCreateNestedManyWithoutKpiMonthlyResultInput
+  signatures?: Prisma.KpiSignatureLogUncheckedCreateNestedManyWithoutKpiMonthlyResultInput
+  auditLogs?: Prisma.KpiAuditLogUncheckedCreateNestedManyWithoutKpiMonthlyResultInput
 }
 
 export type KpiMonthlyResultCreateOrConnectWithoutKpiMasterInput = {
@@ -691,27 +1219,9 @@ export type KpiMonthlyResultUpdateManyWithWhereWithoutKpiMasterInput = {
   data: Prisma.XOR<Prisma.KpiMonthlyResultUpdateManyMutationInput, Prisma.KpiMonthlyResultUncheckedUpdateManyWithoutKpiMasterInput>
 }
 
-export type KpiMonthlyResultScalarWhereInput = {
-  AND?: Prisma.KpiMonthlyResultScalarWhereInput | Prisma.KpiMonthlyResultScalarWhereInput[]
-  OR?: Prisma.KpiMonthlyResultScalarWhereInput[]
-  NOT?: Prisma.KpiMonthlyResultScalarWhereInput | Prisma.KpiMonthlyResultScalarWhereInput[]
-  id?: Prisma.StringFilter<"KpiMonthlyResult"> | string
-  month?: Prisma.IntFilter<"KpiMonthlyResult"> | number
-  actualValue?: Prisma.DecimalNullableFilter<"KpiMonthlyResult"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  isNa?: Prisma.BoolFilter<"KpiMonthlyResult"> | boolean
-  status?: Prisma.EnumKpiMonthlyStatusFilter<"KpiMonthlyResult"> | $Enums.KpiMonthlyStatus
-  approvalStatus?: Prisma.EnumKpiApprovalStatusFilter<"KpiMonthlyResult"> | $Enums.KpiApprovalStatus
-  spItemId?: Prisma.StringNullableFilter<"KpiMonthlyResult"> | string | null
-  spWebUrl?: Prisma.StringNullableFilter<"KpiMonthlyResult"> | string | null
-  spDownloadUrl?: Prisma.StringNullableFilter<"KpiMonthlyResult"> | string | null
-  fileName?: Prisma.StringNullableFilter<"KpiMonthlyResult"> | string | null
-  kpiMasterId?: Prisma.StringFilter<"KpiMonthlyResult"> | string
-  createdAt?: Prisma.DateTimeFilter<"KpiMonthlyResult"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"KpiMonthlyResult"> | Date | string
-}
-
-export type KpiMonthlyResultCreateWithoutCorrectiveActionsInput = {
+export type KpiMonthlyResultCreateWithoutAttachmentsInput = {
   id?: string
+  periodYear?: number | null
   month: number
   actualValue?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isNa?: boolean
@@ -721,13 +1231,383 @@ export type KpiMonthlyResultCreateWithoutCorrectiveActionsInput = {
   spWebUrl?: string | null
   spDownloadUrl?: string | null
   fileName?: string | null
+  submittedAt?: Date | string | null
+  approvedAt?: Date | string | null
+  rejectionReason?: string | null
+  closedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  correctiveActions?: Prisma.KpiCorrectiveActionCreateNestedManyWithoutKpiMonthlyResultInput
+  signatures?: Prisma.KpiSignatureLogCreateNestedManyWithoutKpiMonthlyResultInput
+  auditLogs?: Prisma.KpiAuditLogCreateNestedManyWithoutKpiMonthlyResultInput
+  submittedBy?: Prisma.UserCreateNestedOneWithoutKpiMonthlySubmittedInput
+  approvedBy?: Prisma.UserCreateNestedOneWithoutKpiMonthlyApprovedInput
+  kpiMaster: Prisma.KpiMasterCreateNestedOneWithoutMonthlyResultsInput
+}
+
+export type KpiMonthlyResultUncheckedCreateWithoutAttachmentsInput = {
+  id?: string
+  periodYear?: number | null
+  month: number
+  actualValue?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isNa?: boolean
+  status?: $Enums.KpiMonthlyStatus
+  approvalStatus?: $Enums.KpiApprovalStatus
+  spItemId?: string | null
+  spWebUrl?: string | null
+  spDownloadUrl?: string | null
+  fileName?: string | null
+  submittedById?: string | null
+  submittedAt?: Date | string | null
+  approvedById?: string | null
+  approvedAt?: Date | string | null
+  rejectionReason?: string | null
+  closedAt?: Date | string | null
+  kpiMasterId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  correctiveActions?: Prisma.KpiCorrectiveActionUncheckedCreateNestedManyWithoutKpiMonthlyResultInput
+  signatures?: Prisma.KpiSignatureLogUncheckedCreateNestedManyWithoutKpiMonthlyResultInput
+  auditLogs?: Prisma.KpiAuditLogUncheckedCreateNestedManyWithoutKpiMonthlyResultInput
+}
+
+export type KpiMonthlyResultCreateOrConnectWithoutAttachmentsInput = {
+  where: Prisma.KpiMonthlyResultWhereUniqueInput
+  create: Prisma.XOR<Prisma.KpiMonthlyResultCreateWithoutAttachmentsInput, Prisma.KpiMonthlyResultUncheckedCreateWithoutAttachmentsInput>
+}
+
+export type KpiMonthlyResultUpsertWithoutAttachmentsInput = {
+  update: Prisma.XOR<Prisma.KpiMonthlyResultUpdateWithoutAttachmentsInput, Prisma.KpiMonthlyResultUncheckedUpdateWithoutAttachmentsInput>
+  create: Prisma.XOR<Prisma.KpiMonthlyResultCreateWithoutAttachmentsInput, Prisma.KpiMonthlyResultUncheckedCreateWithoutAttachmentsInput>
+  where?: Prisma.KpiMonthlyResultWhereInput
+}
+
+export type KpiMonthlyResultUpdateToOneWithWhereWithoutAttachmentsInput = {
+  where?: Prisma.KpiMonthlyResultWhereInput
+  data: Prisma.XOR<Prisma.KpiMonthlyResultUpdateWithoutAttachmentsInput, Prisma.KpiMonthlyResultUncheckedUpdateWithoutAttachmentsInput>
+}
+
+export type KpiMonthlyResultUpdateWithoutAttachmentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  periodYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  month?: Prisma.IntFieldUpdateOperationsInput | number
+  actualValue?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isNa?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumKpiMonthlyStatusFieldUpdateOperationsInput | $Enums.KpiMonthlyStatus
+  approvalStatus?: Prisma.EnumKpiApprovalStatusFieldUpdateOperationsInput | $Enums.KpiApprovalStatus
+  spItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  spWebUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  spDownloadUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  correctiveActions?: Prisma.KpiCorrectiveActionUpdateManyWithoutKpiMonthlyResultNestedInput
+  signatures?: Prisma.KpiSignatureLogUpdateManyWithoutKpiMonthlyResultNestedInput
+  auditLogs?: Prisma.KpiAuditLogUpdateManyWithoutKpiMonthlyResultNestedInput
+  submittedBy?: Prisma.UserUpdateOneWithoutKpiMonthlySubmittedNestedInput
+  approvedBy?: Prisma.UserUpdateOneWithoutKpiMonthlyApprovedNestedInput
+  kpiMaster?: Prisma.KpiMasterUpdateOneRequiredWithoutMonthlyResultsNestedInput
+}
+
+export type KpiMonthlyResultUncheckedUpdateWithoutAttachmentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  periodYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  month?: Prisma.IntFieldUpdateOperationsInput | number
+  actualValue?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isNa?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumKpiMonthlyStatusFieldUpdateOperationsInput | $Enums.KpiMonthlyStatus
+  approvalStatus?: Prisma.EnumKpiApprovalStatusFieldUpdateOperationsInput | $Enums.KpiApprovalStatus
+  spItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  spWebUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  spDownloadUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submittedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  kpiMasterId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  correctiveActions?: Prisma.KpiCorrectiveActionUncheckedUpdateManyWithoutKpiMonthlyResultNestedInput
+  signatures?: Prisma.KpiSignatureLogUncheckedUpdateManyWithoutKpiMonthlyResultNestedInput
+  auditLogs?: Prisma.KpiAuditLogUncheckedUpdateManyWithoutKpiMonthlyResultNestedInput
+}
+
+export type KpiMonthlyResultCreateWithoutSignaturesInput = {
+  id?: string
+  periodYear?: number | null
+  month: number
+  actualValue?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isNa?: boolean
+  status?: $Enums.KpiMonthlyStatus
+  approvalStatus?: $Enums.KpiApprovalStatus
+  spItemId?: string | null
+  spWebUrl?: string | null
+  spDownloadUrl?: string | null
+  fileName?: string | null
+  submittedAt?: Date | string | null
+  approvedAt?: Date | string | null
+  rejectionReason?: string | null
+  closedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  correctiveActions?: Prisma.KpiCorrectiveActionCreateNestedManyWithoutKpiMonthlyResultInput
+  attachments?: Prisma.KpiMonthlyAttachmentCreateNestedManyWithoutKpiMonthlyResultInput
+  auditLogs?: Prisma.KpiAuditLogCreateNestedManyWithoutKpiMonthlyResultInput
+  submittedBy?: Prisma.UserCreateNestedOneWithoutKpiMonthlySubmittedInput
+  approvedBy?: Prisma.UserCreateNestedOneWithoutKpiMonthlyApprovedInput
+  kpiMaster: Prisma.KpiMasterCreateNestedOneWithoutMonthlyResultsInput
+}
+
+export type KpiMonthlyResultUncheckedCreateWithoutSignaturesInput = {
+  id?: string
+  periodYear?: number | null
+  month: number
+  actualValue?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isNa?: boolean
+  status?: $Enums.KpiMonthlyStatus
+  approvalStatus?: $Enums.KpiApprovalStatus
+  spItemId?: string | null
+  spWebUrl?: string | null
+  spDownloadUrl?: string | null
+  fileName?: string | null
+  submittedById?: string | null
+  submittedAt?: Date | string | null
+  approvedById?: string | null
+  approvedAt?: Date | string | null
+  rejectionReason?: string | null
+  closedAt?: Date | string | null
+  kpiMasterId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  correctiveActions?: Prisma.KpiCorrectiveActionUncheckedCreateNestedManyWithoutKpiMonthlyResultInput
+  attachments?: Prisma.KpiMonthlyAttachmentUncheckedCreateNestedManyWithoutKpiMonthlyResultInput
+  auditLogs?: Prisma.KpiAuditLogUncheckedCreateNestedManyWithoutKpiMonthlyResultInput
+}
+
+export type KpiMonthlyResultCreateOrConnectWithoutSignaturesInput = {
+  where: Prisma.KpiMonthlyResultWhereUniqueInput
+  create: Prisma.XOR<Prisma.KpiMonthlyResultCreateWithoutSignaturesInput, Prisma.KpiMonthlyResultUncheckedCreateWithoutSignaturesInput>
+}
+
+export type KpiMonthlyResultUpsertWithoutSignaturesInput = {
+  update: Prisma.XOR<Prisma.KpiMonthlyResultUpdateWithoutSignaturesInput, Prisma.KpiMonthlyResultUncheckedUpdateWithoutSignaturesInput>
+  create: Prisma.XOR<Prisma.KpiMonthlyResultCreateWithoutSignaturesInput, Prisma.KpiMonthlyResultUncheckedCreateWithoutSignaturesInput>
+  where?: Prisma.KpiMonthlyResultWhereInput
+}
+
+export type KpiMonthlyResultUpdateToOneWithWhereWithoutSignaturesInput = {
+  where?: Prisma.KpiMonthlyResultWhereInput
+  data: Prisma.XOR<Prisma.KpiMonthlyResultUpdateWithoutSignaturesInput, Prisma.KpiMonthlyResultUncheckedUpdateWithoutSignaturesInput>
+}
+
+export type KpiMonthlyResultUpdateWithoutSignaturesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  periodYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  month?: Prisma.IntFieldUpdateOperationsInput | number
+  actualValue?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isNa?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumKpiMonthlyStatusFieldUpdateOperationsInput | $Enums.KpiMonthlyStatus
+  approvalStatus?: Prisma.EnumKpiApprovalStatusFieldUpdateOperationsInput | $Enums.KpiApprovalStatus
+  spItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  spWebUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  spDownloadUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  correctiveActions?: Prisma.KpiCorrectiveActionUpdateManyWithoutKpiMonthlyResultNestedInput
+  attachments?: Prisma.KpiMonthlyAttachmentUpdateManyWithoutKpiMonthlyResultNestedInput
+  auditLogs?: Prisma.KpiAuditLogUpdateManyWithoutKpiMonthlyResultNestedInput
+  submittedBy?: Prisma.UserUpdateOneWithoutKpiMonthlySubmittedNestedInput
+  approvedBy?: Prisma.UserUpdateOneWithoutKpiMonthlyApprovedNestedInput
+  kpiMaster?: Prisma.KpiMasterUpdateOneRequiredWithoutMonthlyResultsNestedInput
+}
+
+export type KpiMonthlyResultUncheckedUpdateWithoutSignaturesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  periodYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  month?: Prisma.IntFieldUpdateOperationsInput | number
+  actualValue?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isNa?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumKpiMonthlyStatusFieldUpdateOperationsInput | $Enums.KpiMonthlyStatus
+  approvalStatus?: Prisma.EnumKpiApprovalStatusFieldUpdateOperationsInput | $Enums.KpiApprovalStatus
+  spItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  spWebUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  spDownloadUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submittedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  kpiMasterId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  correctiveActions?: Prisma.KpiCorrectiveActionUncheckedUpdateManyWithoutKpiMonthlyResultNestedInput
+  attachments?: Prisma.KpiMonthlyAttachmentUncheckedUpdateManyWithoutKpiMonthlyResultNestedInput
+  auditLogs?: Prisma.KpiAuditLogUncheckedUpdateManyWithoutKpiMonthlyResultNestedInput
+}
+
+export type KpiMonthlyResultCreateWithoutAuditLogsInput = {
+  id?: string
+  periodYear?: number | null
+  month: number
+  actualValue?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isNa?: boolean
+  status?: $Enums.KpiMonthlyStatus
+  approvalStatus?: $Enums.KpiApprovalStatus
+  spItemId?: string | null
+  spWebUrl?: string | null
+  spDownloadUrl?: string | null
+  fileName?: string | null
+  submittedAt?: Date | string | null
+  approvedAt?: Date | string | null
+  rejectionReason?: string | null
+  closedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  correctiveActions?: Prisma.KpiCorrectiveActionCreateNestedManyWithoutKpiMonthlyResultInput
+  attachments?: Prisma.KpiMonthlyAttachmentCreateNestedManyWithoutKpiMonthlyResultInput
+  signatures?: Prisma.KpiSignatureLogCreateNestedManyWithoutKpiMonthlyResultInput
+  submittedBy?: Prisma.UserCreateNestedOneWithoutKpiMonthlySubmittedInput
+  approvedBy?: Prisma.UserCreateNestedOneWithoutKpiMonthlyApprovedInput
+  kpiMaster: Prisma.KpiMasterCreateNestedOneWithoutMonthlyResultsInput
+}
+
+export type KpiMonthlyResultUncheckedCreateWithoutAuditLogsInput = {
+  id?: string
+  periodYear?: number | null
+  month: number
+  actualValue?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isNa?: boolean
+  status?: $Enums.KpiMonthlyStatus
+  approvalStatus?: $Enums.KpiApprovalStatus
+  spItemId?: string | null
+  spWebUrl?: string | null
+  spDownloadUrl?: string | null
+  fileName?: string | null
+  submittedById?: string | null
+  submittedAt?: Date | string | null
+  approvedById?: string | null
+  approvedAt?: Date | string | null
+  rejectionReason?: string | null
+  closedAt?: Date | string | null
+  kpiMasterId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  correctiveActions?: Prisma.KpiCorrectiveActionUncheckedCreateNestedManyWithoutKpiMonthlyResultInput
+  attachments?: Prisma.KpiMonthlyAttachmentUncheckedCreateNestedManyWithoutKpiMonthlyResultInput
+  signatures?: Prisma.KpiSignatureLogUncheckedCreateNestedManyWithoutKpiMonthlyResultInput
+}
+
+export type KpiMonthlyResultCreateOrConnectWithoutAuditLogsInput = {
+  where: Prisma.KpiMonthlyResultWhereUniqueInput
+  create: Prisma.XOR<Prisma.KpiMonthlyResultCreateWithoutAuditLogsInput, Prisma.KpiMonthlyResultUncheckedCreateWithoutAuditLogsInput>
+}
+
+export type KpiMonthlyResultUpsertWithoutAuditLogsInput = {
+  update: Prisma.XOR<Prisma.KpiMonthlyResultUpdateWithoutAuditLogsInput, Prisma.KpiMonthlyResultUncheckedUpdateWithoutAuditLogsInput>
+  create: Prisma.XOR<Prisma.KpiMonthlyResultCreateWithoutAuditLogsInput, Prisma.KpiMonthlyResultUncheckedCreateWithoutAuditLogsInput>
+  where?: Prisma.KpiMonthlyResultWhereInput
+}
+
+export type KpiMonthlyResultUpdateToOneWithWhereWithoutAuditLogsInput = {
+  where?: Prisma.KpiMonthlyResultWhereInput
+  data: Prisma.XOR<Prisma.KpiMonthlyResultUpdateWithoutAuditLogsInput, Prisma.KpiMonthlyResultUncheckedUpdateWithoutAuditLogsInput>
+}
+
+export type KpiMonthlyResultUpdateWithoutAuditLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  periodYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  month?: Prisma.IntFieldUpdateOperationsInput | number
+  actualValue?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isNa?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumKpiMonthlyStatusFieldUpdateOperationsInput | $Enums.KpiMonthlyStatus
+  approvalStatus?: Prisma.EnumKpiApprovalStatusFieldUpdateOperationsInput | $Enums.KpiApprovalStatus
+  spItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  spWebUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  spDownloadUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  correctiveActions?: Prisma.KpiCorrectiveActionUpdateManyWithoutKpiMonthlyResultNestedInput
+  attachments?: Prisma.KpiMonthlyAttachmentUpdateManyWithoutKpiMonthlyResultNestedInput
+  signatures?: Prisma.KpiSignatureLogUpdateManyWithoutKpiMonthlyResultNestedInput
+  submittedBy?: Prisma.UserUpdateOneWithoutKpiMonthlySubmittedNestedInput
+  approvedBy?: Prisma.UserUpdateOneWithoutKpiMonthlyApprovedNestedInput
+  kpiMaster?: Prisma.KpiMasterUpdateOneRequiredWithoutMonthlyResultsNestedInput
+}
+
+export type KpiMonthlyResultUncheckedUpdateWithoutAuditLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  periodYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  month?: Prisma.IntFieldUpdateOperationsInput | number
+  actualValue?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isNa?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumKpiMonthlyStatusFieldUpdateOperationsInput | $Enums.KpiMonthlyStatus
+  approvalStatus?: Prisma.EnumKpiApprovalStatusFieldUpdateOperationsInput | $Enums.KpiApprovalStatus
+  spItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  spWebUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  spDownloadUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submittedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  kpiMasterId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  correctiveActions?: Prisma.KpiCorrectiveActionUncheckedUpdateManyWithoutKpiMonthlyResultNestedInput
+  attachments?: Prisma.KpiMonthlyAttachmentUncheckedUpdateManyWithoutKpiMonthlyResultNestedInput
+  signatures?: Prisma.KpiSignatureLogUncheckedUpdateManyWithoutKpiMonthlyResultNestedInput
+}
+
+export type KpiMonthlyResultCreateWithoutCorrectiveActionsInput = {
+  id?: string
+  periodYear?: number | null
+  month: number
+  actualValue?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isNa?: boolean
+  status?: $Enums.KpiMonthlyStatus
+  approvalStatus?: $Enums.KpiApprovalStatus
+  spItemId?: string | null
+  spWebUrl?: string | null
+  spDownloadUrl?: string | null
+  fileName?: string | null
+  submittedAt?: Date | string | null
+  approvedAt?: Date | string | null
+  rejectionReason?: string | null
+  closedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  attachments?: Prisma.KpiMonthlyAttachmentCreateNestedManyWithoutKpiMonthlyResultInput
+  signatures?: Prisma.KpiSignatureLogCreateNestedManyWithoutKpiMonthlyResultInput
+  auditLogs?: Prisma.KpiAuditLogCreateNestedManyWithoutKpiMonthlyResultInput
+  submittedBy?: Prisma.UserCreateNestedOneWithoutKpiMonthlySubmittedInput
+  approvedBy?: Prisma.UserCreateNestedOneWithoutKpiMonthlyApprovedInput
   kpiMaster: Prisma.KpiMasterCreateNestedOneWithoutMonthlyResultsInput
 }
 
 export type KpiMonthlyResultUncheckedCreateWithoutCorrectiveActionsInput = {
   id?: string
+  periodYear?: number | null
   month: number
   actualValue?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isNa?: boolean
@@ -737,9 +1617,18 @@ export type KpiMonthlyResultUncheckedCreateWithoutCorrectiveActionsInput = {
   spWebUrl?: string | null
   spDownloadUrl?: string | null
   fileName?: string | null
+  submittedById?: string | null
+  submittedAt?: Date | string | null
+  approvedById?: string | null
+  approvedAt?: Date | string | null
+  rejectionReason?: string | null
+  closedAt?: Date | string | null
   kpiMasterId: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  attachments?: Prisma.KpiMonthlyAttachmentUncheckedCreateNestedManyWithoutKpiMonthlyResultInput
+  signatures?: Prisma.KpiSignatureLogUncheckedCreateNestedManyWithoutKpiMonthlyResultInput
+  auditLogs?: Prisma.KpiAuditLogUncheckedCreateNestedManyWithoutKpiMonthlyResultInput
 }
 
 export type KpiMonthlyResultCreateOrConnectWithoutCorrectiveActionsInput = {
@@ -760,6 +1649,7 @@ export type KpiMonthlyResultUpdateToOneWithWhereWithoutCorrectiveActionsInput = 
 
 export type KpiMonthlyResultUpdateWithoutCorrectiveActionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  periodYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   month?: Prisma.IntFieldUpdateOperationsInput | number
   actualValue?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isNa?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -769,13 +1659,23 @@ export type KpiMonthlyResultUpdateWithoutCorrectiveActionsInput = {
   spWebUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   spDownloadUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  attachments?: Prisma.KpiMonthlyAttachmentUpdateManyWithoutKpiMonthlyResultNestedInput
+  signatures?: Prisma.KpiSignatureLogUpdateManyWithoutKpiMonthlyResultNestedInput
+  auditLogs?: Prisma.KpiAuditLogUpdateManyWithoutKpiMonthlyResultNestedInput
+  submittedBy?: Prisma.UserUpdateOneWithoutKpiMonthlySubmittedNestedInput
+  approvedBy?: Prisma.UserUpdateOneWithoutKpiMonthlyApprovedNestedInput
   kpiMaster?: Prisma.KpiMasterUpdateOneRequiredWithoutMonthlyResultsNestedInput
 }
 
 export type KpiMonthlyResultUncheckedUpdateWithoutCorrectiveActionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  periodYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   month?: Prisma.IntFieldUpdateOperationsInput | number
   actualValue?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isNa?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -785,13 +1685,23 @@ export type KpiMonthlyResultUncheckedUpdateWithoutCorrectiveActionsInput = {
   spWebUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   spDownloadUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submittedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   kpiMasterId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  attachments?: Prisma.KpiMonthlyAttachmentUncheckedUpdateManyWithoutKpiMonthlyResultNestedInput
+  signatures?: Prisma.KpiSignatureLogUncheckedUpdateManyWithoutKpiMonthlyResultNestedInput
+  auditLogs?: Prisma.KpiAuditLogUncheckedUpdateManyWithoutKpiMonthlyResultNestedInput
 }
 
-export type KpiMonthlyResultCreateManyKpiMasterInput = {
+export type KpiMonthlyResultCreateManySubmittedByInput = {
   id?: string
+  periodYear?: number | null
   month: number
   actualValue?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isNa?: boolean
@@ -801,12 +1711,211 @@ export type KpiMonthlyResultCreateManyKpiMasterInput = {
   spWebUrl?: string | null
   spDownloadUrl?: string | null
   fileName?: string | null
+  submittedAt?: Date | string | null
+  approvedById?: string | null
+  approvedAt?: Date | string | null
+  rejectionReason?: string | null
+  closedAt?: Date | string | null
+  kpiMasterId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type KpiMonthlyResultCreateManyApprovedByInput = {
+  id?: string
+  periodYear?: number | null
+  month: number
+  actualValue?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isNa?: boolean
+  status?: $Enums.KpiMonthlyStatus
+  approvalStatus?: $Enums.KpiApprovalStatus
+  spItemId?: string | null
+  spWebUrl?: string | null
+  spDownloadUrl?: string | null
+  fileName?: string | null
+  submittedById?: string | null
+  submittedAt?: Date | string | null
+  approvedAt?: Date | string | null
+  rejectionReason?: string | null
+  closedAt?: Date | string | null
+  kpiMasterId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type KpiMonthlyResultUpdateWithoutSubmittedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  periodYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  month?: Prisma.IntFieldUpdateOperationsInput | number
+  actualValue?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isNa?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumKpiMonthlyStatusFieldUpdateOperationsInput | $Enums.KpiMonthlyStatus
+  approvalStatus?: Prisma.EnumKpiApprovalStatusFieldUpdateOperationsInput | $Enums.KpiApprovalStatus
+  spItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  spWebUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  spDownloadUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  correctiveActions?: Prisma.KpiCorrectiveActionUpdateManyWithoutKpiMonthlyResultNestedInput
+  attachments?: Prisma.KpiMonthlyAttachmentUpdateManyWithoutKpiMonthlyResultNestedInput
+  signatures?: Prisma.KpiSignatureLogUpdateManyWithoutKpiMonthlyResultNestedInput
+  auditLogs?: Prisma.KpiAuditLogUpdateManyWithoutKpiMonthlyResultNestedInput
+  approvedBy?: Prisma.UserUpdateOneWithoutKpiMonthlyApprovedNestedInput
+  kpiMaster?: Prisma.KpiMasterUpdateOneRequiredWithoutMonthlyResultsNestedInput
+}
+
+export type KpiMonthlyResultUncheckedUpdateWithoutSubmittedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  periodYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  month?: Prisma.IntFieldUpdateOperationsInput | number
+  actualValue?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isNa?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumKpiMonthlyStatusFieldUpdateOperationsInput | $Enums.KpiMonthlyStatus
+  approvalStatus?: Prisma.EnumKpiApprovalStatusFieldUpdateOperationsInput | $Enums.KpiApprovalStatus
+  spItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  spWebUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  spDownloadUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  kpiMasterId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  correctiveActions?: Prisma.KpiCorrectiveActionUncheckedUpdateManyWithoutKpiMonthlyResultNestedInput
+  attachments?: Prisma.KpiMonthlyAttachmentUncheckedUpdateManyWithoutKpiMonthlyResultNestedInput
+  signatures?: Prisma.KpiSignatureLogUncheckedUpdateManyWithoutKpiMonthlyResultNestedInput
+  auditLogs?: Prisma.KpiAuditLogUncheckedUpdateManyWithoutKpiMonthlyResultNestedInput
+}
+
+export type KpiMonthlyResultUncheckedUpdateManyWithoutSubmittedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  periodYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  month?: Prisma.IntFieldUpdateOperationsInput | number
+  actualValue?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isNa?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumKpiMonthlyStatusFieldUpdateOperationsInput | $Enums.KpiMonthlyStatus
+  approvalStatus?: Prisma.EnumKpiApprovalStatusFieldUpdateOperationsInput | $Enums.KpiApprovalStatus
+  spItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  spWebUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  spDownloadUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  kpiMasterId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type KpiMonthlyResultUpdateWithoutApprovedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  periodYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  month?: Prisma.IntFieldUpdateOperationsInput | number
+  actualValue?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isNa?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumKpiMonthlyStatusFieldUpdateOperationsInput | $Enums.KpiMonthlyStatus
+  approvalStatus?: Prisma.EnumKpiApprovalStatusFieldUpdateOperationsInput | $Enums.KpiApprovalStatus
+  spItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  spWebUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  spDownloadUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  correctiveActions?: Prisma.KpiCorrectiveActionUpdateManyWithoutKpiMonthlyResultNestedInput
+  attachments?: Prisma.KpiMonthlyAttachmentUpdateManyWithoutKpiMonthlyResultNestedInput
+  signatures?: Prisma.KpiSignatureLogUpdateManyWithoutKpiMonthlyResultNestedInput
+  auditLogs?: Prisma.KpiAuditLogUpdateManyWithoutKpiMonthlyResultNestedInput
+  submittedBy?: Prisma.UserUpdateOneWithoutKpiMonthlySubmittedNestedInput
+  kpiMaster?: Prisma.KpiMasterUpdateOneRequiredWithoutMonthlyResultsNestedInput
+}
+
+export type KpiMonthlyResultUncheckedUpdateWithoutApprovedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  periodYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  month?: Prisma.IntFieldUpdateOperationsInput | number
+  actualValue?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isNa?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumKpiMonthlyStatusFieldUpdateOperationsInput | $Enums.KpiMonthlyStatus
+  approvalStatus?: Prisma.EnumKpiApprovalStatusFieldUpdateOperationsInput | $Enums.KpiApprovalStatus
+  spItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  spWebUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  spDownloadUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submittedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  kpiMasterId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  correctiveActions?: Prisma.KpiCorrectiveActionUncheckedUpdateManyWithoutKpiMonthlyResultNestedInput
+  attachments?: Prisma.KpiMonthlyAttachmentUncheckedUpdateManyWithoutKpiMonthlyResultNestedInput
+  signatures?: Prisma.KpiSignatureLogUncheckedUpdateManyWithoutKpiMonthlyResultNestedInput
+  auditLogs?: Prisma.KpiAuditLogUncheckedUpdateManyWithoutKpiMonthlyResultNestedInput
+}
+
+export type KpiMonthlyResultUncheckedUpdateManyWithoutApprovedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  periodYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  month?: Prisma.IntFieldUpdateOperationsInput | number
+  actualValue?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isNa?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumKpiMonthlyStatusFieldUpdateOperationsInput | $Enums.KpiMonthlyStatus
+  approvalStatus?: Prisma.EnumKpiApprovalStatusFieldUpdateOperationsInput | $Enums.KpiApprovalStatus
+  spItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  spWebUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  spDownloadUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submittedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  kpiMasterId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type KpiMonthlyResultCreateManyKpiMasterInput = {
+  id?: string
+  periodYear?: number | null
+  month: number
+  actualValue?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isNa?: boolean
+  status?: $Enums.KpiMonthlyStatus
+  approvalStatus?: $Enums.KpiApprovalStatus
+  spItemId?: string | null
+  spWebUrl?: string | null
+  spDownloadUrl?: string | null
+  fileName?: string | null
+  submittedById?: string | null
+  submittedAt?: Date | string | null
+  approvedById?: string | null
+  approvedAt?: Date | string | null
+  rejectionReason?: string | null
+  closedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
 export type KpiMonthlyResultUpdateWithoutKpiMasterInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  periodYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   month?: Prisma.IntFieldUpdateOperationsInput | number
   actualValue?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isNa?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -816,13 +1925,23 @@ export type KpiMonthlyResultUpdateWithoutKpiMasterInput = {
   spWebUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   spDownloadUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   correctiveActions?: Prisma.KpiCorrectiveActionUpdateManyWithoutKpiMonthlyResultNestedInput
+  attachments?: Prisma.KpiMonthlyAttachmentUpdateManyWithoutKpiMonthlyResultNestedInput
+  signatures?: Prisma.KpiSignatureLogUpdateManyWithoutKpiMonthlyResultNestedInput
+  auditLogs?: Prisma.KpiAuditLogUpdateManyWithoutKpiMonthlyResultNestedInput
+  submittedBy?: Prisma.UserUpdateOneWithoutKpiMonthlySubmittedNestedInput
+  approvedBy?: Prisma.UserUpdateOneWithoutKpiMonthlyApprovedNestedInput
 }
 
 export type KpiMonthlyResultUncheckedUpdateWithoutKpiMasterInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  periodYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   month?: Prisma.IntFieldUpdateOperationsInput | number
   actualValue?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isNa?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -832,13 +1951,23 @@ export type KpiMonthlyResultUncheckedUpdateWithoutKpiMasterInput = {
   spWebUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   spDownloadUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submittedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   correctiveActions?: Prisma.KpiCorrectiveActionUncheckedUpdateManyWithoutKpiMonthlyResultNestedInput
+  attachments?: Prisma.KpiMonthlyAttachmentUncheckedUpdateManyWithoutKpiMonthlyResultNestedInput
+  signatures?: Prisma.KpiSignatureLogUncheckedUpdateManyWithoutKpiMonthlyResultNestedInput
+  auditLogs?: Prisma.KpiAuditLogUncheckedUpdateManyWithoutKpiMonthlyResultNestedInput
 }
 
 export type KpiMonthlyResultUncheckedUpdateManyWithoutKpiMasterInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  periodYear?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   month?: Prisma.IntFieldUpdateOperationsInput | number
   actualValue?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isNa?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -848,6 +1977,12 @@ export type KpiMonthlyResultUncheckedUpdateManyWithoutKpiMasterInput = {
   spWebUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   spDownloadUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fileName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submittedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -859,10 +1994,16 @@ export type KpiMonthlyResultUncheckedUpdateManyWithoutKpiMasterInput = {
 
 export type KpiMonthlyResultCountOutputType = {
   correctiveActions: number
+  attachments: number
+  signatures: number
+  auditLogs: number
 }
 
 export type KpiMonthlyResultCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   correctiveActions?: boolean | KpiMonthlyResultCountOutputTypeCountCorrectiveActionsArgs
+  attachments?: boolean | KpiMonthlyResultCountOutputTypeCountAttachmentsArgs
+  signatures?: boolean | KpiMonthlyResultCountOutputTypeCountSignaturesArgs
+  auditLogs?: boolean | KpiMonthlyResultCountOutputTypeCountAuditLogsArgs
 }
 
 /**
@@ -882,9 +2023,31 @@ export type KpiMonthlyResultCountOutputTypeCountCorrectiveActionsArgs<ExtArgs ex
   where?: Prisma.KpiCorrectiveActionWhereInput
 }
 
+/**
+ * KpiMonthlyResultCountOutputType without action
+ */
+export type KpiMonthlyResultCountOutputTypeCountAttachmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.KpiMonthlyAttachmentWhereInput
+}
+
+/**
+ * KpiMonthlyResultCountOutputType without action
+ */
+export type KpiMonthlyResultCountOutputTypeCountSignaturesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.KpiSignatureLogWhereInput
+}
+
+/**
+ * KpiMonthlyResultCountOutputType without action
+ */
+export type KpiMonthlyResultCountOutputTypeCountAuditLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.KpiAuditLogWhereInput
+}
+
 
 export type KpiMonthlyResultSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  periodYear?: boolean
   month?: boolean
   actualValue?: boolean
   isNa?: boolean
@@ -894,16 +2057,28 @@ export type KpiMonthlyResultSelect<ExtArgs extends runtime.Types.Extensions.Inte
   spWebUrl?: boolean
   spDownloadUrl?: boolean
   fileName?: boolean
+  submittedById?: boolean
+  submittedAt?: boolean
+  approvedById?: boolean
+  approvedAt?: boolean
+  rejectionReason?: boolean
+  closedAt?: boolean
   kpiMasterId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   correctiveActions?: boolean | Prisma.KpiMonthlyResult$correctiveActionsArgs<ExtArgs>
+  attachments?: boolean | Prisma.KpiMonthlyResult$attachmentsArgs<ExtArgs>
+  signatures?: boolean | Prisma.KpiMonthlyResult$signaturesArgs<ExtArgs>
+  auditLogs?: boolean | Prisma.KpiMonthlyResult$auditLogsArgs<ExtArgs>
+  submittedBy?: boolean | Prisma.KpiMonthlyResult$submittedByArgs<ExtArgs>
+  approvedBy?: boolean | Prisma.KpiMonthlyResult$approvedByArgs<ExtArgs>
   kpiMaster?: boolean | Prisma.KpiMasterDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.KpiMonthlyResultCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["kpiMonthlyResult"]>
 
 export type KpiMonthlyResultSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  periodYear?: boolean
   month?: boolean
   actualValue?: boolean
   isNa?: boolean
@@ -913,14 +2088,23 @@ export type KpiMonthlyResultSelectCreateManyAndReturn<ExtArgs extends runtime.Ty
   spWebUrl?: boolean
   spDownloadUrl?: boolean
   fileName?: boolean
+  submittedById?: boolean
+  submittedAt?: boolean
+  approvedById?: boolean
+  approvedAt?: boolean
+  rejectionReason?: boolean
+  closedAt?: boolean
   kpiMasterId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  submittedBy?: boolean | Prisma.KpiMonthlyResult$submittedByArgs<ExtArgs>
+  approvedBy?: boolean | Prisma.KpiMonthlyResult$approvedByArgs<ExtArgs>
   kpiMaster?: boolean | Prisma.KpiMasterDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["kpiMonthlyResult"]>
 
 export type KpiMonthlyResultSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  periodYear?: boolean
   month?: boolean
   actualValue?: boolean
   isNa?: boolean
@@ -930,14 +2114,23 @@ export type KpiMonthlyResultSelectUpdateManyAndReturn<ExtArgs extends runtime.Ty
   spWebUrl?: boolean
   spDownloadUrl?: boolean
   fileName?: boolean
+  submittedById?: boolean
+  submittedAt?: boolean
+  approvedById?: boolean
+  approvedAt?: boolean
+  rejectionReason?: boolean
+  closedAt?: boolean
   kpiMasterId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  submittedBy?: boolean | Prisma.KpiMonthlyResult$submittedByArgs<ExtArgs>
+  approvedBy?: boolean | Prisma.KpiMonthlyResult$approvedByArgs<ExtArgs>
   kpiMaster?: boolean | Prisma.KpiMasterDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["kpiMonthlyResult"]>
 
 export type KpiMonthlyResultSelectScalar = {
   id?: boolean
+  periodYear?: boolean
   month?: boolean
   actualValue?: boolean
   isNa?: boolean
@@ -947,21 +2140,36 @@ export type KpiMonthlyResultSelectScalar = {
   spWebUrl?: boolean
   spDownloadUrl?: boolean
   fileName?: boolean
+  submittedById?: boolean
+  submittedAt?: boolean
+  approvedById?: boolean
+  approvedAt?: boolean
+  rejectionReason?: boolean
+  closedAt?: boolean
   kpiMasterId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type KpiMonthlyResultOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "month" | "actualValue" | "isNa" | "status" | "approvalStatus" | "spItemId" | "spWebUrl" | "spDownloadUrl" | "fileName" | "kpiMasterId" | "createdAt" | "updatedAt", ExtArgs["result"]["kpiMonthlyResult"]>
+export type KpiMonthlyResultOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "periodYear" | "month" | "actualValue" | "isNa" | "status" | "approvalStatus" | "spItemId" | "spWebUrl" | "spDownloadUrl" | "fileName" | "submittedById" | "submittedAt" | "approvedById" | "approvedAt" | "rejectionReason" | "closedAt" | "kpiMasterId" | "createdAt" | "updatedAt", ExtArgs["result"]["kpiMonthlyResult"]>
 export type KpiMonthlyResultInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   correctiveActions?: boolean | Prisma.KpiMonthlyResult$correctiveActionsArgs<ExtArgs>
+  attachments?: boolean | Prisma.KpiMonthlyResult$attachmentsArgs<ExtArgs>
+  signatures?: boolean | Prisma.KpiMonthlyResult$signaturesArgs<ExtArgs>
+  auditLogs?: boolean | Prisma.KpiMonthlyResult$auditLogsArgs<ExtArgs>
+  submittedBy?: boolean | Prisma.KpiMonthlyResult$submittedByArgs<ExtArgs>
+  approvedBy?: boolean | Prisma.KpiMonthlyResult$approvedByArgs<ExtArgs>
   kpiMaster?: boolean | Prisma.KpiMasterDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.KpiMonthlyResultCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type KpiMonthlyResultIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  submittedBy?: boolean | Prisma.KpiMonthlyResult$submittedByArgs<ExtArgs>
+  approvedBy?: boolean | Prisma.KpiMonthlyResult$approvedByArgs<ExtArgs>
   kpiMaster?: boolean | Prisma.KpiMasterDefaultArgs<ExtArgs>
 }
 export type KpiMonthlyResultIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  submittedBy?: boolean | Prisma.KpiMonthlyResult$submittedByArgs<ExtArgs>
+  approvedBy?: boolean | Prisma.KpiMonthlyResult$approvedByArgs<ExtArgs>
   kpiMaster?: boolean | Prisma.KpiMasterDefaultArgs<ExtArgs>
 }
 
@@ -969,10 +2177,16 @@ export type $KpiMonthlyResultPayload<ExtArgs extends runtime.Types.Extensions.In
   name: "KpiMonthlyResult"
   objects: {
     correctiveActions: Prisma.$KpiCorrectiveActionPayload<ExtArgs>[]
+    attachments: Prisma.$KpiMonthlyAttachmentPayload<ExtArgs>[]
+    signatures: Prisma.$KpiSignatureLogPayload<ExtArgs>[]
+    auditLogs: Prisma.$KpiAuditLogPayload<ExtArgs>[]
+    submittedBy: Prisma.$UserPayload<ExtArgs> | null
+    approvedBy: Prisma.$UserPayload<ExtArgs> | null
     kpiMaster: Prisma.$KpiMasterPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    periodYear: number | null
     month: number
     actualValue: runtime.Decimal | null
     isNa: boolean
@@ -982,6 +2196,12 @@ export type $KpiMonthlyResultPayload<ExtArgs extends runtime.Types.Extensions.In
     spWebUrl: string | null
     spDownloadUrl: string | null
     fileName: string | null
+    submittedById: string | null
+    submittedAt: Date | null
+    approvedById: string | null
+    approvedAt: Date | null
+    rejectionReason: string | null
+    closedAt: Date | null
     kpiMasterId: string
     createdAt: Date
     updatedAt: Date
@@ -1380,6 +2600,11 @@ readonly fields: KpiMonthlyResultFieldRefs;
 export interface Prisma__KpiMonthlyResultClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   correctiveActions<T extends Prisma.KpiMonthlyResult$correctiveActionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.KpiMonthlyResult$correctiveActionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$KpiCorrectiveActionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  attachments<T extends Prisma.KpiMonthlyResult$attachmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.KpiMonthlyResult$attachmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$KpiMonthlyAttachmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  signatures<T extends Prisma.KpiMonthlyResult$signaturesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.KpiMonthlyResult$signaturesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$KpiSignatureLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  auditLogs<T extends Prisma.KpiMonthlyResult$auditLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.KpiMonthlyResult$auditLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$KpiAuditLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  submittedBy<T extends Prisma.KpiMonthlyResult$submittedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.KpiMonthlyResult$submittedByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  approvedBy<T extends Prisma.KpiMonthlyResult$approvedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.KpiMonthlyResult$approvedByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   kpiMaster<T extends Prisma.KpiMasterDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.KpiMasterDefaultArgs<ExtArgs>>): Prisma.Prisma__KpiMasterClient<runtime.Types.Result.GetResult<Prisma.$KpiMasterPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1411,6 +2636,7 @@ export interface Prisma__KpiMonthlyResultClient<T, Null = never, ExtArgs extends
  */
 export interface KpiMonthlyResultFieldRefs {
   readonly id: Prisma.FieldRef<"KpiMonthlyResult", 'String'>
+  readonly periodYear: Prisma.FieldRef<"KpiMonthlyResult", 'Int'>
   readonly month: Prisma.FieldRef<"KpiMonthlyResult", 'Int'>
   readonly actualValue: Prisma.FieldRef<"KpiMonthlyResult", 'Decimal'>
   readonly isNa: Prisma.FieldRef<"KpiMonthlyResult", 'Boolean'>
@@ -1420,6 +2646,12 @@ export interface KpiMonthlyResultFieldRefs {
   readonly spWebUrl: Prisma.FieldRef<"KpiMonthlyResult", 'String'>
   readonly spDownloadUrl: Prisma.FieldRef<"KpiMonthlyResult", 'String'>
   readonly fileName: Prisma.FieldRef<"KpiMonthlyResult", 'String'>
+  readonly submittedById: Prisma.FieldRef<"KpiMonthlyResult", 'String'>
+  readonly submittedAt: Prisma.FieldRef<"KpiMonthlyResult", 'DateTime'>
+  readonly approvedById: Prisma.FieldRef<"KpiMonthlyResult", 'String'>
+  readonly approvedAt: Prisma.FieldRef<"KpiMonthlyResult", 'DateTime'>
+  readonly rejectionReason: Prisma.FieldRef<"KpiMonthlyResult", 'String'>
+  readonly closedAt: Prisma.FieldRef<"KpiMonthlyResult", 'DateTime'>
   readonly kpiMasterId: Prisma.FieldRef<"KpiMonthlyResult", 'String'>
   readonly createdAt: Prisma.FieldRef<"KpiMonthlyResult", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"KpiMonthlyResult", 'DateTime'>
@@ -1845,6 +3077,116 @@ export type KpiMonthlyResult$correctiveActionsArgs<ExtArgs extends runtime.Types
   take?: number
   skip?: number
   distinct?: Prisma.KpiCorrectiveActionScalarFieldEnum | Prisma.KpiCorrectiveActionScalarFieldEnum[]
+}
+
+/**
+ * KpiMonthlyResult.attachments
+ */
+export type KpiMonthlyResult$attachmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the KpiMonthlyAttachment
+   */
+  select?: Prisma.KpiMonthlyAttachmentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the KpiMonthlyAttachment
+   */
+  omit?: Prisma.KpiMonthlyAttachmentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.KpiMonthlyAttachmentInclude<ExtArgs> | null
+  where?: Prisma.KpiMonthlyAttachmentWhereInput
+  orderBy?: Prisma.KpiMonthlyAttachmentOrderByWithRelationInput | Prisma.KpiMonthlyAttachmentOrderByWithRelationInput[]
+  cursor?: Prisma.KpiMonthlyAttachmentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.KpiMonthlyAttachmentScalarFieldEnum | Prisma.KpiMonthlyAttachmentScalarFieldEnum[]
+}
+
+/**
+ * KpiMonthlyResult.signatures
+ */
+export type KpiMonthlyResult$signaturesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the KpiSignatureLog
+   */
+  select?: Prisma.KpiSignatureLogSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the KpiSignatureLog
+   */
+  omit?: Prisma.KpiSignatureLogOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.KpiSignatureLogInclude<ExtArgs> | null
+  where?: Prisma.KpiSignatureLogWhereInput
+  orderBy?: Prisma.KpiSignatureLogOrderByWithRelationInput | Prisma.KpiSignatureLogOrderByWithRelationInput[]
+  cursor?: Prisma.KpiSignatureLogWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.KpiSignatureLogScalarFieldEnum | Prisma.KpiSignatureLogScalarFieldEnum[]
+}
+
+/**
+ * KpiMonthlyResult.auditLogs
+ */
+export type KpiMonthlyResult$auditLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the KpiAuditLog
+   */
+  select?: Prisma.KpiAuditLogSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the KpiAuditLog
+   */
+  omit?: Prisma.KpiAuditLogOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.KpiAuditLogInclude<ExtArgs> | null
+  where?: Prisma.KpiAuditLogWhereInput
+  orderBy?: Prisma.KpiAuditLogOrderByWithRelationInput | Prisma.KpiAuditLogOrderByWithRelationInput[]
+  cursor?: Prisma.KpiAuditLogWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.KpiAuditLogScalarFieldEnum | Prisma.KpiAuditLogScalarFieldEnum[]
+}
+
+/**
+ * KpiMonthlyResult.submittedBy
+ */
+export type KpiMonthlyResult$submittedByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
+}
+
+/**
+ * KpiMonthlyResult.approvedBy
+ */
+export type KpiMonthlyResult$approvedByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
 }
 
 /**

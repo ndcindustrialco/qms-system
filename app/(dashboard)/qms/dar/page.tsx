@@ -1,7 +1,6 @@
 
 import { requireRole } from "@/lib/auth";
 import { DarService } from "@/services/darService";
-import QmsDarPageHeader from "@/components/qms/QmsDarPageHeader";
 import QmsDarListClient from "@/components/dar/QmsDarListClient";
 
 const darService = new DarService();
@@ -11,10 +10,8 @@ export default async function QmsDarPage() {
   const dars = await darService.getAllDars();
 
   return (
-    <div className="max-w-350 mx-auto px-4 md:px-8">
-      <QmsDarPageHeader />
+    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
       <QmsDarListClient dars={dars} />
     </div>
   );
 }
-

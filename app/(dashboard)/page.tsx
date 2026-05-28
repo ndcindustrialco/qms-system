@@ -45,7 +45,15 @@ export default async function CompanyCenterDashboard() {
 
     db.department.findMany({
       where: { isActive: true },
-      select: { name: true },
+      include: {
+        _count: { select: { docControls: true } },
+        docControls: {
+          select: { updatedAt: true },
+          orderBy: { updatedAt: "desc" },
+          take: 1,
+        },
+      },
+      orderBy: { updatedAt: "desc" },
     }),
 
     db.darAttachment.findMany({
@@ -70,6 +78,20 @@ export default async function CompanyCenterDashboard() {
 
   const canManage = ["QMS", "IT", "MR"].includes(session.user.role);
 
+  const mappedDepartments = departmentList
+    .map((dept) => ({
+      id: dept.id,
+      name: dept.name,
+      documentCount: dept._count.docControls,
+      latestDocUpdatedAt: dept.docControls[0]?.updatedAt ?? null,
+    }))
+    .sort((a, b) => {
+      const aTime = a.latestDocUpdatedAt ? new Date(a.latestDocUpdatedAt).getTime() : 0;
+      const bTime = b.latestDocUpdatedAt ? new Date(b.latestDocUpdatedAt).getTime() : 0;
+      return bTime - aTime;
+    })
+    .map(({ id, name, documentCount }) => ({ id, name, documentCount }));
+
   return (
     <DashboardClientView
       canManage={canManage}
@@ -77,7 +99,7 @@ export default async function CompanyCenterDashboard() {
       announcements={announcementsList}
       tickerAnnouncements={tickerAnnouncements}
       recentPublicDocs={recentPublicDocs}
-      departments={departmentList}
+      departments={mappedDepartments}
       recentAttachments={recentAttachments}
       kpiOk={kpiOkCount}
       kpiNg={kpiNgCount}

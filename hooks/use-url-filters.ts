@@ -101,14 +101,14 @@ export function useUrlFilters({
    */
   const setParam = useCallback(
     (key: string, value: string) => {
-      setRawValues((prev) => {
-        const next = { ...prev, [key]: value };
-        if (key !== ref.current.searchKey) {
-          const { debouncedSearch: ds, pathname: p, keys: k, searchKey: sk } = ref.current;
-          router.replace(toUrl(p, k, next, sk, ds), { scroll: false });
-        }
-        return next;
-      });
+      // Compute next values outside the updater — router.replace is a side effect
+      // and must not be called inside a setState updater (renders another component).
+      const next = { ...ref.current.rawValues, [key]: value };
+      setRawValues(next);
+      if (key !== ref.current.searchKey) {
+        const { debouncedSearch: ds, pathname: p, keys: k, searchKey: sk } = ref.current;
+        router.replace(toUrl(p, k, next, sk, ds), { scroll: false });
+      }
     },
     [router],
   );

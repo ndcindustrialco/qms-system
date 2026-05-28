@@ -13,6 +13,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import PageHeader from "@/components/common/PageHeader";
+import Pagination from "@/components/common/Pagination";
+import { useUrlFilters } from "@/hooks/use-url-filters";
 
 type Props = { departments: DepartmentRow[] };
 
@@ -20,6 +22,16 @@ export default function DepartmentTable({ departments }: Props) {
   const locale = useLocale();
   const { toast, showToast, hideToast } = useToast();
   const router = useRouter();
+
+  // ── URL-bound page ────────────────────────────────────────────────
+  const { params, setParam } = useUrlFilters({
+    keys: ["page"] as const,
+  });
+  const PAGE_SIZE = 20;
+  const currentPage = Math.max(1, parseInt(params.page || "1", 10));
+  const totalPages = Math.max(1, Math.ceil(departments.length / PAGE_SIZE));
+  const safePage = Math.min(currentPage, totalPages);
+  const paginated = departments.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
 
   const [modalMode, setModalMode] = useState<"create" | "edit" | null>(null);
   const [selected, setSelected] = useState<DepartmentRow | null>(null);
@@ -137,7 +149,7 @@ export default function DepartmentTable({ departments }: Props) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {departments.map((dept) => (
+            {paginated.map((dept) => (
               <TableRow key={dept.id} className="text-sm hover:bg-base-200 transition-colors duration-100">
                 <TableCell>
                   <Link
@@ -202,7 +214,7 @@ export default function DepartmentTable({ departments }: Props) {
 
       {/* Mobile cards */}
       <div className="md:hidden flex flex-col gap-3">
-        {departments.map((dept) => (
+        {paginated.map((dept) => (
           <div key={dept.id} className="card-premium p-4 border border-base-300 rounded-xl shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
             <div className="flex items-start justify-between gap-2 mb-2">
               <div>
@@ -254,6 +266,15 @@ export default function DepartmentTable({ departments }: Props) {
           onSuccess={handleSuccess}
         />
       )}
+
+      {/* Pagination */}
+      <Pagination
+        page={safePage}
+        totalPages={totalPages}
+        total={departments.length}
+        countLabel={locale === "th" ? "แผนก" : "departments"}
+        onPageChange={(p) => setParam("page", String(p))}
+      />
 
       {/* Confirm delete modal */}
       {confirmDept && (

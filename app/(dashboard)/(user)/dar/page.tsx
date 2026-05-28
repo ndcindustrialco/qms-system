@@ -44,7 +44,7 @@ export default async function DarPage() {
   };
 
   return (
-    <div className="max-w-350 mx-auto px-4 md:px-8">
+    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
       <Suspense fallback={<DarTableSkeleton />}>
         <DarList requesterId={session.user.id} requesterInfo={requesterInfo} />
       </Suspense>

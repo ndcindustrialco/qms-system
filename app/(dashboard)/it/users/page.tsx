@@ -17,7 +17,7 @@ export default async function ItUsersPage() {
   ]);
 
   return (
-    <div className="max-w-350 mx-auto px-4 md:px-8">
+    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
       <PageHeader
         title="Manage Users"
         subtitle={`All users signed in via Microsoft 365 (${users.length})`}

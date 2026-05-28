@@ -16,7 +16,7 @@ const createSchema = z.object({
 
 export async function GET() {
   try {
-    await requireRole("IT");
+    await requireRole("IT", "QMS", "MR");
     const departments = await deptService.getAllDepartments();
     return sendSuccess(departments, "Departments retrieved successfully");
   } catch (err) {
@@ -26,7 +26,7 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
-    await requireRole("IT");
+    await requireRole("IT", "QMS", "MR");
     const body = await req.json();
     const validated = createSchema.parse(body);
     const dept = await deptService.createDepartment(validated);

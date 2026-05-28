@@ -3,7 +3,10 @@ import { AppError } from "@/errors/customErrors";
 import { ZodError } from "zod";
 
 export function handleApiError(error: unknown): NextResponse {
-  console.error("[API Error]:", error);
+  // Only log unexpected server errors — 4xx errors are expected flow, not bugs
+  if (!(error instanceof AppError) || error.statusCode >= 500) {
+    console.error("[API Error]:", error);
+  }
 
   if (error instanceof AppError) {
     return NextResponse.json(

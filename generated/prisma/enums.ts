@@ -102,3 +102,44 @@ export const KpiApprovalStep = {
 } as const
 
 export type KpiApprovalStep = (typeof KpiApprovalStep)[keyof typeof KpiApprovalStep]
+
+
+export const KpiObjectiveStatus = {
+  DRAFT: 'DRAFT',
+  PENDING_APPROVAL: 'PENDING_APPROVAL',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+  ARCHIVED: 'ARCHIVED'
+} as const
+
+export type KpiObjectiveStatus = (typeof KpiObjectiveStatus)[keyof typeof KpiObjectiveStatus]
+
+
+export const KpiSignerRole = {
+  SUBMITTER: 'SUBMITTER',
+  APPROVER: 'APPROVER'
+} as const
+
+export type KpiSignerRole = (typeof KpiSignerRole)[keyof typeof KpiSignerRole]
+
+
+export const KpiWorkflowAction = {
+  SUBMIT: 'SUBMIT',
+  APPROVE: 'APPROVE',
+  REJECT: 'REJECT',
+  CLOSE: 'CLOSE',
+  REOPEN: 'REOPEN',
+  ATTACH: 'ATTACH',
+  DETACH: 'DETACH'
+} as const
+
+export type KpiWorkflowAction = (typeof KpiWorkflowAction)[keyof typeof KpiWorkflowAction]
+
+
+export const DocControlStatus = {
+  DRAFT: 'DRAFT',
+  ACTIVE: 'ACTIVE',
+  OBSOLETE: 'OBSOLETE'
+} as const
+
+export type DocControlStatus = (typeof DocControlStatus)[keyof typeof DocControlStatus]

@@ -1,0 +1,193 @@
+'use client';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+import { useState, useMemo } from 'react';
+import Link from 'next/link';
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
+import { toast } from 'sonner';
+import { ChevronRight, Home } from 'lucide-react';
+import { useT } from '@/lib/i18n';
+import { useLocale } from '@/lib/locale-context';
+import { Skeleton } from '@/components/ui/skeleton';
+import { CategoryFolderGrid } from './CategoryFolderGrid';
+import { CategoryDrawer } from './CategoryDrawer';
+import ConfirmModal from '@/components/common/ConfirmModal';
+import PageHeader from '@/components/common/PageHeader';
+import FilterBar from '@/components/common/FilterBar';
+import type { DocumentCategorySummary } from '@/types/documentControl';
+
+interface CategoryListClientProps {
+  department: { id: string; name: string };
+  canManage: boolean;
+}
+
+export function CategoryListClient({ department, canManage }: CategoryListClientProps) {
+  const t = useT();
+  const locale = useLocale();
+  const queryClient = useQueryClient();
+  const [search, setSearch] = useState('');
+  const [sortBy, setSortBy] = useState('order-asc');
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [editingCategory, setEditingCategory] = useState<DocumentCategorySummary | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<DocumentCategorySummary | null>(null);
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['document-categories', department.id],
+    queryFn: async () => {
+      const res = await fetch(`/api/document-categories?departmentId=${department.id}`);
+      if (!res.ok) throw new Error('Failed to fetch categories');
+      return res.json();
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const res = await fetch(`/api/document-categories/${id}`, { method: 'DELETE' });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error?.message || 'Failed to delete category');
+      }
+    },
+    onSuccess: () => {
+      toast.success(t('documentCategory.messages.deleteSuccess'));
+      setDeleteTarget(null);
+      queryClient.invalidateQueries({ queryKey: ['document-categories', department.id] });
+    },
+    onError: (err: any) => {
+      toast.error(err.message);
+      setDeleteTarget(null);
+    },
+  });
+
+  const handleAdd = () => {
+    setEditingCategory(null);
+    setDrawerOpen(true);
+  };
+
+  const handleEdit = (cat: DocumentCategorySummary) => {
+    setEditingCategory(cat);
+    setDrawerOpen(true);
+  };
+
+  const categories: DocumentCategorySummary[] = useMemo(() => data?.data ?? [], [data?.data]);
+
+  const isTh = locale === 'th';
+
+  const sortOptions = [
+    { value: 'order-asc', label: isTh ? 'ลำดับแสดงผล' : 'Display Order' },
+    { value: 'name-asc', label: isTh ? 'ชื่อ (ก-ฮ)' : 'Name (A-Z)' },
+    { value: 'name-desc', label: isTh ? 'ชื่อ (ฮ-ก)' : 'Name (Z-A)' },
+    { value: 'doc-desc', label: isTh ? 'จำนวนเอกสาร (มาก-น้อย)' : 'Documents (High-Low)' },
+  ];
+
+  const filtered = useMemo(() => {
+    const q = search.toLowerCase().trim();
+    return categories.filter((cat) => {
+      if (q && !cat.name.toLowerCase().includes(q) && !(cat.description || '').toLowerCase().includes(q)) return false;
+      return true;
+    });
+  }, [categories, search]);
+
+  const sorted = useMemo(() => {
+    return [...filtered].sort((a, b) => {
+      if (sortBy === 'order-asc') return a.order - b.order;
+      if (sortBy === 'name-asc') return a.name.localeCompare(b.name, 'th');
+      if (sortBy === 'name-desc') return b.name.localeCompare(a.name, 'th');
+      if (sortBy === 'doc-desc') {
+        const countA = a._count?.documents ?? 0;
+        const countB = b._count?.documents ?? 0;
+        return countB - countA;
+      }
+      return 0;
+    });
+  }, [filtered, sortBy]);
+
+  return (
+    <>
+      <div className="space-y-6">
+        {/* Breadcrumb */}
+        <nav className="flex items-center gap-1.5 text-sm text-neutral flex-wrap">
+          <Link href="/qms/document-controls" className="hover:text-[#0F1059] transition-colors flex items-center gap-1">
+            <Home className="w-3.5 h-3.5" />
+            <span>Document Controls</span>
+          </Link>
+          <ChevronRight className="w-3.5 h-3.5 opacity-40" />
+          <span className="text-[#0F1059] font-medium">{department.name}</span>
+        </nav>
+
+        <PageHeader
+          title={department.name}
+          subtitle={t('documentCategory.list')}
+        />
+
+        <FilterBar
+          searchValue={search}
+          onSearchChange={setSearch}
+          searchPlaceholder={isTh ? 'ค้นหาหมวดหมู่...' : 'Search categories...'}
+          searchLabel={t('common.search')}
+          filters={[
+            {
+              key: 'sort',
+              label: isTh ? 'จัดเรียงตาม' : 'Sort By',
+              options: sortOptions,
+              allLabel: isTh ? 'ลำดับแสดงผล' : 'Display Order',
+              minWidth: '14rem',
+            },
+          ]}
+          filterValues={{ sort: sortBy }}
+          onFilterChange={(key, val) => {
+            if (key === 'sort') setSortBy(val || 'order-asc');
+          }}
+          hasActiveFilters={!!search || sortBy !== 'order-asc'}
+          onClearAll={() => {
+            setSearch('');
+            setSortBy('order-asc');
+          }}
+          resultCount={sorted.length}
+          totalCount={categories.length}
+          countLabel={isTh ? 'หมวดหมู่' : 'categories'}
+        />
+
+        {isLoading ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Skeleton key={i} className="h-36 rounded-xl" />
+            ))}
+          </div>
+        ) : (
+          <CategoryFolderGrid
+            departmentId={department.id}
+            categories={sorted as any}
+            canManage={canManage}
+            onAdd={handleAdd}
+            onEdit={handleEdit as any}
+            onDelete={(cat: any) => setDeleteTarget(cat)}
+          />
+        )}
+      </div>
+
+      {/* Category Drawer */}
+      <CategoryDrawer
+        open={drawerOpen}
+        onClose={() => { setDrawerOpen(false); setEditingCategory(null); }}
+        departmentId={department.id}
+        category={editingCategory}
+        onSuccess={() => queryClient.invalidateQueries({ queryKey: ['document-categories', department.id] })}
+      />
+
+      {/* Delete Confirm Modal */}
+      {deleteTarget && (
+        <ConfirmModal
+          title={t('documentCategory.deleteConfirm')}
+          message={t('documentCategory.deleteMsg')}
+          confirmLabel={t('common.delete')}
+          cancelLabel={t('common.cancel')}
+          danger
+          loading={deleteMutation.isPending}
+          onConfirm={() => deleteMutation.mutate(deleteTarget.id)}
+          onCancel={() => setDeleteTarget(null)}
+        />
+      )}
+    </>
+  );
+}
