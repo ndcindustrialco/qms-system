@@ -1,4 +1,4 @@
-import { dirname, resolve } from "path";
+import { dirname } from "path";
 import { fileURLToPath } from "url";
 import { createRequire } from "module";
 import { FlatCompat } from "@eslint/eslintrc";
@@ -27,6 +27,12 @@ const eslintConfig = [
     },
     rules: {
       "ndc/no-db-in-api": "error",
+    },
+  },
+  {
+    files: ["next.config.js", "eslint-rules/**/*.js"],
+    rules: {
+      "@typescript-eslint/no-require-imports": "off",
     },
   },
 ];
