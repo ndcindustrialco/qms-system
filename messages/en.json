@@ -94,7 +94,8 @@
       "docName": "Document Name",
       "revision": "Revision",
       "darNo": "DAR No.",
-      "darNoDraft": "Not assigned yet (Draft)"
+      "darNoDraft": "Not assigned yet (Draft)",
+      "status": "Status"
     },
     "placeholder": {
       "reason": "Describe the reason for this request",
@@ -186,6 +187,53 @@
     "signModal": {
       "title": "Sign to Confirm Request",
       "subtitle": "Please sign before submitting your DAR request"
+    },
+    "drawer": {
+      "title": "New Document Request",
+      "subtitle": "Fill in the request details below",
+      "depsError": "Failed to load departments",
+      "tryAgain": "Try Again"
+    },
+    "editDrawer": {
+      "title": "Edit Document Request",
+      "draft": "Draft",
+      "darNoPrefix": "DAR No.",
+      "deleteLabel": "Delete request",
+      "loadError": "Failed to load data",
+      "deleteConfirmTitle": "Delete Draft?",
+      "deleteIrreversible": "This draft will be permanently deleted and cannot be recovered.",
+      "deleteForever": "Delete"
+    },
+    "list": {
+      "title": "Manage Document Requests (DAR)",
+      "subtitle": "Overview of all document requests",
+      "search": "Search DAR No., type, status...",
+      "filterStatus": "Status",
+      "allStatuses": "All Statuses",
+      "filterObjective": "Objective",
+      "allObjectives": "All Objectives",
+      "clearFilters": "Clear",
+      "sortDateLabel": "Date",
+      "sortDarNo": "DAR No.",
+      "sortStatus": "Status",
+      "sortAsc": "Ascending",
+      "sortDesc": "Descending",
+      "emptyTitle": "No document requests yet",
+      "emptyDesc": "Requests submitted by users will appear here",
+      "filteredEmptyTitle": "No results found",
+      "filteredEmptyDesc": "Try adjusting your filters or search term",
+      "filteredEmptyClear": "Clear Filters",
+      "deleteConfirmTitle": "Delete {darNo}?",
+      "deleteConfirmMsg": "This will permanently delete the DAR and all its attachments. This action cannot be undone.",
+      "deleteConfirmYes": "Delete",
+      "deleteSuccess": "Request deleted",
+      "countLabel": "items",
+      "statusPendingReview": "Pending Review",
+      "statusPendingApprove": "Pending Approve",
+      "statusQmsProcessing": "QMS Processing",
+      "statusCompleted": "Completed",
+      "statusCancelled": "Cancelled",
+      "statusDraft": "Draft"
     },
     "attachment": {
       "download": "Download",
@@ -327,7 +375,16 @@
     "displayTypeScrolling": "Scrolling Ticker (Top Bar)",
     "unauthorized": "Unauthorized",
     "uploadFail": "Failed to upload file",
-    "saveFail": "Failed to save announcement"
+    "saveFail": "Failed to save announcement",
+    "createDescription": "Fill in the announcement details below",
+    "bg": {
+      "background": "Background",
+      "colorTab": "Color",
+      "imageTab": "Image",
+      "noImage": "No image",
+      "textColor": "Text Color",
+      "previewText": "Preview text"
+    }
   },
   "profile": {
     "title": "My Profile",
@@ -362,6 +419,14 @@
     "retryBtn": "Try Again"
   },
   "kpi": {
+    "metaCard": {
+      "title": "KPI Details",
+      "assigned": "Assigned",
+      "submittedAt": "Submitted"
+    },
+    "rolePrivilegedDesc": "role has unrestricted CRUD access on all KPI items at all times.",
+    "roleUserDesc": "You can create and edit objectives only while KPI status is Draft or Rejected. Actions are locked once approved.",
+    "roleUserApprovedDesc": "This KPI has been fully approved. CRUD actions are locked for your role.",
     "reference": {
       "title": "KPI Management",
       "add": "Add KPI",
@@ -417,7 +482,8 @@
         "target": "Target",
         "frequency": "Frequency",
         "empty": "No objectives found"
-      }
+      },
+      "emptyHint": "Use the Add Objective button above to get started."
     },
     "submit": {
       "button": "Submit for Review",
@@ -427,6 +493,7 @@
     },
     "monthly": {
       "title": "Monthly KPI Reports",
+      "subtitle": "Track and manage monthly KPI reporting by department",
       "createReport": "Create Report",
       "filter": {
         "allMonths": "All Months",
@@ -495,7 +562,8 @@
     },
     "placeholder": {
       "name": "e.g. SOP, Manual, Format",
-      "description": "Optional description"
+      "description": "Optional description",
+      "search": "Search categories..."
     },
     "button": {
       "add": "Add Category"
@@ -504,7 +572,8 @@
       "createSuccess": "Category created successfully",
       "updateSuccess": "Category updated successfully",
       "deleteSuccess": "Category deleted successfully"
-    }
+    },
+    "countLabel": "categories"
   },
   "documentControl": {
     "title": "Document Control",
@@ -600,6 +669,21 @@
       "page": "Page",
       "of": "of",
       "items": "items"
+    },
+    "sort": {
+      "label": "Sort By",
+      "displayOrder": "Display Order",
+      "nameAsc": "Name (A-Z)",
+      "nameDesc": "Name (Z-A)",
+      "categoriesDesc": "Categories (High-Low)",
+      "documentsDesc": "Documents (High-Low)",
+      "latestCreated": "Latest Created",
+      "docNumberAsc": "Doc Number (A-Z)",
+      "docNumberDesc": "Doc Number (Z-A)",
+      "docNameAsc": "Doc Name (A-Z)",
+      "docNameDesc": "Doc Name (Z-A)",
+      "effectiveDateDesc": "Effective Date (New-Old)",
+      "effectiveDateAsc": "Effective Date (Old-New)"
     }
   },
   "documentDepartment": {
@@ -618,7 +702,8 @@
     },
     "placeholder": {
       "name": "e.g. Production, QA, HR",
-      "emailGroup": "e.g. production-dept@company.com"
+      "emailGroup": "e.g. production-dept@company.com",
+      "search": "Search departments..."
     },
     "button": {
       "add": "Add Department"
@@ -627,7 +712,8 @@
       "createSuccess": "Department created successfully",
       "updateSuccess": "Department updated successfully",
       "deleteSuccess": "Department deleted successfully"
-    }
+    },
+    "countLabel": "departments"
   },
   "approve": {
     "title": "Approve Queue",
@@ -654,6 +740,109 @@
     "backToQueue": "Back to Approve Queue",
     "empty": "No pending DAR items",
     "emptyKpiReview": "No pending KPI review items",
-    "emptyKpiApprove": "No pending KPI approval items"
+    "emptyKpiApprove": "No pending KPI approval items",
+    "role": "Role",
+    "stepReview": "Review",
+    "stepApprove": "Approval",
+    "accessLevel": "Access Level",
+    "fullAccess": "Full Access",
+    "rolePrivilegedDesc": "role has unrestricted CRUD access on all approval items at all times.",
+    "roleUserDesc": "You can take action on items assigned to you. Actions are restricted once your department approval is fully completed."
+  },
+  "qms": {
+    "approval": {
+      "title": "DAR Approver Configuration",
+      "subtitle": "Set MR and QMS signer from one place",
+      "mrLabel": "MR Approver (CURRENT_MR_USER_ID)",
+      "qmsLabel": "Final QMS Signer (CURRENT_QMS_USER_ID)",
+      "notSet": "Not set",
+      "saveFail": "Save failed",
+      "saveSuccess": "Configuration saved successfully",
+      "connectionError": "Connection error",
+      "savingLabel": "Saving...",
+      "saveButton": "Save Configuration"
+    },
+    "mr": {
+      "title": "Set Management Representative (MR)",
+      "subtitle": "Assign MR role to users in the system",
+      "currentMr": "Current MR",
+      "userCount": "user(s)",
+      "highlightTitle": "Current Management Representatives",
+      "search": "Search name, email, department...",
+      "empty": "No users found",
+      "mobileRole": "Mgmt. Rep.",
+      "mobileRoleUser": "User",
+      "colName": "Name",
+      "colEmail": "Email",
+      "colDept": "Department",
+      "colAction": "Action",
+      "countLabel": "users",
+      "removeLabel": "Remove MR",
+      "setLabel": "Set as MR",
+      "protected": "Protected"
+    }
+  },
+  "dashboard": {
+    "departments": {
+      "title": "Document Departments",
+      "viewAll": "View all",
+      "allDepartments": "All departments",
+      "searchPlaceholder": "Filter departments...",
+      "documentsUnit": "documents"
+    },
+    "announcements": {
+      "title": "Announcements",
+      "manage": "Manage",
+      "empty": "No announcements at this time"
+    },
+    "recentDocuments": {
+      "title": "Recently Changed Documents",
+      "empty": "No recent document updates",
+      "badgeNew": "NEW"
+    },
+    "kpi": {
+      "title": "KPI Monthly",
+      "indicatorsUnit": "indicators",
+      "stripTotal": "Total KPI",
+      "stripMonth": "This Month",
+      "stripPassed": "Passed",
+      "stripFailed": "Failed",
+      "stripPending": "Pending",
+      "stripInReview": "In Review",
+      "widgetNoData": "No data",
+      "widgetTotal": "total",
+      "widgetPending": "Pending"
+    },
+    "carWidget": {
+      "production": "Production",
+      "quality": "Quality",
+      "dueLabel": "Due",
+      "openStatus": "Open",
+      "comingSoon": "Coming soon",
+      "recentDocsTitle": "Recent Documents",
+      "recentDocsEmpty": "No recent documents"
+    },
+    "quickActions": {
+      "newDar": "New DAR",
+      "docRequest": "Document Request",
+      "trackDar": "Track DAR",
+      "myRequests": "My Requests",
+      "manageDar": "Manage DAR",
+      "reviewApprove": "Review & Approve",
+      "documents": "Documents",
+      "sharepointFiles": "SharePoint Files",
+      "announcements": "Announcements",
+      "manageNews": "Manage News",
+      "mr": "Set MR",
+      "mgmtRep": "Management Rep.",
+      "users": "Manage Users",
+      "userAccounts": "User Accounts",
+      "departments": "Departments",
+      "organization": "Organization"
+    },
+    "heroBanner": {
+      "viewDetails": "View Details",
+      "empty": "No announcements"
+    }
   }
 }

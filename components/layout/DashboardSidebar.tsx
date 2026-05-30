@@ -83,6 +83,15 @@ function UserStarIcon() {
   );
 }
 
+function CogIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-4.5 w-4.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.6} d="M11.983 5.25c.323-1.39 2.311-1.39 2.634 0a1.5 1.5 0 002.236 1.002c1.215-.733 2.621.673 1.888 1.888a1.5 1.5 0 001.002 2.236c1.39.323 1.39 2.311 0 2.634a1.5 1.5 0 00-1.002 2.236c.733 1.215-.673 2.621-1.888 1.888a1.5 1.5 0 00-2.236 1.002c-.323 1.39-2.311 1.39-2.634 0a1.5 1.5 0 00-2.236-1.002c-1.215.733-2.621-.673-1.888-1.888a1.5 1.5 0 00-1.002-2.236c-1.39-.323-1.39-2.311 0-2.634a1.5 1.5 0 001.002-2.236c-.733-1.215.673-2.621 1.888-1.888a1.5 1.5 0 002.236-1.002z" />
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.6} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+    </svg>
+  );
+}
+
 function ProfileIcon() {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" className="h-4.5 w-4.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -110,7 +119,7 @@ function KpiMonthlyIcon() {
 function getSections(role: UserRole, locale: "th" | "en"): { label: string; items: NavItem[] }[] {
   const userItems: NavItem[] = [
     { labelTh: "หน้าหลัก", labelEn: "Dashboard", href: "/", icon: <HomeIcon /> },
-    { labelTh: "คำขอเอกสาร", labelEn: "My Requests", href: "/dar", icon: <FileIcon /> },
+    { labelTh: "DAR", labelEn: "DAR Requests", href: "/dar", icon: <FileIcon /> },
     { labelTh: "เอกสารทั้งหมด", labelEn: "Document Control", href: "/qms/document-controls", icon: <FileIcon /> },
     { labelTh: "โปรไฟล์ของฉัน", labelEn: "My Profile", href: "/profile", icon: <ProfileIcon /> },
     { labelTh: "งานรออนุมัติ", labelEn: "Approve Queue", href: "/approve", icon: <CheckIcon /> },
@@ -132,11 +141,12 @@ function getSections(role: UserRole, locale: "th" | "en"): { label: string; item
   ];
 
   const setMrItem: NavItem = { labelTh: "กำหนด MR", labelEn: "Set MR", href: "/qms/mr", icon: <UserStarIcon /> };
+  const approvalConfigItem: NavItem = { labelTh: "ตั้งค่าผู้อนุมัติ", labelEn: "Approver Config", href: "/qms/approval-config", icon: <CogIcon /> };
 
   if (role === "QMS" || role === "MR") {
-    sections.push({ label: "QMS", items: [...qmsItems, setMrItem] });
+    sections.push({ label: "QMS", items: [...qmsItems, setMrItem, approvalConfigItem] });
   } else if (role === "IT") {
-    sections.push({ label: "QMS", items: [...qmsItems, setMrItem] });
+    sections.push({ label: "QMS", items: [...qmsItems, setMrItem, approvalConfigItem] });
     sections.push({ label: locale === "th" ? "ระบบ IT" : "IT Admin", items: itItems });
   }
 

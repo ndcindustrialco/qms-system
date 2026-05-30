@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
+import { useAppQuery } from "@/hooks/use-app-query";
 import { toast } from "sonner";
 import { useT } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
@@ -27,8 +27,9 @@ export default function KpiApproveActionClient({ id, mode, type, kpiId }: Props)
   const [submitting, setSubmitting] = useState(false);
   const [successOpen, setSuccessOpen] = useState(false);
 
-  const query = useQuery({
+  const query = useAppQuery({
     queryKey: ["approve-action", type, id, kpiId],
+    realtimeClass: "A",
     queryFn: async () => {
       const url = type === "kpi"
         ? `/api/kpi/${id}`
@@ -45,7 +46,10 @@ export default function KpiApproveActionClient({ id, mode, type, kpiId }: Props)
     return `${t("approve.typeMonthly")} - ${query.data?.kpi?.department ?? ""}`;
   }, [query.data, t, type]);
 
-  async function submitAction(action: "approve" | "reject") {
+  async function submitAction(
+    action: "approve" | "reject",
+    sigPayload?: { signatureDataUrl: string; signatureType: string; saveSignature: boolean }
+  ) {
     try {
       setSubmitting(true);
       let url = "";
@@ -65,11 +69,15 @@ export default function KpiApproveActionClient({ id, mode, type, kpiId }: Props)
         }
       }
 
-      const payload = action === "reject" ? { reason: "Rejected from approve action page" } : undefined;
+      const bodyPayload = {
+        ...(action === "reject" ? { reason: "Rejected from approve action page" } : {}),
+        ...(sigPayload || {}),
+      };
+
       const res = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: payload ? JSON.stringify(payload) : undefined,
+        body: Object.keys(bodyPayload).length > 0 ? JSON.stringify(bodyPayload) : undefined,
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error?.message ?? json.message ?? "Action failed");
@@ -141,9 +149,9 @@ export default function KpiApproveActionClient({ id, mode, type, kpiId }: Props)
         open={sigOpen}
         title={mode === "reviewer" ? t("kpi.monthly.actions.review") : t("kpi.monthly.actions.approve")}
         onOpenChange={setSigOpen}
-        onConfirm={async () => {
+        onConfirm={async (payload) => {
           if (!pendingAction) return;
-          await submitAction(pendingAction);
+          await submitAction(pendingAction, payload);
         }}
       />
 

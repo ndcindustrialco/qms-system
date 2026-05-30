@@ -6,13 +6,14 @@ import { Button } from "@/components/ui/button";
 type Props = {
   isSaving: boolean;
   isSubmitting: boolean;
+  disableSubmit?: boolean;
   onSaveDraft: () => void;
   onSubmit: () => void;
   mode: "create" | "edit";
   hideSubmit?: boolean;
 };
 
-export default function DarFormActions({ isSaving, isSubmitting, onSaveDraft, onSubmit, mode, hideSubmit = false }: Props) {
+export default function DarFormActions({ isSaving, isSubmitting, disableSubmit = false, onSaveDraft, onSubmit, mode, hideSubmit = false }: Props) {
   const t = useT();
   const isLoading = isSaving || isSubmitting;
 
@@ -32,7 +33,7 @@ export default function DarFormActions({ isSaving, isSubmitting, onSaveDraft, on
           <Button size="sm" className=" gap-1 order-1 sm:order-2"
             type="button"
             onClick={onSubmit}
-            disabled={isLoading}
+            disabled={isLoading || disableSubmit}
           >
             {isSubmitting && <span className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin inline-block" />}
             {t("submitRequest")}

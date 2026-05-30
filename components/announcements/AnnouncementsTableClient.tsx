@@ -17,6 +17,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useUrlFilters } from "@/hooks/use-url-filters";
+import { getErrorMessage } from "@/lib/error-message";
 
 const PAGE_SIZE = 10;
 
@@ -117,7 +118,7 @@ export default function AnnouncementsTableClient({ rows: initialRows }: { rows: 
         body: JSON.stringify({ active }),
       });
       const json = await res.json();
-      if (!res.ok || json.error) throw new Error(json.error ?? "Toggle failed");
+      if (!res.ok || json.error) throw new Error(getErrorMessage(json.error, "Toggle failed"));
       return json.data;
     },
     onSuccess: () => {
@@ -134,21 +135,21 @@ export default function AnnouncementsTableClient({ rows: initialRows }: { rows: 
   }
 
   function handleSaved(success: boolean, errorMessage?: string) {
-    if (!success) { toast.error(errorMessage ?? t("announcement.updateFail")); return; }
+    if (!success) { toast.error(getErrorMessage(errorMessage, t("announcement.updateFail"))); return; }
     setEditOpen(false);
     toast.success(t("announcement.updateSuccess"));
     queryClient.invalidateQueries({ queryKey: ["announcements"] });
   }
 
   function handleCreated(success: boolean, errorMessage?: string) {
-    if (!success) { toast.error(errorMessage ?? t("announcement.createFail")); return; }
+    if (!success) { toast.error(getErrorMessage(errorMessage, t("announcement.createFail"))); return; }
     setCreateOpen(false);
     toast.success(t("announcement.createSuccess"));
     queryClient.invalidateQueries({ queryKey: ["announcements"] });
   }
 
   function handleDeleted(success: boolean, errorMessage?: string) {
-    if (!success) { toast.error(errorMessage ?? t("announcement.deleteFail")); return; }
+    if (!success) { toast.error(getErrorMessage(errorMessage, t("announcement.deleteFail"))); return; }
     setDeleteModalOpen(false);
     toast.success(t("announcement.deleteSuccess"));
     queryClient.invalidateQueries({ queryKey: ["announcements"] });

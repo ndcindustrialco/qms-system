@@ -10,7 +10,8 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ re
   try {
     const session = await requireAuth();
     const { reportId } = await params;
-    const updated = await service.reviewReport(reportId, { userId: session.user.id, role: session.user.role, departmentId: session.user.departmentId });
+    const body = await _req.json().catch(() => ({}));
+    const updated = await service.reviewReport(reportId, { userId: session.user.id, role: session.user.role, departmentId: session.user.departmentId }, body);
     return sendSuccess(updated, 'Monthly report reviewed successfully');
   } catch (error) {
     return handleApiError(error);

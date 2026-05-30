@@ -11,6 +11,13 @@ export class KpiMonthlyDetailRepository extends BaseRepository<KPIMonthlyDetail,
     return this.getClient(tx).kPIMonthlyDetail;
   }
 
+  async findByIdWithReport(id: string, tx?: Prisma.TransactionClient) {
+    return this.delegate(tx).findUnique({
+      where: { id },
+      include: { monthlyReport: true, kpiObjective: true },
+    });
+  }
+
   async findByReportId(reportId: string, tx?: Prisma.TransactionClient) {
     return this.delegate(tx).findMany({
       where: { monthlyReportId: reportId },

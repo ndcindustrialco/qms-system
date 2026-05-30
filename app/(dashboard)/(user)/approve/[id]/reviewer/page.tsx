@@ -4,6 +4,7 @@ import { DarService } from "@/services/darService";
 import DarReviewLayout from "@/components/dar/DarReviewLayout";
 import type { DarApprovalRow } from "@/types/dar";
 import KpiApproveActionClient from "@/components/approve/KpiApproveActionClient";
+import { AppError } from "@/errors/customErrors";
 
 const darService = new DarService();
 
@@ -64,7 +65,15 @@ export default async function ApproveReviewerPage({ params, searchParams }: Prop
         />
       </div>
     );
-  } catch {
-    notFound();
+  } catch (error) {
+    if (error instanceof AppError) {
+      if (error.statusCode === 403) {
+        redirect("/unauthorized?reason=insufficient_role");
+      }
+      if (error.statusCode === 404) {
+        notFound();
+      }
+    }
+    throw error;
   }
 }

@@ -1,15 +1,8 @@
 /**
- * Microsoft Graph API — Send Mail (app-only)
- *
- * Required Azure AD application permission:
- *   - Mail.Send
- *
- * The "from" address must be a mailbox in the tenant.
- * Set MAIL_SENDER_ADDRESS to the shared/service mailbox (e.g. noreply@yourcompany.com).
+ * Microsoft Graph API - Send Mail (app-only)
  */
 
 import { getGraphToken } from "@/lib/graph-token";
-
 
 export interface MailRecipient {
   name: string;
@@ -20,14 +13,13 @@ interface SendMailOptions {
   to: MailRecipient[];
   subject: string;
   bodyHtml: string;
-  /** Override sender mailbox. Falls back to MAIL_SENDER_ADDRESS env var. */
   senderEmail?: string;
 }
 
 async function sendMail(opts: SendMailOptions): Promise<void> {
   const sender = opts.senderEmail || process.env.MAIL_SENDER_ADDRESS;
   if (!sender) {
-    console.warn("[email] No sender address — skipping mail send");
+    console.warn("[email] No sender address - skipping mail send");
     return;
   }
 
@@ -44,17 +36,14 @@ async function sendMail(opts: SendMailOptions): Promise<void> {
     saveToSentItems: false,
   };
 
-  const res = await fetch(
-    `https://graph.microsoft.com/v1.0/users/${encodeURIComponent(sender)}/sendMail`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
+  const res = await fetch(`https://graph.microsoft.com/v1.0/users/${encodeURIComponent(sender)}/sendMail`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
     },
-  );
+    body: JSON.stringify(payload),
+  });
 
   if (!res.ok) {
     const text = await res.text();
@@ -62,7 +51,76 @@ async function sendMail(opts: SendMailOptions): Promise<void> {
   }
 }
 
-// ── DAR email templates ───────────────────────────────────────────────────────
+function esc(value: string): string {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
+function getAppUrl(path: string): string {
+  const base = (process.env.NEXTAUTH_URL ?? "").replace(/\/+$/, "");
+  return `${base}${path.startsWith("/") ? path : `/${path}`}`;
+}
+
+function makeBilingualMail(opts: {
+  titleTh: string;
+  titleEn: string;
+  subtitleTh?: string;
+  subtitleEn?: string;
+  facts: Array<{ labelTh: string; labelEn: string; value: string }>;
+  detailTh?: string;
+  detailEn?: string;
+  actionLabelTh?: string;
+  actionLabelEn?: string;
+  actionUrl?: string;
+}): string {
+  const factsHtml = opts.facts
+    .map(
+      (f) => `
+      <tr>
+        <td style="padding:10px 12px;border-bottom:1px solid #e2e8f0;width:35%;vertical-align:top;background:#f8fafc">
+          <div style="font-size:12px;color:#0f172a;font-weight:700">${esc(f.labelTh)}</div>
+          <div style="font-size:11px;color:#64748b">${esc(f.labelEn)}</div>
+        </td>
+        <td style="padding:10px 12px;border-bottom:1px solid #e2e8f0;vertical-align:top">
+          <div style="font-size:13px;color:#0f172a;font-weight:600;white-space:pre-wrap">${esc(f.value)}</div>
+        </td>
+      </tr>`
+    )
+    .join("");
+
+  const actionHtml = opts.actionUrl
+    ? `
+      <div style="margin-top:16px;padding-top:16px;border-top:1px solid #e2e8f0">
+        <a href="${opts.actionUrl}" style="display:inline-block;padding:12px 20px;background:#0f1059;color:#fff;text-decoration:none;border-radius:8px;font-size:13px;font-weight:700">
+          ${esc(opts.actionLabelTh ?? "เปิดรายการ")} / ${esc(opts.actionLabelEn ?? "Open Item")}
+        </a>
+        <div style="margin-top:8px;font-size:11px;color:#64748b;word-break:break-all">${esc(opts.actionUrl)}</div>
+      </div>`
+    : "";
+
+  return `
+  <div style="width:100%;margin:0;padding:20px;background:#f8fafc;font-family:Segoe UI,Arial,sans-serif">
+    <div style="width:100%;max-width:980px;margin:0 auto;background:#fff;overflow:hidden">
+      <div style="padding:18px 22px;background:#0f1059;color:#fff">
+        <div style="font-size:20px;font-weight:800;line-height:1.3">${esc(opts.titleTh)}</div>
+        <div style="font-size:15px;font-weight:600;opacity:.95">${esc(opts.titleEn)}</div>
+        ${opts.subtitleTh ? `<div style="margin-top:8px;font-size:12px;opacity:.9">${esc(opts.subtitleTh)}${opts.subtitleEn ? ` / ${esc(opts.subtitleEn)}` : ""}</div>` : ""}
+      </div>
+      <div style="padding:20px 22px">
+        <table style="width:100%;border-collapse:collapse">${factsHtml}</table>
+        ${opts.detailTh || opts.detailEn ? `<div style="margin-top:14px;padding:12px;background:#f8fafc"><div style="font-size:12px;font-weight:700;color:#0f172a">รายละเอียด / Details</div><div style="font-size:13px;color:#334155;margin-top:6px;white-space:pre-wrap">${esc(opts.detailTh ?? "")}${opts.detailEn ? `\n${esc(opts.detailEn)}` : ""}</div></div>` : ""}
+        ${actionHtml}
+      </div>
+      <div style="padding:12px 22px;background:#f8fafc;border-top:1px solid #e2e8f0;font-size:11px;color:#64748b">
+        อีเมลนี้ถูกส่งโดยระบบอัตโนมัติ กรุณาอย่าตอบกลับ / This is an automated email. Please do not reply.
+      </div>
+    </div>
+  </div>`;
+}
 
 export interface DarEmailItem {
   itemNo: number;
@@ -90,148 +148,28 @@ export async function sendReviewerAssignedEmail(opts: {
   attachments: DarEmailAttachment[];
   senderEmail?: string;
 }): Promise<void> {
-  const appUrl = process.env.NEXTAUTH_URL ?? "";
-  const reviewUrl = `${appUrl}/dar/${opts.darId}/review`;
-
-  const itemRows = opts.items
-    .map(
-      (it) => `
-        <tr>
-          <td style="padding:8px 12px;border-bottom:1px solid #e2e8f0;color:#374151;font-size:13px">${it.itemNo}</td>
-          <td style="padding:8px 12px;border-bottom:1px solid #e2e8f0;color:#374151;font-size:13px;font-family:monospace">${it.docNumber}</td>
-          <td style="padding:8px 12px;border-bottom:1px solid #e2e8f0;color:#374151;font-size:13px">${it.docName}</td>
-          <td style="padding:8px 12px;border-bottom:1px solid #e2e8f0;color:#374151;font-size:13px;text-align:center">${it.revision}</td>
-        </tr>`,
-    )
-    .join("");
-
-  const attachmentList =
-    opts.attachments.length > 0
-      ? opts.attachments
-          .map(
-            (a) =>
-              `<li style="margin-bottom:4px">
-                <a href="${a.spWebUrl}" style="color:#0f1059;font-size:13px;text-decoration:underline">${a.fileName}</a>
-              </li>`,
-          )
-          .join("")
-      : `<li style="color:#9ca3af;font-size:13px">ไม่มีไฟล์แนบ</li>`;
-
-  const requestDateFmt = new Date(opts.requestDate).toLocaleDateString("th-TH", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-  });
-
+  const url = getAppUrl(`/dar/${opts.darId}`);
   await sendMail({
     to: [opts.reviewer],
     senderEmail: opts.senderEmail,
-    subject: `[QMS] Document Request ${opts.darNo} — Pending Your Review / รอการตรวจสอบจากคุณ`,
-    bodyHtml: `
-<!DOCTYPE html>
-<html lang="th">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
-<body style="margin:0;padding:0;background:#f8fafc;font-family:'Segoe UI',sans-serif">
-<div style="max-width:620px;margin:32px auto;background:#fff;border-radius:12px;border:1px solid #e2e8f0;overflow:hidden">
-
-  <!-- Header -->
-  <div style="background:#0f1059;padding:28px 32px">
-    <p style="margin:0;color:#a5b4fc;font-size:12px;letter-spacing:1px;text-transform:uppercase">QMS Document Request</p>
-    <h1 style="margin:6px 0 0;color:#fff;font-size:22px;font-weight:700">${opts.darNo}</h1>
-  </div>
-
-  <!-- Alert banner -->
-  <div style="background:#fffbeb;border-bottom:1px solid #fde68a;padding:14px 32px">
-    <p style="margin:0;color:#92400e;font-size:13px;font-weight:600">
-      You have been assigned to review a document request from <strong>${opts.requesterName}</strong>
-    </p>
-    <p style="margin:4px 0 0;color:#92400e;font-size:12px">
-      คุณได้รับมอบหมายให้ตรวจสอบคำขอเอกสารจาก <strong>${opts.requesterName}</strong>
-    </p>
-  </div>
-
-  <div style="padding:28px 32px">
-
-    <!-- Request meta -->
-    <table style="width:100%;border-collapse:collapse;margin-bottom:24px">
-      <tr>
-        <td style="padding:4px 0;width:50%;vertical-align:top">
-          <p style="margin:0;font-size:11px;color:#9ca3af;text-transform:uppercase;letter-spacing:.5px">Requested By / ผู้จัดทำ</p>
-          <p style="margin:4px 0 0;font-size:14px;color:#111827;font-weight:600">${opts.requesterName}</p>
-          ${opts.requesterDepartment ? `<p style="margin:2px 0 0;font-size:12px;color:#6b7280">${opts.requesterDepartment}</p>` : ""}
-        </td>
-        <td style="padding:4px 0;width:50%;vertical-align:top">
-          <p style="margin:0;font-size:11px;color:#9ca3af;text-transform:uppercase;letter-spacing:.5px">Request Date / วันที่ขอ</p>
-          <p style="margin:4px 0 0;font-size:14px;color:#111827">${requestDateFmt}</p>
-        </td>
-      </tr>
-      <tr>
-        <td style="padding:12px 0 4px;vertical-align:top">
-          <p style="margin:0;font-size:11px;color:#9ca3af;text-transform:uppercase;letter-spacing:.5px">Objective / วัตถุประสงค์</p>
-          <p style="margin:4px 0 0;font-size:14px;color:#111827">${opts.objective}</p>
-        </td>
-        <td style="padding:12px 0 4px;vertical-align:top">
-          <p style="margin:0;font-size:11px;color:#9ca3af;text-transform:uppercase;letter-spacing:.5px">Document Type / ประเภทเอกสาร</p>
-          <p style="margin:4px 0 0;font-size:14px;color:#111827">${opts.docType}</p>
-        </td>
-      </tr>
-    </table>
-
-    <!-- Reason -->
-    <div style="margin-bottom:24px">
-      <p style="margin:0 0 8px;font-size:12px;font-weight:600;color:#374151;text-transform:uppercase;letter-spacing:.5px">Reason / เหตุผล - ความจำเป็น</p>
-      <div style="background:#f9fafb;border:1px solid #e5e7eb;border-left:3px solid #0f1059;border-radius:6px;padding:12px 16px">
-        <p style="margin:0;font-size:13px;color:#374151;line-height:1.7;white-space:pre-wrap">${opts.reason}</p>
-      </div>
-    </div>
-
-    <!-- Items table -->
-    <div style="margin-bottom:24px">
-      <p style="margin:0 0 8px;font-size:12px;font-weight:600;color:#374151;text-transform:uppercase;letter-spacing:.5px">Document Items / รายการเอกสาร (${opts.items.length})</p>
-      <table style="width:100%;border-collapse:collapse;border:1px solid #e2e8f0;border-radius:8px;overflow:hidden">
-        <thead>
-          <tr style="background:#f1f5f9">
-            <th style="padding:8px 12px;text-align:left;font-size:11px;color:#64748b;font-weight:600;border-bottom:1px solid #e2e8f0">#</th>
-            <th style="padding:8px 12px;text-align:left;font-size:11px;color:#64748b;font-weight:600;border-bottom:1px solid #e2e8f0">Doc. No. / เลขที่เอกสาร</th>
-            <th style="padding:8px 12px;text-align:left;font-size:11px;color:#64748b;font-weight:600;border-bottom:1px solid #e2e8f0">Document Name / ชื่อเอกสาร</th>
-            <th style="padding:8px 12px;text-align:center;font-size:11px;color:#64748b;font-weight:600;border-bottom:1px solid #e2e8f0">Rev.</th>
-          </tr>
-        </thead>
-        <tbody>${itemRows}</tbody>
-      </table>
-    </div>
-
-    <!-- Attachments -->
-    <div style="margin-bottom:28px">
-      <p style="margin:0 0 8px;font-size:12px;font-weight:600;color:#374151;text-transform:uppercase;letter-spacing:.5px">Attachments / ไฟล์แนบ</p>
-      <ul style="margin:0;padding-left:18px">${attachmentList}</ul>
-    </div>
-
-    <!-- CTA -->
-    <div style="text-align:center;padding:20px 0;border-top:1px solid #f1f5f9">
-      <p style="margin:0 0 4px;font-size:14px;color:#6b7280">Click the button below to review and sign off.</p>
-      <p style="margin:0 0 16px;font-size:13px;color:#9ca3af">คลิกปุ่มด้านล่างเพื่อตรวจสอบและลงลายมือชื่อ</p>
-      <a href="${reviewUrl}"
-         style="display:inline-block;padding:12px 28px;background:#0f1059;color:#fff;border-radius:8px;text-decoration:none;font-size:14px;font-weight:600;letter-spacing:.3px">
-        Review and Approve / ตรวจสอบและอนุมัติ
-      </a>
-      <p style="margin:16px 0 0;font-size:11px;color:#9ca3af">
-        If the button does not work, open this link / หากปุ่มด้านบนไม่ทำงาน กรุณาเปิดลิงก์:<br>
-        <a href="${reviewUrl}" style="color:#0f1059">${reviewUrl}</a>
-      </p>
-    </div>
-
-  </div>
-
-  <!-- Footer -->
-  <div style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:16px 32px;text-align:center">
-    <p style="margin:0;font-size:11px;color:#9ca3af">This email was sent automatically by the QMS system. Please do not reply.</p>
-    <p style="margin:4px 0 0;font-size:11px;color:#9ca3af">อีเมลนี้ส่งโดยระบบ QMS โดยอัตโนมัติ — กรุณาอย่าตอบกลับ</p>
-  </div>
-
-</div>
-</body>
-</html>`,
+    subject: `[DAR] Review Required - ${opts.darNo}`,
+    bodyHtml: makeBilingualMail({
+      titleTh: `คำขอเอกสาร DAR ${opts.darNo} รอตรวจสอบ`,
+      titleEn: `DAR ${opts.darNo} Pending Review`,
+      facts: [
+        { labelTh: "ผู้ตรวจสอบ", labelEn: "Reviewer", value: opts.reviewer.name },
+        { labelTh: "ผู้ร้องขอ", labelEn: "Requester", value: `${opts.requesterName}${opts.requesterDepartment ? ` (${opts.requesterDepartment})` : ""}` },
+        { labelTh: "วันที่ร้องขอ", labelEn: "Request Date", value: opts.requestDate },
+        { labelTh: "วัตถุประสงค์", labelEn: "Objective", value: opts.objective },
+        { labelTh: "ประเภทเอกสาร", labelEn: "Document Type", value: opts.docType },
+        { labelTh: "จำนวนรายการ", labelEn: "Item Count", value: String(opts.items.length) },
+      ],
+      detailTh: `เหตุผล: ${opts.reason}`,
+      detailEn: `Reason: ${opts.reason}`,
+      actionLabelTh: "เปิดคำขอ DAR",
+      actionLabelEn: "Open DAR",
+      actionUrl: url,
+    }),
   });
 }
 
@@ -250,148 +188,50 @@ export async function sendMrApprovalRequestEmail(opts: {
   attachments: DarEmailAttachment[];
   senderEmail?: string;
 }): Promise<void> {
-  const appUrl = process.env.NEXTAUTH_URL ?? "";
-  const darUrl = `${appUrl}/dar/${opts.darId}/review`;
-
-  const itemRows = opts.items
-    .map(
-      (it) => `
-        <tr>
-          <td style="padding:8px 12px;border-bottom:1px solid #e2e8f0;color:#374151;font-size:13px">${it.itemNo}</td>
-          <td style="padding:8px 12px;border-bottom:1px solid #e2e8f0;color:#374151;font-size:13px;font-family:monospace">${it.docNumber}</td>
-          <td style="padding:8px 12px;border-bottom:1px solid #e2e8f0;color:#374151;font-size:13px">${it.docName}</td>
-          <td style="padding:8px 12px;border-bottom:1px solid #e2e8f0;color:#374151;font-size:13px;text-align:center">${it.revision}</td>
-        </tr>`,
-    )
-    .join("");
-
-  const attachmentList =
-    opts.attachments.length > 0
-      ? opts.attachments
-          .map(
-            (a) =>
-              `<li style="margin-bottom:4px">
-                <a href="${a.spWebUrl}" style="color:#0f1059;font-size:13px;text-decoration:underline">${a.fileName}</a>
-              </li>`,
-          )
-          .join("")
-      : `<li style="color:#9ca3af;font-size:13px">ไม่มีไฟล์แนบ</li>`;
-
-  const requestDateFmt = new Date(opts.requestDate).toLocaleDateString("th-TH", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-  });
-
+  const url = getAppUrl(`/dar/${opts.darId}`);
   await sendMail({
     to: [opts.mr],
     senderEmail: opts.senderEmail,
-    subject: `[QMS] Document Request ${opts.darNo} — Reviewed, Pending Final Approval / รออนุมัติขั้นสุดท้ายจากท่าน`,
-    bodyHtml: `
-<!DOCTYPE html>
-<html lang="th">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
-<body style="margin:0;padding:0;background:#f8fafc;font-family:'Segoe UI',sans-serif">
-<div style="max-width:620px;margin:32px auto;background:#fff;border-radius:12px;border:1px solid #e2e8f0;overflow:hidden">
+    subject: `[DAR] MR Approval Required - ${opts.darNo}`,
+    bodyHtml: makeBilingualMail({
+      titleTh: `คำขอ DAR ${opts.darNo} รออนุมัติ MR`,
+      titleEn: `DAR ${opts.darNo} Pending MR Approval`,
+      facts: [
+        { labelTh: "ผู้ตรวจสอบแล้ว", labelEn: "Reviewed By", value: opts.reviewerName },
+        { labelTh: "ผู้ร้องขอ", labelEn: "Requester", value: `${opts.requesterName}${opts.requesterDepartment ? ` (${opts.requesterDepartment})` : ""}` },
+        { labelTh: "วัตถุประสงค์", labelEn: "Objective", value: opts.objective },
+        { labelTh: "จำนวนรายการ", labelEn: "Item Count", value: String(opts.items.length) },
+      ],
+      actionLabelTh: "เปิดคำขอ DAR",
+      actionLabelEn: "Open DAR",
+      actionUrl: url,
+    }),
+  });
+}
 
-  <!-- Header -->
-  <div style="background:#0f1059;padding:28px 32px">
-    <p style="margin:0;color:#a5b4fc;font-size:12px;letter-spacing:1px;text-transform:uppercase">QMS Document Request</p>
-    <h1 style="margin:6px 0 0;color:#fff;font-size:22px;font-weight:700">${opts.darNo}</h1>
-  </div>
-
-  <!-- Alert banner -->
-  <div style="background:#f0fdf4;border-bottom:1px solid #bbf7d0;padding:14px 32px">
-    <p style="margin:0;color:#166534;font-size:13px;font-weight:600">
-      <strong>${opts.reviewerName}</strong> has reviewed and approved this request. Final approval from you is required.
-    </p>
-    <p style="margin:4px 0 0;color:#166534;font-size:12px">
-      <strong>${opts.reviewerName}</strong> ได้ตรวจสอบและอนุมัติคำขอนี้แล้ว — รออนุมัติขั้นสุดท้ายจากท่าน
-    </p>
-  </div>
-
-  <div style="padding:28px 32px">
-
-    <!-- Request meta -->
-    <table style="width:100%;border-collapse:collapse;margin-bottom:24px">
-      <tr>
-        <td style="padding:4px 0;width:50%;vertical-align:top">
-          <p style="margin:0;font-size:11px;color:#9ca3af;text-transform:uppercase;letter-spacing:.5px">Requested By / ผู้จัดทำ</p>
-          <p style="margin:4px 0 0;font-size:14px;color:#111827;font-weight:600">${opts.requesterName}</p>
-          ${opts.requesterDepartment ? `<p style="margin:2px 0 0;font-size:12px;color:#6b7280">${opts.requesterDepartment}</p>` : ""}
-        </td>
-        <td style="padding:4px 0;width:50%;vertical-align:top">
-          <p style="margin:0;font-size:11px;color:#9ca3af;text-transform:uppercase;letter-spacing:.5px">Request Date / วันที่ขอ</p>
-          <p style="margin:4px 0 0;font-size:14px;color:#111827">${requestDateFmt}</p>
-        </td>
-      </tr>
-      <tr>
-        <td style="padding:12px 0 4px;vertical-align:top">
-          <p style="margin:0;font-size:11px;color:#9ca3af;text-transform:uppercase;letter-spacing:.5px">Objective / วัตถุประสงค์</p>
-          <p style="margin:4px 0 0;font-size:14px;color:#111827">${opts.objective}</p>
-        </td>
-        <td style="padding:12px 0 4px;vertical-align:top">
-          <p style="margin:0;font-size:11px;color:#9ca3af;text-transform:uppercase;letter-spacing:.5px">Document Type / ประเภทเอกสาร</p>
-          <p style="margin:4px 0 0;font-size:14px;color:#111827">${opts.docType}</p>
-        </td>
-      </tr>
-    </table>
-
-    <!-- Reason -->
-    <div style="margin-bottom:24px">
-      <p style="margin:0 0 8px;font-size:12px;font-weight:600;color:#374151;text-transform:uppercase;letter-spacing:.5px">Reason / เหตุผล - ความจำเป็น</p>
-      <div style="background:#f9fafb;border:1px solid #e5e7eb;border-left:3px solid #0f1059;border-radius:6px;padding:12px 16px">
-        <p style="margin:0;font-size:13px;color:#374151;line-height:1.7;white-space:pre-wrap">${opts.reason}</p>
-      </div>
-    </div>
-
-    <!-- Items table -->
-    <div style="margin-bottom:24px">
-      <p style="margin:0 0 8px;font-size:12px;font-weight:600;color:#374151;text-transform:uppercase;letter-spacing:.5px">Document Items / รายการเอกสาร (${opts.items.length})</p>
-      <table style="width:100%;border-collapse:collapse;border:1px solid #e2e8f0;border-radius:8px;overflow:hidden">
-        <thead>
-          <tr style="background:#f1f5f9">
-            <th style="padding:8px 12px;text-align:left;font-size:11px;color:#64748b;font-weight:600;border-bottom:1px solid #e2e8f0">#</th>
-            <th style="padding:8px 12px;text-align:left;font-size:11px;color:#64748b;font-weight:600;border-bottom:1px solid #e2e8f0">Doc. No. / เลขที่เอกสาร</th>
-            <th style="padding:8px 12px;text-align:left;font-size:11px;color:#64748b;font-weight:600;border-bottom:1px solid #e2e8f0">Document Name / ชื่อเอกสาร</th>
-            <th style="padding:8px 12px;text-align:center;font-size:11px;color:#64748b;font-weight:600;border-bottom:1px solid #e2e8f0">Rev.</th>
-          </tr>
-        </thead>
-        <tbody>${itemRows}</tbody>
-      </table>
-    </div>
-
-    <!-- Attachments -->
-    <div style="margin-bottom:28px">
-      <p style="margin:0 0 8px;font-size:12px;font-weight:600;color:#374151;text-transform:uppercase;letter-spacing:.5px">Attachments / ไฟล์แนบ</p>
-      <ul style="margin:0;padding-left:18px">${attachmentList}</ul>
-    </div>
-
-    <!-- CTA -->
-    <div style="text-align:center;padding:20px 0;border-top:1px solid #f1f5f9">
-      <p style="margin:0 0 4px;font-size:14px;color:#6b7280">Click the button below to review and provide final approval.</p>
-      <p style="margin:0 0 16px;font-size:13px;color:#9ca3af">คลิกปุ่มด้านล่างเพื่อตรวจสอบและอนุมัติขั้นสุดท้าย</p>
-      <a href="${darUrl}"
-         style="display:inline-block;padding:12px 28px;background:#0f1059;color:#fff;border-radius:8px;text-decoration:none;font-size:14px;font-weight:600;letter-spacing:.3px">
-        View and Approve / ดูและอนุมัติ
-      </a>
-      <p style="margin:16px 0 0;font-size:11px;color:#9ca3af">
-        If the button does not work, open this link / หากปุ่มด้านบนไม่ทำงาน กรุณาเปิดลิงก์:<br>
-        <a href="${darUrl}" style="color:#0f1059">${darUrl}</a>
-      </p>
-    </div>
-
-  </div>
-
-  <!-- Footer -->
-  <div style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:16px 32px;text-align:center">
-    <p style="margin:0;font-size:11px;color:#9ca3af">This email was sent automatically by the QMS system. Please do not reply.</p>
-    <p style="margin:4px 0 0;font-size:11px;color:#9ca3af">อีเมลนี้ส่งโดยระบบ QMS โดยอัตโนมัติ — กรุณาอย่าตอบกลับ</p>
-  </div>
-
-</div>
-</body>
-</html>`,
+export async function sendQmsApprovalRequestEmail(opts: {
+  qms: MailRecipient;
+  requesterName: string;
+  darNo: string;
+  darId: string;
+  senderEmail?: string;
+}): Promise<void> {
+  const url = getAppUrl(`/dar/${opts.darId}`);
+  await sendMail({
+    to: [opts.qms],
+    senderEmail: opts.senderEmail,
+    subject: `[DAR] QMS Approval Required - ${opts.darNo}`,
+    bodyHtml: makeBilingualMail({
+      titleTh: `คำขอ DAR ${opts.darNo} รออนุมัติ QMS`,
+      titleEn: `DAR ${opts.darNo} Pending QMS Approval`,
+      facts: [
+        { labelTh: "ผู้ร้องขอ", labelEn: "Requester", value: opts.requesterName },
+        { labelTh: "สถานะ", labelEn: "Status", value: "MR อนุมัติแล้ว รอ QMS อนุมัติขั้นสุดท้าย / MR approved, awaiting final QMS approval" },
+      ],
+      actionLabelTh: "เปิดคำขอ DAR",
+      actionLabelEn: "Open DAR",
+      actionUrl: url,
+    }),
   });
 }
 
@@ -403,74 +243,22 @@ export async function sendApprovalNotificationEmail(opts: {
   stepLabel: string;
   nextStepLabel: string;
 }): Promise<void> {
-  const appUrl = process.env.NEXTAUTH_URL ?? "";
-  const darUrl = `${appUrl}/dar/${opts.darId}`;
-
+  const url = getAppUrl(`/dar/${opts.darId}`);
   await sendMail({
     to: [opts.to],
-    subject: `[QMS] Document Request ${opts.darNo} — ${opts.stepLabel} Approved / ผ่านขั้นตอน${opts.stepLabel}แล้ว`,
-    bodyHtml: `
-<!DOCTYPE html>
-<html lang="th">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
-<body style="margin:0;padding:0;background:#f8fafc;font-family:'Segoe UI',sans-serif">
-<div style="max-width:620px;margin:32px auto;background:#fff;border-radius:12px;border:1px solid #e2e8f0;overflow:hidden">
-
-  <!-- Header -->
-  <div style="background:#0f1059;padding:28px 32px">
-    <p style="margin:0;color:#a5b4fc;font-size:12px;letter-spacing:1px;text-transform:uppercase">QMS Document Request</p>
-    <h1 style="margin:6px 0 0;color:#fff;font-size:22px;font-weight:700">${opts.darNo}</h1>
-  </div>
-
-  <!-- Alert banner -->
-  <div style="background:#f0fdf4;border-bottom:1px solid #bbf7d0;padding:14px 32px">
-    <p style="margin:0;color:#166534;font-size:13px;font-weight:600">
-      Step <strong>${opts.stepLabel}</strong> has been approved by <strong>${opts.approverName}</strong>.
-    </p>
-    <p style="margin:4px 0 0;color:#166534;font-size:12px">
-      <strong>${opts.approverName}</strong> ได้อนุมัติขั้นตอน${opts.stepLabel} เรียบร้อยแล้ว
-    </p>
-  </div>
-
-  <div style="padding:28px 32px">
-
-    <table style="width:100%;border-collapse:collapse;margin-bottom:24px">
-      <tr>
-        <td style="padding:4px 0;width:50%;vertical-align:top">
-          <p style="margin:0;font-size:11px;color:#9ca3af;text-transform:uppercase;letter-spacing:.5px">Approved Step / ขั้นตอนที่อนุมัติ</p>
-          <p style="margin:4px 0 0;font-size:14px;color:#111827;font-weight:600">${opts.stepLabel}</p>
-        </td>
-        <td style="padding:4px 0;width:50%;vertical-align:top">
-          <p style="margin:0;font-size:11px;color:#9ca3af;text-transform:uppercase;letter-spacing:.5px">Next Step / ขั้นตอนถัดไป</p>
-          <p style="margin:4px 0 0;font-size:14px;color:#111827;font-weight:600">${opts.nextStepLabel}</p>
-        </td>
-      </tr>
-    </table>
-
-    <div style="text-align:center;padding:20px 0;border-top:1px solid #f1f5f9">
-      <p style="margin:0 0 4px;font-size:14px;color:#6b7280">Click the button below to view the request status.</p>
-      <p style="margin:0 0 16px;font-size:13px;color:#9ca3af">คลิกปุ่มด้านล่างเพื่อดูสถานะคำขอ</p>
-      <a href="${darUrl}"
-         style="display:inline-block;padding:12px 28px;background:#0f1059;color:#fff;border-radius:8px;text-decoration:none;font-size:14px;font-weight:600;letter-spacing:.3px">
-        View Request Status / ดูสถานะคำขอ
-      </a>
-      <p style="margin:16px 0 0;font-size:11px;color:#9ca3af">
-        If the button does not work, open this link / หากปุ่มด้านบนไม่ทำงาน กรุณาเปิดลิงก์:<br>
-        <a href="${darUrl}" style="color:#0f1059">${darUrl}</a>
-      </p>
-    </div>
-
-  </div>
-
-  <!-- Footer -->
-  <div style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:16px 32px;text-align:center">
-    <p style="margin:0;font-size:11px;color:#9ca3af">This email was sent automatically by the QMS system. Please do not reply.</p>
-    <p style="margin:4px 0 0;font-size:11px;color:#9ca3af">อีเมลนี้ส่งโดยระบบ QMS โดยอัตโนมัติ — กรุณาอย่าตอบกลับ</p>
-  </div>
-
-</div>
-</body>
-</html>`,
+    subject: `[DAR] ${opts.darNo} - ${opts.stepLabel} Approved`,
+    bodyHtml: makeBilingualMail({
+      titleTh: `คำขอ DAR ${opts.darNo} อนุมัติแล้ว`,
+      titleEn: `DAR ${opts.darNo} Approved`,
+      facts: [
+        { labelTh: "ผู้อนุมัติ", labelEn: "Approved By", value: opts.approverName },
+        { labelTh: "ขั้นตอนที่อนุมัติ", labelEn: "Approved Step", value: opts.stepLabel },
+        { labelTh: "ขั้นตอนถัดไป", labelEn: "Next Step", value: opts.nextStepLabel },
+      ],
+      actionLabelTh: "ดูคำขอ DAR",
+      actionLabelEn: "View DAR",
+      actionUrl: url,
+    }),
   });
 }
 
@@ -481,70 +269,21 @@ export async function sendRejectionEmail(opts: {
   rejectorName: string;
   reason: string;
 }): Promise<void> {
-  const appUrl = process.env.NEXTAUTH_URL ?? "";
-  const darUrl = `${appUrl}/dar/${opts.darId}`;
-
+  const url = getAppUrl(`/dar/${opts.darId}`);
   await sendMail({
     to: [opts.to],
-    subject: `[QMS] Document Request ${opts.darNo} — Returned for Revision / ถูกส่งคืน`,
-    bodyHtml: `
-<!DOCTYPE html>
-<html lang="th">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
-<body style="margin:0;padding:0;background:#f8fafc;font-family:'Segoe UI',sans-serif">
-<div style="max-width:620px;margin:32px auto;background:#fff;border-radius:12px;border:1px solid #e2e8f0;overflow:hidden">
-
-  <!-- Header -->
-  <div style="background:#0f1059;padding:28px 32px">
-    <p style="margin:0;color:#a5b4fc;font-size:12px;letter-spacing:1px;text-transform:uppercase">QMS Document Request</p>
-    <h1 style="margin:6px 0 0;color:#fff;font-size:22px;font-weight:700">${opts.darNo}</h1>
-  </div>
-
-  <!-- Alert banner -->
-  <div style="background:#fef2f2;border-bottom:1px solid #fecaca;padding:14px 32px">
-    <p style="margin:0;color:#991b1b;font-size:13px;font-weight:600">
-      This request has been returned for revision by <strong>${opts.rejectorName}</strong>.
-    </p>
-    <p style="margin:4px 0 0;color:#991b1b;font-size:12px">
-      <strong>${opts.rejectorName}</strong> ได้ส่งคืนคำขอนี้เพื่อแก้ไข
-    </p>
-  </div>
-
-  <div style="padding:28px 32px">
-
-    <!-- Reason -->
-    <div style="margin-bottom:28px">
-      <p style="margin:0 0 8px;font-size:12px;font-weight:600;color:#374151;text-transform:uppercase;letter-spacing:.5px">Reason for Return / เหตุผลที่ส่งคืน</p>
-      <div style="background:#f9fafb;border:1px solid #e5e7eb;border-left:3px solid #dc2626;border-radius:6px;padding:12px 16px">
-        <p style="margin:0;font-size:13px;color:#374151;line-height:1.7;white-space:pre-wrap">${opts.reason}</p>
-      </div>
-    </div>
-
-    <p style="margin:0 0 4px;font-size:14px;color:#374151">Please revise and resubmit the request.</p>
-    <p style="margin:0 0 24px;font-size:13px;color:#6b7280">กรุณาแก้ไขและส่งใหม่อีกครั้ง</p>
-
-    <div style="text-align:center;padding:20px 0;border-top:1px solid #f1f5f9">
-      <a href="${darUrl}"
-         style="display:inline-block;padding:12px 28px;background:#0f1059;color:#fff;border-radius:8px;text-decoration:none;font-size:14px;font-weight:600;letter-spacing:.3px">
-        View Request / ดูคำขอ
-      </a>
-      <p style="margin:16px 0 0;font-size:11px;color:#9ca3af">
-        If the button does not work, open this link / หากปุ่มด้านบนไม่ทำงาน กรุณาเปิดลิงก์:<br>
-        <a href="${darUrl}" style="color:#0f1059">${darUrl}</a>
-      </p>
-    </div>
-
-  </div>
-
-  <!-- Footer -->
-  <div style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:16px 32px;text-align:center">
-    <p style="margin:0;font-size:11px;color:#9ca3af">This email was sent automatically by the QMS system. Please do not reply.</p>
-    <p style="margin:4px 0 0;font-size:11px;color:#9ca3af">อีเมลนี้ส่งโดยระบบ QMS โดยอัตโนมัติ — กรุณาอย่าตอบกลับ</p>
-  </div>
-
-</div>
-</body>
-</html>`,
+    subject: `[DAR] ${opts.darNo} - Rejected`,
+    bodyHtml: makeBilingualMail({
+      titleTh: `คำขอ DAR ${opts.darNo} ถูกปฏิเสธ`,
+      titleEn: `DAR ${opts.darNo} Rejected`,
+      facts: [
+        { labelTh: "ผู้ปฏิเสธ", labelEn: "Rejected By", value: opts.rejectorName },
+        { labelTh: "เหตุผล", labelEn: "Reason", value: opts.reason },
+      ],
+      actionLabelTh: "ดูคำขอ DAR",
+      actionLabelEn: "View DAR",
+      actionUrl: url,
+    }),
   });
 }
 
@@ -556,21 +295,23 @@ export async function sendKpiObjectiveReviewerAssignedEmail(opts: {
   objective: string;
   year: number;
 }) {
-  const appUrl = process.env.NEXTAUTH_URL ?? "";
-  const url = `${appUrl}/qms/kpi`;
+  const url = getAppUrl(`/approve/${opts.objectiveId}/reviewer?type=kpi`);
   await sendMail({
     to: [opts.reviewer],
     subject: `[KPI] Review Required - ${opts.departmentName} / ${opts.year}`,
-    bodyHtml: `
-      <p>Hello ${opts.reviewer.name},</p>
-      <p>You have been assigned as KPI objective reviewer.</p>
-      <p><strong>Department:</strong> ${opts.departmentName}</p>
-      <p><strong>Objective:</strong> ${opts.objective}</p>
-      <p><strong>Year:</strong> ${opts.year}</p>
-      <p><a href="${url}">Open KPI Workflow</a></p>
-      <hr />
-      <p style="color:#666">Assigned by: ${opts.requesterName}</p>
-    `,
+    bodyHtml: makeBilingualMail({
+      titleTh: `KPI ${opts.departmentName} ปี ${opts.year} รอตรวจสอบ`,
+      titleEn: `KPI ${opts.departmentName} ${opts.year} Pending Review`,
+      facts: [
+        { labelTh: "ผู้ตรวจสอบ", labelEn: "Reviewer", value: opts.reviewer.name },
+        { labelTh: "ผู้มอบหมาย", labelEn: "Assigned By", value: opts.requesterName },
+        { labelTh: "หน่วยงาน", labelEn: "Department", value: opts.departmentName },
+        { labelTh: "ปี", labelEn: "Year", value: String(opts.year) },
+      ],
+      actionLabelTh: "เปิด KPI",
+      actionLabelEn: "Open KPI",
+      actionUrl: url,
+    }),
   });
 }
 
@@ -581,19 +322,128 @@ export async function sendKpiObjectiveApproverRequestEmail(opts: {
   objective: string;
   year: number;
 }) {
-  const appUrl = process.env.NEXTAUTH_URL ?? "";
-  const url = `${appUrl}/qms/kpi`;
+  const url = getAppUrl(`/qms/kpi`);
   await sendMail({
     to: [opts.approver],
-    subject: `[KPI] Final Approval Required - ${opts.departmentName} / ${opts.year}`,
-    bodyHtml: `
-      <p>Hello ${opts.approver.name},</p>
-      <p>The KPI objective has been reviewed and is ready for final approval.</p>
-      <p><strong>Department:</strong> ${opts.departmentName}</p>
-      <p><strong>Objective:</strong> ${opts.objective}</p>
-      <p><strong>Year:</strong> ${opts.year}</p>
-      <p><strong>Reviewed by:</strong> ${opts.reviewerName}</p>
-      <p><a href="${url}">Open KPI Workflow</a></p>
-    `,
+    subject: `[KPI] Approval Required - ${opts.departmentName} / ${opts.year}`,
+    bodyHtml: makeBilingualMail({
+      titleTh: `KPI ${opts.departmentName} ปี ${opts.year} รออนุมัติ`,
+      titleEn: `KPI ${opts.departmentName} ${opts.year} Pending Approval`,
+      facts: [
+        { labelTh: "ผู้ตรวจสอบแล้ว", labelEn: "Reviewed By", value: opts.reviewerName },
+        { labelTh: "หน่วยงาน", labelEn: "Department", value: opts.departmentName },
+        { labelTh: "ปี", labelEn: "Year", value: String(opts.year) },
+      ],
+      actionLabelTh: "เปิด KPI",
+      actionLabelEn: "Open KPI",
+      actionUrl: url,
+    }),
+  });
+}
+
+export async function sendKpiApprovalRequestEmail(opts: {
+  approver: MailRecipient;
+  departmentName: string;
+  year: number;
+  reviewerName?: string;
+}) {
+  const url = getAppUrl(`/qms/kpi`);
+  await sendMail({
+    to: [opts.approver],
+    subject: `[KPI] Approval Required - ${opts.departmentName} / ${opts.year}`,
+    bodyHtml: makeBilingualMail({
+      titleTh: `KPI ${opts.departmentName} ปี ${opts.year} รออนุมัติ`,
+      titleEn: `KPI ${opts.departmentName} ${opts.year} Pending Approval`,
+      facts: [
+        { labelTh: "ผู้ตรวจสอบแล้ว", labelEn: "Reviewed By", value: opts.reviewerName ?? "-" },
+        { labelTh: "หน่วยงาน", labelEn: "Department", value: opts.departmentName },
+        { labelTh: "ปี", labelEn: "Year", value: String(opts.year) },
+      ],
+      actionLabelTh: "เปิด KPI",
+      actionLabelEn: "Open KPI",
+      actionUrl: url,
+    }),
+  });
+}
+
+export async function sendKpiResultEmail(opts: {
+  to: MailRecipient;
+  departmentName: string;
+  year: number;
+  status: "APPROVED" | "REJECTED";
+  actorName: string;
+}) {
+  const url = getAppUrl(`/qms/kpi`);
+  await sendMail({
+    to: [opts.to],
+    subject: `[KPI] ${opts.status} - ${opts.departmentName} / ${opts.year}`,
+    bodyHtml: makeBilingualMail({
+      titleTh: `ผลการอนุมัติ KPI ${opts.departmentName} ปี ${opts.year}`,
+      titleEn: `KPI ${opts.departmentName} ${opts.year} Approval Result`,
+      facts: [
+        { labelTh: "สถานะ", labelEn: "Status", value: opts.status },
+        { labelTh: "ดำเนินการโดย", labelEn: "Action By", value: opts.actorName },
+        { labelTh: "หน่วยงาน", labelEn: "Department", value: opts.departmentName },
+        { labelTh: "ปี", labelEn: "Year", value: String(opts.year) },
+      ],
+      actionLabelTh: "เปิด KPI",
+      actionLabelEn: "Open KPI",
+      actionUrl: url,
+    }),
+  });
+}
+
+export async function sendKpiMonthlyApprovalRequestEmail(opts: {
+  approver: MailRecipient;
+  departmentName: string;
+  month: string;
+  year: number;
+  preparerName?: string;
+}) {
+  const url = getAppUrl(`/qms/kpi/monthly`);
+  await sendMail({
+    to: [opts.approver],
+    subject: `[KPI Monthly] Approval Required - ${opts.departmentName} / ${opts.month} ${opts.year}`,
+    bodyHtml: makeBilingualMail({
+      titleTh: `KPI รายเดือน ${opts.departmentName} รออนุมัติ`,
+      titleEn: `Monthly KPI ${opts.departmentName} Pending Approval`,
+      facts: [
+        { labelTh: "รอบเดือน", labelEn: "Period", value: `${opts.month} ${opts.year}` },
+        { labelTh: "ผู้จัดเตรียม", labelEn: "Prepared By", value: opts.preparerName ?? "-" },
+        { labelTh: "หน่วยงาน", labelEn: "Department", value: opts.departmentName },
+      ],
+      actionLabelTh: "เปิด KPI รายเดือน",
+      actionLabelEn: "Open Monthly KPI",
+      actionUrl: url,
+    }),
+  });
+}
+
+export async function sendKpiMonthlyResultEmail(opts: {
+  to: MailRecipient;
+  departmentName: string;
+  month: string;
+  year: number;
+  status: "APPROVED" | "REJECTED";
+  actorName: string;
+  reason?: string;
+}) {
+  const url = getAppUrl(`/qms/kpi/monthly`);
+  await sendMail({
+    to: [opts.to],
+    subject: `[KPI Monthly] ${opts.status} - ${opts.departmentName} / ${opts.month} ${opts.year}`,
+    bodyHtml: makeBilingualMail({
+      titleTh: `ผลการอนุมัติ KPI รายเดือน ${opts.departmentName}`,
+      titleEn: `Monthly KPI ${opts.departmentName} Approval Result`,
+      facts: [
+        { labelTh: "รอบเดือน", labelEn: "Period", value: `${opts.month} ${opts.year}` },
+        { labelTh: "สถานะ", labelEn: "Status", value: opts.status },
+        { labelTh: "ดำเนินการโดย", labelEn: "Action By", value: opts.actorName },
+        { labelTh: "เหตุผล", labelEn: "Reason", value: opts.reason ?? "-" },
+      ],
+      actionLabelTh: "เปิด KPI รายเดือน",
+      actionLabelEn: "Open Monthly KPI",
+      actionUrl: url,
+    }),
   });
 }

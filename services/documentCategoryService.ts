@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { DocumentCategoryRepository } from '@/repositories/documentCategoryRepository';
 import { DocumentControlRepository } from '@/repositories/documentControlRepository';
+import { DepartmentRepository } from '@/repositories/departmentRepository';
 import { NotFoundError, ValidationError, ForbiddenError } from '@/lib/errors';
 import type { CreateDocumentCategoryInput, UpdateDocumentCategoryInput } from '@/types/documentControl';
 import { db } from '@/lib/db';
@@ -15,6 +16,7 @@ import {
 export class DocumentCategoryService {
   private repo = new DocumentCategoryRepository();
   private docRepo = new DocumentControlRepository();
+  private deptRepo = new DepartmentRepository();
 
   async listByDepartment(departmentId: string) {
     const categories = await this.repo.listByDepartment(departmentId);
@@ -28,7 +30,7 @@ export class DocumentCategoryService {
   }
 
   async createCategory(data: CreateDocumentCategoryInput) {
-    const dept = await db.department.findUnique({ where: { id: data.departmentId }, select: { name: true } });
+    const dept = await this.deptRepo.findNameById(data.departmentId);
     if (!dept) throw new ValidationError('Department not found');
     await ensureSpFolder(buildDocControlCategoryFolderPath(dept.name, data.name));
 

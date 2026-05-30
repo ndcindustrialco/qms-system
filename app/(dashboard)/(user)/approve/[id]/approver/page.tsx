@@ -4,6 +4,7 @@ import { DarService } from "@/services/darService";
 import DarReviewLayout from "@/components/dar/DarReviewLayout";
 import type { DarApprovalRow } from "@/types/dar";
 import KpiApproveActionClient from "@/components/approve/KpiApproveActionClient";
+import { AppError } from "@/errors/customErrors";
 
 const darService = new DarService();
 
@@ -41,7 +42,7 @@ export default async function ApproveApproverPage({ params, searchParams }: Prop
 
     const isAssignedApprover = dar.approvals.some(
       (a: DarApprovalRow) =>
-        a.stepRole === "APPROVER_MR" &&
+        (a.stepRole === "APPROVER_MR" || a.stepRole === "QMS_PROCESSOR") &&
         a.assignedUser.id === session.user.id &&
         a.action === "PENDING",
     );
@@ -60,12 +61,20 @@ export default async function ApproveApproverPage({ params, searchParams }: Prop
           savedSignatureUrl={savedSig?.url ?? null}
           savedSignatureType={savedSig?.type ?? null}
           isAssignedReviewer={true}
-          isMrApprove
+          isMrApprove={session.user.role === "MR"}
           redirectToApproveOnAction
         />
       </div>
     );
-  } catch {
-    notFound();
+  } catch (error) {
+    if (error instanceof AppError) {
+      if (error.statusCode === 403) {
+        redirect("/unauthorized?reason=insufficient_role");
+      }
+      if (error.statusCode === 404) {
+        notFound();
+      }
+    }
+    throw error;
   }
 }

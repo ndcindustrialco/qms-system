@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useCallback, useRef, useEffect } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useT } from "@/lib/i18n";
-import { useLocale } from "@/lib/locale-context";
 import type { DarDetail, DarApprovalRow, ReviewerCandidate } from "@/types/dar";
 import type { SignatureType } from "@/types/dar";
+import DarApprovalTimeline from "./DarApprovalTimeline";
 
 interface Props {
   dar: DarDetail;
@@ -13,6 +14,24 @@ interface Props {
   savedSignatureUrl?: string | null;
   savedSignatureType?: SignatureType | null;
   onUpdated: (dar: DarDetail) => void;
+}
+
+function getErrorMessage(error: unknown, fallback: string): string {
+  if (!error) return fallback;
+  if (typeof error === "string") return error;
+  if (typeof error === "object" && error !== null) {
+    const payload = error as { message?: unknown; code?: unknown };
+    const maybeCode = typeof payload.code === "string" ? payload.code : "";
+    if (maybeCode === "QMS_NOT_CONFIGURED") return "ยังไม่ได้ตั้งค่า QMS signer ในระบบ";
+    if (maybeCode === "MR_NOT_CONFIGURED") return "ยังไม่ได้ตั้งค่า MR ในระบบ";
+    const maybeMessage = payload.message;
+    if (typeof maybeMessage === "string" && maybeMessage.trim()) {
+      // Guard against mojibake text leaking from backend.
+      if (maybeMessage.includes("à¸") || maybeMessage.includes("Ã")) return fallback;
+      return maybeMessage;
+    }
+  }
+  return fallback;
 }
 
 // ── Signature input ───────────────────────────────────────────────────────────
@@ -141,7 +160,7 @@ function ImagePad({ onChange, uploadLabel, uploadHint, sizeError, sigAlt }: {
 
   function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]; if (!file) return;
-    if (file.size > 2 * 1024 * 1024) { alert(sizeError); return; }
+    if (file.size > 2 * 1024 * 1024) { toast.error(sizeError, { duration: Infinity }); return; }
     const reader = new FileReader();
     reader.onload = (ev) => { const url = ev.target?.result as string; setPreview(url); onChange(url); };
     reader.readAsDataURL(file);
@@ -275,13 +294,13 @@ function Modal({ onClose, children }: { onClose: () => void; children: React.Rea
   }, []);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
+    <div className="fixed inset-0 z-[122] flex items-center justify-center p-4"
       onClick={onClose}>
       {/* Backdrop */}
       <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" />
       {/* Dialog */}
       <div
-        className="relative z-10 w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150"
+        className="relative z-[123] w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150"
         onClick={(e) => e.stopPropagation()}
       >
         {children}
@@ -295,20 +314,35 @@ function Modal({ onClose, children }: { onClose: () => void; children: React.Rea
 interface ApproveModalProps {
   darId: string;
   stepLabel: string;
+  stepRole: DarApprovalRow["stepRole"];
   savedSignatureUrl?: string | null;
   savedSignatureType?: SignatureType | null;
   onClose: () => void;
   onDone: (dar: DarDetail) => void;
 }
 
-function ApproveModal({ darId, stepLabel, savedSignatureUrl, savedSignatureType, onClose, onDone }: ApproveModalProps) {
+function ApproveModal({ darId, stepLabel, stepRole, savedSignatureUrl, savedSignatureType, onClose, onDone }: ApproveModalProps) {
   const t = useT();
+  const isQmsStep = stepRole === "QMS_PROCESSOR";
   const [sigDataUrl, setSigDataUrl] = useState<string | null>(null);
   const [sigType, setSigType] = useState<SigMode>("DRAW");
   const [saveSignature, setSaveSignature] = useState(false);
   const [comment, setComment] = useState("");
+  const [qmsComment, setQmsComment] = useState("");
+  const [qmsChecklist, setQmsChecklist] = useState({
+    chkHasAttachment: false,
+    chkPrintAndValidate: false,
+    chkRenumber: false,
+    chkImpactInvestigated: false,
+    chkSubmitVerification: false,
+    chkGetBackProcess: false,
+    chkCopyDistribute: false,
+  });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const qmsCheckedCount = Object.values(qmsChecklist).filter(Boolean).length;
+  const canSubmit = !!sigDataUrl && !submitting;
 
   const handleSignatureChange = useCallback((url: string | null, type: SigMode) => {
     setSigDataUrl(url); setSigType(type);
@@ -320,10 +354,16 @@ function ApproveModal({ darId, stepLabel, savedSignatureUrl, savedSignatureType,
     try {
       const res = await fetch(`/api/dar/${darId}/approve`, {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ signatureDataUrl: sigDataUrl, signatureType: sigType, saveSignature, comment: comment.trim() || null }),
+        body: JSON.stringify({
+          signatureDataUrl: sigDataUrl,
+          signatureType: sigType,
+          saveSignature,
+          comment: comment.trim() || null,
+          qmsProcessing: isQmsStep ? { ...qmsChecklist, comments: qmsComment.trim() || null } : null,
+        }),
       });
       const json = await res.json();
-      if (!res.ok || json.error) { setError(json.error ?? t("dar.approval.errorGeneric")); return; }
+      if (!res.ok || json.error) { setError(getErrorMessage(json.error, t("dar.approval.errorGeneric"))); return; }
       onDone(json.data);
     } finally { setSubmitting(false); }
   }
@@ -368,6 +408,41 @@ function ApproveModal({ darId, stepLabel, savedSignatureUrl, savedSignatureType,
           />
         </div>
 
+        {isQmsStep && (
+          <div className="flex flex-col gap-2 rounded-xl border border-amber-200 bg-amber-50 p-4">
+            <p className="text-xs font-semibold text-amber-700 uppercase tracking-wide">QMS Checklist</p>
+            {[
+              ["chkHasAttachment", "ตรวจสอบเอกสารแนบ", "Check attachment"],
+              ["chkPrintAndValidate", "พิมพ์และตรวจสอบเอกสารเก่า/ใหม่", "Print and validate old/new documents"],
+              ["chkRenumber", "ปรับเลขเอกสาร/อัปเดตรายการฟอร์ม", "Renumber / update format list"],
+              ["chkImpactInvestigated", "ตรวจสอบผลกระทบจากการเปลี่ยนแปลงเอกสาร", "Investigate impact from document changes"],
+              ["chkSubmitVerification", "ส่งหลักฐานการตรวจสอบ", "Submit verification evidence"],
+              ["chkGetBackProcess", "เรียกคืนและดำเนินการกับสำเนาควบคุม", "Get back and process controlled copies"],
+              ["chkCopyDistribute", "สำเนาและแจกจ่ายให้หน่วยงานที่เกี่ยวข้อง", "Copy and distribute to related departments"],
+            ].map(([key, labelTh, labelEn]) => (
+              <label key={key} className="flex items-start gap-2 text-sm text-slate-700">
+                <input
+                  type="checkbox"
+                  checked={qmsChecklist[key as keyof typeof qmsChecklist]}
+                  onChange={(e) => setQmsChecklist((prev) => ({ ...prev, [key]: e.target.checked }))}
+                  className="mt-0.5 w-4 h-4 rounded border-slate-300 text-primary"
+                />
+                <span className="leading-snug">
+                  <span className="block text-slate-800">{labelTh}</span>
+                  <span className="block text-xs text-slate-500">{labelEn}</span>
+                </span>
+              </label>
+            ))}
+            <textarea
+              rows={2}
+              value={qmsComment}
+              onChange={(e) => setQmsComment(e.target.value)}
+              placeholder="QMS note (optional)"
+              className="mt-2 w-full px-3 py-2 text-sm rounded-xl border border-slate-200 bg-white resize-none focus:outline-none focus:ring-2 focus:ring-primary/30"
+            />
+          </div>
+        )}
+
         {/* Signature */}
         <div className="flex flex-col gap-2">
           <label className="text-xs font-medium text-slate-600">
@@ -395,7 +470,7 @@ function ApproveModal({ darId, stepLabel, savedSignatureUrl, savedSignatureType,
       <div className="flex justify-end gap-2 px-6 py-4 border-t border-slate-100 bg-slate-50/60">
         <Button variant="ghost" size="sm" type="button" onClick={onClose} disabled={submitting}>{t("common.cancel")}</Button>
         <button type="button"
-          disabled={!sigDataUrl || submitting}
+          disabled={!canSubmit}
           onClick={handleSubmit}
           className="h-8 px-5 text-xs font-semibold rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors inline-flex items-center gap-1.5">
           {submitting
@@ -404,6 +479,12 @@ function ApproveModal({ darId, stepLabel, savedSignatureUrl, savedSignatureType,
           }
           {t("dar.approval.btnConfirmApprove")}
         </button>
+      </div>
+      <div className="px-6 pb-4">
+        <p className="text-xs text-slate-500">
+          {sigDataUrl ? "ลายเซ็น: พร้อม" : "ลายเซ็น: ยังไม่ครบ"}
+          {isQmsStep ? ` | Checklist: ${qmsCheckedCount}/7` : ""}
+        </p>
       </div>
     </Modal>
   );
@@ -433,7 +514,7 @@ function RejectModal({ darId, stepLabel, onClose, onDone }: RejectModalProps) {
         body: JSON.stringify({ reason: reason.trim() }),
       });
       const json = await res.json();
-      if (!res.ok || json.error) { setError(json.error ?? t("dar.approval.errorGeneric")); return; }
+      if (!res.ok || json.error) { setError(getErrorMessage(json.error, t("dar.approval.errorGeneric"))); return; }
       onDone(json.data);
     } finally { setSubmitting(false); }
   }
@@ -538,7 +619,7 @@ function PreparerSignModal({ darId, savedSignatureUrl, savedSignatureType, onClo
         body: JSON.stringify({ signatureDataUrl: sigDataUrl, signatureType: sigType, saveSignature, comment: null }),
       });
       const json = await res.json();
-      if (!res.ok || json.error) { setError(json.error ?? t("dar.approval.errorGeneric")); return; }
+      if (!res.ok || json.error) { setError(getErrorMessage(json.error, t("dar.approval.errorGeneric"))); return; }
       onDone(json.data);
     } finally { setSubmitting(false); }
   }
@@ -590,112 +671,7 @@ function PreparerSignModal({ darId, savedSignatureUrl, savedSignatureType, onClo
   );
 }
 
-// ── Approval timeline ─────────────────────────────────────────────────────────
 
-const STEP_ORDER: DarApprovalRow["stepRole"][] = ["PREPARER", "REVIEWER", "APPROVER_MR"];
-
-function ApprovalTimeline({ approvals }: { approvals: DarApprovalRow[] }) {
-  const t = useT();
-  const locale = useLocale();
-
-  const stepLabel = (role: DarApprovalRow["stepRole"]) => ({
-    PREPARER:    t("dar.approval.stepPreparer"),
-    REVIEWER:    t("dar.approval.stepReviewer"),
-    APPROVER_MR: t("dar.approval.stepApproverMr"),
-  })[role];
-
-  const actionLabel = (action: DarApprovalRow["action"]) => ({
-    APPROVED: t("dar.approval.actionApproved"),
-    REJECTED: t("dar.approval.actionRejected"),
-    PENDING:  t("dar.approval.actionPending"),
-  })[action];
-
-  // Build a fixed 3-row list: use the real row if it exists, otherwise a placeholder
-  const byRole = Object.fromEntries(approvals.map((a) => [a.stepRole, a])) as Partial<Record<DarApprovalRow["stepRole"], DarApprovalRow>>;
-
-  return (
-    <div className="flex flex-col">
-      {STEP_ORDER.map((role, idx) => {
-        const a = byRole[role];
-        const isLast = idx === STEP_ORDER.length - 1;
-
-        if (!a) {
-          // Placeholder — step not yet created
-          return (
-            <div key={role} className="flex gap-3">
-              <div className="flex flex-col items-center">
-                <div className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 border-2 border-dashed border-slate-200 bg-slate-50 text-slate-300">
-                  <span className="text-xs font-bold">{idx + 1}</span>
-                </div>
-                {!isLast && <div className="w-0.5 flex-1 my-1 bg-slate-100" style={{ minHeight: 24 }} />}
-              </div>
-              <div className="pb-5 flex-1 min-w-0">
-                <span className="text-sm font-semibold text-slate-400">{stepLabel(role)}</span>
-                <p className="text-xs text-slate-300 mt-0.5">—</p>
-              </div>
-            </div>
-          );
-        }
-
-        return (
-          <div key={a.id} className="flex gap-3">
-            <div className="flex flex-col items-center">
-              <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 border-2 ${
-                a.action === "APPROVED" ? "bg-emerald-500 border-emerald-500 text-white" :
-                a.action === "REJECTED" ? "bg-rose-500 border-rose-500 text-white" :
-                "bg-white border-amber-300 text-amber-500"
-              }`}>
-                {a.action === "APPROVED" ? (
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><polyline points="20 6 9 17 4 12" /></svg>
-                ) : a.action === "REJECTED" ? (
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
-                ) : (
-                  <span className="text-xs font-bold">{idx + 1}</span>
-                )}
-              </div>
-              {!isLast && (
-                <div className={`w-0.5 flex-1 my-1 ${a.action === "APPROVED" ? "bg-emerald-200" : "bg-slate-100"}`} style={{ minHeight: 24 }} />
-              )}
-            </div>
-            <div className="pb-5 flex-1 min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-sm font-semibold text-slate-800">{stepLabel(a.stepRole)}</span>
-                <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium ${
-                  a.action === "APPROVED" ? "bg-emerald-100 text-emerald-700" :
-                  a.action === "REJECTED" ? "bg-rose-100 text-rose-700" :
-                  "bg-amber-100 text-amber-700"
-                }`}>
-                  {actionLabel(a.action)}
-                </span>
-              </div>
-              <p className="text-xs text-slate-500 mt-0.5">
-                {a.assignedUser.name ?? a.assignedUser.employeeId ?? "—"}
-                {a.assignedUser.department && <span className="text-slate-400"> · {a.assignedUser.department.name}</span>}
-              </p>
-              {a.actionDate && (
-                <p className="text-[11px] text-slate-400 mt-0.5">
-                  {new Date(a.actionDate).toLocaleString(locale === "en" ? "en-GB" : "th-TH", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}
-                </p>
-              )}
-              {a.comment && (
-                <div className="mt-2 rounded-lg bg-slate-50 border border-slate-100 px-3 py-2">
-                  <p className="text-xs text-slate-400 mb-0.5 font-medium">{t("dar.approval.commentLabel")}</p>
-                  <p className="text-sm text-slate-700 whitespace-pre-wrap leading-relaxed">{a.comment}</p>
-                </div>
-              )}
-              {a.signatureUsedUrl && a.action === "APPROVED" && (
-                <div className="mt-2 border border-slate-200 rounded-lg bg-white inline-block px-3 py-2">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={a.signatureUsedUrl} alt={t("dar.approval.sigAlt")} className="h-10 object-contain" />
-                </div>
-              )}
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
 
 // ── Assign reviewer panel ─────────────────────────────────────────────────────
 
@@ -725,7 +701,7 @@ function AssignReviewerPanel({ darId, onDone }: { darId: string; onDone: (dar: D
         body: JSON.stringify({ reviewerUserId: selected }),
       });
       const json = await res.json();
-      if (!res.ok || json.error) { setError(json.error ?? t("dar.approval.errorGeneric")); return; }
+      if (!res.ok || json.error) { setError(getErrorMessage(json.error, t("dar.approval.errorGeneric"))); return; }
       onDone(json.data);
     } finally { setSubmitting(false); }
   }
@@ -776,11 +752,24 @@ export default function DarApprovalPanel({ dar, currentUserId, savedSignatureUrl
   const reviewerAssigned = dar.approvals.some((a) => a.stepRole === "REVIEWER");
   const isPreparerStep = myPendingStep?.stepRole === "PREPARER";
 
-  const stepLabel = (role: DarApprovalRow["stepRole"]) => ({
-    PREPARER:    t("dar.approval.stepPreparer"),
-    REVIEWER:    t("dar.approval.stepReviewer"),
-    APPROVER_MR: t("dar.approval.stepApproverMr"),
-  })[role];
+  const stepLabel = (role: DarApprovalRow["stepRole"]): string => {
+    switch (role) {
+      case "PREPARER":
+        return t("dar.approval.stepPreparer");
+      case "REVIEWER":
+        return t("dar.approval.stepReviewer");
+      case "APPROVER_MR":
+      case "APPROVER":
+      case "APPROVER_DCC":
+      case "REQUESTER":
+      case "REQUESTER_MANAGER":
+        return t("dar.approval.stepApproverMr");
+      case "QMS_PROCESSOR":
+        return "QMS";
+      default:
+        return String(role);
+    }
+  };
 
   function handleDone(updated: DarDetail) {
     setModal("none");
@@ -801,8 +790,7 @@ export default function DarApprovalPanel({ dar, currentUserId, savedSignatureUrl
         </div>
 
         <div className="p-6 flex flex-col gap-6">
-          {/* Timeline */}
-          <ApprovalTimeline approvals={dar.approvals} />
+          <DarApprovalTimeline approvals={dar.approvals} />
 
           {/* 1. Preparer self-sign */}
           {myPendingStep && isPreparerStep && (
@@ -867,6 +855,7 @@ export default function DarApprovalPanel({ dar, currentUserId, savedSignatureUrl
         <ApproveModal
           darId={dar.id}
           stepLabel={stepLabel(myPendingStep.stepRole)}
+          stepRole={myPendingStep.stepRole}
           savedSignatureUrl={savedSignatureUrl}
           savedSignatureType={savedSignatureType}
           onClose={() => setModal("none")}

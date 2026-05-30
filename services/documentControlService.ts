@@ -1,6 +1,8 @@
-import { db } from '@/lib/db';
 import { DocumentControlRepository } from '@/repositories/documentControlRepository';
+import { DepartmentRepository } from '@/repositories/departmentRepository';
+import { DocumentCategoryRepository } from '@/repositories/documentCategoryRepository';
 import { NotFoundError, ValidationError } from '@/lib/errors';
+import { db } from '@/lib/db';
 import {
   uploadFileToDocControl,
   deleteSpItem,
@@ -23,6 +25,8 @@ type DocumentControlWithNames = Prisma.DocumentControlGetPayload<{
 
 export class DocumentControlService {
   private repo = new DocumentControlRepository();
+  private deptRepo = new DepartmentRepository();
+  private categoryRepo = new DocumentCategoryRepository();
 
   async listDocuments(
     page: number,
@@ -67,8 +71,8 @@ export class DocumentControlService {
     }
 
     const [dept, category] = await Promise.all([
-      db.department.findUnique({ where: { id: data.departmentId }, select: { name: true } }),
-      db.documentCategory.findUnique({ where: { id: data.categoryId }, select: { name: true, departmentId: true } }),
+      this.deptRepo.findNameById(data.departmentId),
+      this.categoryRepo.findForDocControl(data.categoryId),
     ]);
     if (!dept || !category) throw new ValidationError('Department or category not found');
     if (category.departmentId !== data.departmentId) throw new ValidationError('Category does not belong to department');
@@ -102,8 +106,8 @@ export class DocumentControlService {
     if (!nextDepartmentId || !nextCategoryId) throw new ValidationError('Department and category are required');
 
     const [nextDept, nextCategory] = await Promise.all([
-      db.department.findUnique({ where: { id: nextDepartmentId }, select: { name: true } }),
-      db.documentCategory.findUnique({ where: { id: nextCategoryId }, select: { name: true, departmentId: true } }),
+      this.deptRepo.findNameById(nextDepartmentId),
+      this.categoryRepo.findForDocControl(nextCategoryId),
     ]);
     if (!nextDept || !nextCategory) throw new ValidationError('Department or category not found');
     if (nextCategory.departmentId !== nextDepartmentId) throw new ValidationError('Category does not belong to department');

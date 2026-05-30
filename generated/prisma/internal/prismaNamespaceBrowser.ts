@@ -60,6 +60,7 @@ export const ModelName = {
   DarDistribution: 'DarDistribution',
   DarAttachment: 'DarAttachment',
   DarApproval: 'DarApproval',
+  ApprovalSignature: 'ApprovalSignature',
   QmsProcessing: 'QmsProcessing',
   PublicDocument: 'PublicDocument',
   KPI: 'KPI',
@@ -232,6 +233,23 @@ export const DarApprovalScalarFieldEnum = {
 } as const
 
 export type DarApprovalScalarFieldEnum = (typeof DarApprovalScalarFieldEnum)[keyof typeof DarApprovalScalarFieldEnum]
+
+
+export const ApprovalSignatureScalarFieldEnum = {
+  id: 'id',
+  module: 'module',
+  documentId: 'documentId',
+  step: 'step',
+  action: 'action',
+  actionDate: 'actionDate',
+  signerUserId: 'signerUserId',
+  signaturePath: 'signaturePath',
+  comment: 'comment',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ApprovalSignatureScalarFieldEnum = (typeof ApprovalSignatureScalarFieldEnum)[keyof typeof ApprovalSignatureScalarFieldEnum]
 
 
 export const QmsProcessingScalarFieldEnum = {

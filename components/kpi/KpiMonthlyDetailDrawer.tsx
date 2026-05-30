@@ -8,16 +8,31 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
-import { CheckCircle2, XCircle } from "lucide-react";
-import { useKpiMonthlyById, useSubmitMonthlyReport, useReviewMonthlyReport, useApproveMonthlyReport, useRejectMonthlyReport, useUpdateMonthlyDetail } from "@/hooks/api/use-kpi-monthly";
+import { CheckCircle2, XCircle, ShieldCheck } from "lucide-react";
+import {
+  useKpiMonthlyById,
+  useSubmitMonthlyReport,
+  useReviewMonthlyReport,
+  useApproveMonthlyReport,
+  useRejectMonthlyReport,
+  useUpdateMonthlyDetail,
+} from "@/hooks/api/use-kpi-monthly";
 import type { MonthlyStatus, AchievedStatus } from "@/generated/prisma/client";
+
+type UserRole = "USER" | "IT" | "QMS" | "MR";
+
+const PRIVILEGED_ROLES: UserRole[] = ["IT", "QMS", "MR"];
+
+function isPrivileged(role: UserRole): boolean {
+  return PRIVILEGED_ROLES.includes(role);
+}
 
 interface Props {
   kpiId: string | null;
   reportId: string | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  canApprove: boolean;
+  userRole: UserRole;
 }
 
 const STATUS_STYLES: Record<MonthlyStatus, string> = {
@@ -34,8 +49,17 @@ const ACHIEVED_STYLES: Record<AchievedStatus, string> = {
   PENDING: "bg-amber-50 text-amber-600 border border-amber-200",
 };
 
-export default function KpiMonthlyDetailDrawer({ kpiId, reportId, open, onOpenChange, canApprove }: Props) {
+type DetailRow = {
+  id: string;
+  actualResult: number | null;
+  achievedStatus: AchievedStatus;
+  kpiObjective: { objective: string; target: number };
+};
+
+export default function KpiMonthlyDetailDrawer({ kpiId, reportId, open, onOpenChange, userRole }: Props) {
   const t = useT();
+  const privileged = isPrivileged(userRole);
+
   const { data: response, isLoading } = useKpiMonthlyById(open ? kpiId : null, open ? reportId : null);
   const report = response?.data;
 
@@ -50,8 +74,23 @@ export default function KpiMonthlyDetailDrawer({ kpiId, reportId, open, onOpenCh
   const approveMutation = useApproveMonthlyReport();
   const rejectMutation = useRejectMonthlyReport();
 
-  const anyLoading = submitMutation.isPending || reviewMutation.isPending || approveMutation.isPending || rejectMutation.isPending || updateDetailMutation.isPending;
-  const isEditable = report?.status === "DRAFT" || report?.status === "REJECTED";
+  const anyLoading =
+    submitMutation.isPending ||
+    reviewMutation.isPending ||
+    approveMutation.isPending ||
+    rejectMutation.isPending ||
+    updateDetailMutation.isPending;
+
+  const reportStatus = report?.status as MonthlyStatus | undefined;
+
+  // IT/QMS/MR can always edit regardless of status
+  // USER can only edit when DRAFT or REJECTED (not yet fully approved)
+  const isEditable = privileged
+    ? reportStatus !== "APPROVED"
+    : reportStatus === "DRAFT" || reportStatus === "REJECTED";
+
+  // IT/QMS/MR can always approve/review
+  const canApprove = privileged;
 
   async function handleSaveDetail(detailId: string) {
     if (!kpiId || !reportId) return;
@@ -113,12 +152,22 @@ export default function KpiMonthlyDetailDrawer({ kpiId, reportId, open, onOpenCh
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="w-full sm:max-w-lg overflow-y-auto flex flex-col gap-0 p-0">
         <SheetHeader className="px-6 py-5 border-b border-slate-100">
-          <SheetTitle className="text-primary font-bold">{t("kpi.monthly.drawer.title")}</SheetTitle>
+          <div className="flex items-center justify-between gap-3">
+            <SheetTitle className="text-primary font-bold">{t("kpi.monthly.drawer.title")}</SheetTitle>
+            {privileged && (
+              <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full px-2.5 py-0.5">
+                <ShieldCheck className="w-3 h-3" />
+                {t("approve.fullAccess")}
+              </span>
+            )}
+          </div>
         </SheetHeader>
 
         {isLoading || !report ? (
           <div className="p-6 space-y-4">
-            <Skeleton className="h-6 w-3/4" /><Skeleton className="h-4 w-1/2" /><Skeleton className="h-20 w-full" />
+            <Skeleton className="h-6 w-3/4" />
+            <Skeleton className="h-4 w-1/2" />
+            <Skeleton className="h-20 w-full" />
           </div>
         ) : (
           <div className="flex-1 overflow-y-auto">
@@ -134,15 +183,23 @@ export default function KpiMonthlyDetailDrawer({ kpiId, reportId, open, onOpenCh
             {/* Details grid */}
             <div className="px-6 py-5 space-y-4">
               <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">{t("kpi.monthly.drawer.objectives")}</p>
-              {(report.details ?? []).map((detail: { id: string; actualResult: number | null; achievedStatus: AchievedStatus; kpiObjective: { objective: string; target: number } }) => (
+              {(report.details ?? []).map((detail: DetailRow) => (
                 <div key={detail.id} className="rounded-xl border border-slate-100 bg-slate-50/50 p-4 space-y-2">
                   <p className="text-sm font-medium text-slate-700">{detail.kpiObjective.objective}</p>
                   <div className="flex items-center gap-4 text-xs text-slate-500">
-                    <span>{t("kpi.monthly.table.target")}: <strong className="text-slate-700">{detail.kpiObjective.target}</strong></span>
-                    <span>{t("kpi.monthly.table.actual")}:{" "}
+                    <span>
+                      {t("kpi.monthly.table.target")}: <strong className="text-slate-700">{detail.kpiObjective.target}</strong>
+                    </span>
+                    <span>
+                      {t("kpi.monthly.table.actual")}:{" "}
                       {editingDetailId === detail.id ? (
-                        <Input type="number" step="0.01" value={actualInput} onChange={e => setActualInput(e.target.value)}
-                          className="h-6 w-24 inline-flex rounded-lg text-xs px-2 py-0" />
+                        <Input
+                          type="number"
+                          step="0.01"
+                          value={actualInput}
+                          onChange={e => setActualInput(e.target.value)}
+                          className="h-6 w-24 inline-flex rounded-lg text-xs px-2 py-0"
+                        />
                       ) : (
                         <strong className="text-slate-700">{detail.actualResult ?? "—"}</strong>
                       )}
@@ -155,12 +212,33 @@ export default function KpiMonthlyDetailDrawer({ kpiId, reportId, open, onOpenCh
                     {isEditable && (
                       editingDetailId === detail.id ? (
                         <div className="flex gap-1.5 ml-auto">
-                          <Button size="sm" className="h-6 text-xs rounded-lg bg-primary hover:bg-[#161875]" onClick={() => handleSaveDetail(detail.id)} disabled={anyLoading}>{t("common.save")}</Button>
-                          <Button size="sm" variant="outline" className="h-6 text-xs rounded-lg" onClick={() => setEditingDetailId(null)}>{t("common.cancel")}</Button>
+                          <Button
+                            size="sm"
+                            className="h-6 text-xs rounded-lg bg-primary hover:bg-primary/90"
+                            onClick={() => handleSaveDetail(detail.id)}
+                            disabled={anyLoading}
+                          >
+                            {t("common.save")}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-6 text-xs rounded-lg"
+                            onClick={() => setEditingDetailId(null)}
+                          >
+                            {t("common.cancel")}
+                          </Button>
                         </div>
                       ) : (
-                        <Button size="sm" variant="outline" className="h-6 text-xs rounded-lg ml-auto"
-                          onClick={() => { setEditingDetailId(detail.id); setActualInput(detail.actualResult !== null ? String(detail.actualResult) : ""); }}>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-6 text-xs rounded-lg ml-auto"
+                          onClick={() => {
+                            setEditingDetailId(detail.id);
+                            setActualInput(detail.actualResult !== null ? String(detail.actualResult) : "");
+                          }}
+                        >
                           {t("common.edit")}
                         </Button>
                       )
@@ -177,14 +255,29 @@ export default function KpiMonthlyDetailDrawer({ kpiId, reportId, open, onOpenCh
           <div className="px-6 py-4 border-t border-slate-100 bg-slate-50 space-y-3">
             {showRejectForm && (
               <div className="space-y-2">
-                <Textarea placeholder={t("kpi.monthly.drawer.rejectionPlaceholder")} value={rejectReason}
-                  onChange={e => setRejectReason(e.target.value)} className="rounded-xl text-sm resize-none" rows={3} />
+                <Textarea
+                  placeholder={t("kpi.monthly.drawer.rejectionPlaceholder")}
+                  value={rejectReason}
+                  onChange={e => setRejectReason(e.target.value)}
+                  className="rounded-xl text-sm resize-none"
+                  rows={3}
+                />
                 <div className="flex gap-2">
-                  <Button size="sm" className="rounded-xl bg-rose-600 hover:bg-rose-700 text-white flex-1"
-                    onClick={handleReject} disabled={!rejectReason.trim() || anyLoading}>
+                  <Button
+                    size="sm"
+                    className="rounded-xl bg-rose-600 hover:bg-rose-700 text-white flex-1"
+                    onClick={handleReject}
+                    disabled={!rejectReason.trim() || anyLoading}
+                  >
                     <XCircle className="w-4 h-4 mr-1.5" />{t("kpi.monthly.actions.reject")}
                   </Button>
-                  <Button size="sm" variant="outline" className="rounded-xl" onClick={() => setShowRejectForm(false)} disabled={anyLoading}>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="rounded-xl"
+                    onClick={() => setShowRejectForm(false)}
+                    disabled={anyLoading}
+                  >
                     {t("common.cancel")}
                   </Button>
                 </div>
@@ -193,29 +286,65 @@ export default function KpiMonthlyDetailDrawer({ kpiId, reportId, open, onOpenCh
 
             {!showRejectForm && (
               <div className="flex flex-wrap gap-2">
+                {/* USER: submit only when editable (DRAFT/REJECTED) */}
                 {isEditable && !canApprove && (
-                  <Button className="rounded-xl bg-primary hover:bg-[#161875] flex-1" onClick={handleSubmit} disabled={anyLoading}>
+                  <Button
+                    className="rounded-xl bg-primary hover:bg-primary/90 flex-1"
+                    onClick={handleSubmit}
+                    disabled={anyLoading}
+                  >
                     {t("kpi.monthly.actions.submit")}
                   </Button>
                 )}
-                {canApprove && report.status === "PENDING_REVIEW" && (
+
+                {/* IT/QMS/MR: can submit if DRAFT/REJECTED regardless */}
+                {privileged && (reportStatus === "DRAFT" || reportStatus === "REJECTED") && (
+                  <Button
+                    className="rounded-xl bg-primary hover:bg-primary/90 flex-1"
+                    onClick={handleSubmit}
+                    disabled={anyLoading}
+                  >
+                    {t("kpi.monthly.actions.submit")}
+                  </Button>
+                )}
+
+                {/* Review: privileged can always review when PENDING_REVIEW */}
+                {canApprove && reportStatus === "PENDING_REVIEW" && (
                   <>
-                    <Button className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white flex-1" onClick={handleReview} disabled={anyLoading}>
+                    <Button
+                      className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white flex-1"
+                      onClick={handleReview}
+                      disabled={anyLoading}
+                    >
                       <CheckCircle2 className="w-4 h-4 mr-1.5" />{t("kpi.monthly.actions.review")}
                     </Button>
-                    <Button variant="outline" className="rounded-xl border-rose-200 text-rose-600 hover:bg-rose-50"
-                      onClick={() => setShowRejectForm(true)} disabled={anyLoading}>
+                    <Button
+                      variant="outline"
+                      className="rounded-xl border-rose-200 text-rose-600 hover:bg-rose-50"
+                      onClick={() => setShowRejectForm(true)}
+                      disabled={anyLoading}
+                    >
                       <XCircle className="w-4 h-4 mr-1.5" />{t("kpi.monthly.actions.reject")}
                     </Button>
                   </>
                 )}
-                {canApprove && report.status === "PENDING_APPROVAL" && (
+
+                {/* Approve: privileged can always approve when PENDING_APPROVAL */}
+                {canApprove && reportStatus === "PENDING_APPROVAL" && (
                   <>
-                    <Button className="rounded-xl bg-blue-600 hover:bg-blue-700 text-white flex-1" onClick={handleApprove} disabled={anyLoading}>
+                    <Button
+                      className="rounded-xl bg-blue-600 hover:bg-blue-700 text-white flex-1"
+                      onClick={handleApprove}
+                      disabled={anyLoading}
+                    >
                       <CheckCircle2 className="w-4 h-4 mr-1.5" />{t("kpi.monthly.actions.approve")}
                     </Button>
-                    <Button variant="outline" className="rounded-xl border-rose-200 text-rose-600 hover:bg-rose-50"
-                      onClick={() => setShowRejectForm(true)} disabled={anyLoading}>
+                    <Button
+                      variant="outline"
+                      className="rounded-xl border-rose-200 text-rose-600 hover:bg-rose-50"
+                      onClick={() => setShowRejectForm(true)}
+                      disabled={anyLoading}
+                    >
                       <XCircle className="w-4 h-4 mr-1.5" />{t("kpi.monthly.actions.reject")}
                     </Button>
                   </>

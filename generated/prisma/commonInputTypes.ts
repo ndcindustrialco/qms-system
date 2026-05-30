@@ -277,6 +277,23 @@ export type EnumApprovalActionWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumApprovalActionFilter<$PrismaModel>
 }
 
+export type EnumApprovalModuleFilter<$PrismaModel = never> = {
+  equals?: $Enums.ApprovalModule | Prisma.EnumApprovalModuleFieldRefInput<$PrismaModel>
+  in?: $Enums.ApprovalModule[] | Prisma.ListEnumApprovalModuleFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ApprovalModule[] | Prisma.ListEnumApprovalModuleFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumApprovalModuleFilter<$PrismaModel> | $Enums.ApprovalModule
+}
+
+export type EnumApprovalModuleWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ApprovalModule | Prisma.EnumApprovalModuleFieldRefInput<$PrismaModel>
+  in?: $Enums.ApprovalModule[] | Prisma.ListEnumApprovalModuleFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ApprovalModule[] | Prisma.ListEnumApprovalModuleFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumApprovalModuleWithAggregatesFilter<$PrismaModel> | $Enums.ApprovalModule
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumApprovalModuleFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumApprovalModuleFilter<$PrismaModel>
+}
+
 export type EnumKpiObjectiveStatusFilter<$PrismaModel = never> = {
   equals?: $Enums.KpiObjectiveStatus | Prisma.EnumKpiObjectiveStatusFieldRefInput<$PrismaModel>
   in?: $Enums.KpiObjectiveStatus[] | Prisma.ListEnumKpiObjectiveStatusFieldRefInput<$PrismaModel>
@@ -700,6 +717,23 @@ export type NestedEnumApprovalActionWithAggregatesFilter<$PrismaModel = never> =
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumApprovalActionFilter<$PrismaModel>
   _max?: Prisma.NestedEnumApprovalActionFilter<$PrismaModel>
+}
+
+export type NestedEnumApprovalModuleFilter<$PrismaModel = never> = {
+  equals?: $Enums.ApprovalModule | Prisma.EnumApprovalModuleFieldRefInput<$PrismaModel>
+  in?: $Enums.ApprovalModule[] | Prisma.ListEnumApprovalModuleFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ApprovalModule[] | Prisma.ListEnumApprovalModuleFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumApprovalModuleFilter<$PrismaModel> | $Enums.ApprovalModule
+}
+
+export type NestedEnumApprovalModuleWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ApprovalModule | Prisma.EnumApprovalModuleFieldRefInput<$PrismaModel>
+  in?: $Enums.ApprovalModule[] | Prisma.ListEnumApprovalModuleFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ApprovalModule[] | Prisma.ListEnumApprovalModuleFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumApprovalModuleWithAggregatesFilter<$PrismaModel> | $Enums.ApprovalModule
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumApprovalModuleFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumApprovalModuleFilter<$PrismaModel>
 }
 
 export type NestedEnumKpiObjectiveStatusFilter<$PrismaModel = never> = {

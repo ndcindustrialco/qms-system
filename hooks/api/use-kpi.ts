@@ -1,4 +1,16 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type { KPI } from "@/generated/prisma/client";
+
+export interface ResolvedUser { id: string; name: string | null; email: string }
+export type KpiWithUsers = KPI & {
+  reviewerUser: ResolvedUser | null;
+  approverUser: ResolvedUser | null;
+}
+
+interface KpiListResponse {
+  data: KpiWithUsers[];
+  meta: { page: number; limit: number; total: number };
+}
 
 export interface KpiSubmitPayload {
   prepareSignature: string;
@@ -49,12 +61,13 @@ function buildParams(q: KpiQuery): string {
 }
 
 export function useKpiList(query: KpiQuery) {
-  return useQuery({
+  return useQuery<KpiListResponse>({
     queryKey: ["kpi", query],
     queryFn: async () => {
       const res = await fetch(`/api/kpi?${buildParams(query)}`);
       if (!res.ok) throw new Error(await extractError(res));
-      return res.json();
+      const json = await res.json();
+      return { data: json.data ?? [], meta: json.meta ?? { page: 1, limit: 20, total: 0 } };
     },
   });
 }

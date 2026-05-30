@@ -130,4 +130,29 @@ export class DepartmentService {
     await this.deptRepo.delete(id);
     await this.invalidateActiveCache();
   }
+
+  async syncFromEntraGroups(
+    groups: Array<{ displayName?: string | null; mail?: string | null }>
+  ): Promise<{ total: number; created: number; updated: number; skipped: number }> {
+    const valid = groups.filter((g) => g.displayName?.trim());
+    const skipped = groups.length - valid.length;
+
+    let created = 0;
+    let updated = 0;
+
+    await Promise.all(
+      valid.map(async (g) => {
+        const name = g.displayName!.trim();
+        const emailGroup = g.mail?.toLowerCase().trim() ?? null;
+        const result = await this.deptRepo.upsertDepartmentWithEmail(name, emailGroup);
+        if (result.created) {
+          created++;
+        } else {
+          updated++;
+        }
+      })
+    );
+
+    return { total: groups.length, created, updated, skipped };
+  }
 }

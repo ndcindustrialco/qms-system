@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { useT } from '@/lib/i18n';
-import { useLocale } from '@/lib/locale-context';
 import PageHeader from '@/components/common/PageHeader';
 import FilterBar from '@/components/common/FilterBar';
 import { DepartmentFolderGrid } from './DepartmentFolderGrid';
@@ -28,7 +27,6 @@ interface Props {
 
 export function DocumentControlsLevelOneClient({ departments, canManage }: Props) {
   const t = useT();
-  const locale = useLocale();
   const router = useRouter();
 
   const [search, setSearch] = useState('');
@@ -38,13 +36,12 @@ export function DocumentControlsLevelOneClient({ departments, canManage }: Props
   const [editingDepartment, setEditingDepartment] = useState<DepartmentCard | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<DepartmentCard | null>(null);
 
-  const isTh = locale === 'th';
 
   const sortOptions = [
-    { value: 'name-asc', label: isTh ? 'ชื่อ (ก-ฮ)' : 'Name (A-Z)' },
-    { value: 'name-desc', label: isTh ? 'ชื่อ (ฮ-ก)' : 'Name (Z-A)' },
-    { value: 'cat-desc', label: isTh ? 'จำนวนหมวดหมู่ (มาก-น้อย)' : 'Categories (High-Low)' },
-    { value: 'doc-desc', label: isTh ? 'จำนวนเอกสาร (มาก-น้อย)' : 'Documents (High-Low)' },
+    { value: 'name-asc', label: t('documentControl.sort.nameAsc') },
+    { value: 'name-desc', label: t('documentControl.sort.nameDesc') },
+    { value: 'cat-desc', label: t('documentControl.sort.categoriesDesc') },
+    { value: 'doc-desc', label: t('documentControl.sort.documentsDesc') },
   ];
 
   const filtered = useMemo(() => {
@@ -111,7 +108,7 @@ export function DocumentControlsLevelOneClient({ departments, canManage }: Props
         <FilterBar
           searchValue={search}
           onSearchChange={setSearch}
-          searchPlaceholder={isTh ? 'ค้นหาแผนก...' : 'Search departments...'}
+          searchPlaceholder={t('documentDepartment.placeholder.search')}
           searchLabel={t('common.search')}
           filters={[
             {
@@ -126,9 +123,9 @@ export function DocumentControlsLevelOneClient({ departments, canManage }: Props
             },
             {
               key: 'sort',
-              label: isTh ? 'จัดเรียงตาม' : 'Sort By',
+              label: t('documentControl.sort.label'),
               options: sortOptions,
-              allLabel: isTh ? 'ชื่อ (ก-ฮ)' : 'Name (A-Z)',
+              allLabel: t('documentControl.sort.nameAsc'),
               minWidth: '14rem',
             },
           ]}
@@ -145,7 +142,7 @@ export function DocumentControlsLevelOneClient({ departments, canManage }: Props
           }}
           resultCount={sorted.length}
           totalCount={departments.length}
-          countLabel={isTh ? 'แผนก' : 'departments'}
+          countLabel={t('documentDepartment.countLabel')}
         />
 
         <DepartmentFolderGrid

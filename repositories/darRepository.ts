@@ -25,6 +25,7 @@ export class DarRepository extends BaseRepository<DarMaster> {
           orderBy: { createdAt: "asc" },
           include: { uploadedBy: true },
         },
+        qmsProcessing: true,
       },
     });
   }
@@ -152,5 +153,56 @@ export class DarRepository extends BaseRepository<DarMaster> {
 
   async deleteAttachmentsByDarId(darMasterId: string, tx: Prisma.TransactionClient) {
     return tx.darAttachment.deleteMany({ where: { darMasterId } });
+  }
+
+  async findAttachmentById(attachmentId: string, tx?: Prisma.TransactionClient) {
+    return this.getClient(tx).darAttachment.findUnique({
+      where: { id: attachmentId },
+      select: { id: true, spItemId: true, uploadedById: true, darMasterId: true },
+    });
+  }
+
+  async deleteAttachmentById(attachmentId: string, tx?: Prisma.TransactionClient) {
+    return this.getClient(tx).darAttachment.delete({ where: { id: attachmentId } });
+  }
+
+  async createAttachment(
+    data: Prisma.DarAttachmentUncheckedCreateInput,
+    tx?: Prisma.TransactionClient
+  ) {
+    return this.getClient(tx).darAttachment.create({ data });
+  }
+
+  async findDarForAttachmentUpload(darId: string, tx?: Prisma.TransactionClient) {
+    return this.delegate(tx).findUnique({
+      where: { id: darId },
+      select: {
+        id: true, darNo: true, status: true, requesterId: true,
+        objective: true, docType: true,
+        department: { select: { name: true } },
+        approvals: { select: { assignedUserId: true } },
+      },
+    });
+  }
+
+  async findDarStatusAndRequester(darId: string, tx?: Prisma.TransactionClient) {
+    return this.delegate(tx).findUnique({
+      where: { id: darId },
+      select: { requesterId: true, status: true },
+    });
+  }
+
+  async findAttachmentBySpItemId(spItemId: string, tx?: Prisma.TransactionClient) {
+    return this.getClient(tx).darAttachment.findFirst({
+      where: { spItemId },
+      select: { darMasterId: true },
+    });
+  }
+
+  async findApprovalByDarAndUser(darMasterId: string, userId: string, tx?: Prisma.TransactionClient) {
+    return this.getClient(tx).darApproval.findFirst({
+      where: { darMasterId, assignedUserId: userId },
+      select: { id: true },
+    });
   }
 }

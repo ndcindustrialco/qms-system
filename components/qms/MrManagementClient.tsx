@@ -1,32 +1,29 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import type { UserWithDept } from "@/types/user";
 import { useRouter } from "next/navigation";
 import MrUserRow from "@/components/qms/MrUserRow";
 import Toast from "@/components/common/Toast";
 import { useToast } from "@/hooks/use-toast";
-import { useLocale } from "@/lib/locale-context";
+import { useT } from "@/lib/i18n";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import PageHeader from "@/components/common/PageHeader";
 import FilterBar from "@/components/common/FilterBar";
 import Pagination from "@/components/common/Pagination";
 import { Button } from "@/components/ui/button";
 import { useUrlFilters } from "@/hooks/use-url-filters";
-import { useState } from "react";
 
 type Props = { initialUsers: UserWithDept[] };
 
 export default function MrManagementClient({ initialUsers }: Props) {
-  const locale = useLocale();
-  const isTh = locale === "th";
+  const t = useT();
   const router = useRouter();
   const { toast, showToast, hideToast } = useToast();
   const [loadingId, setLoadingId] = useState<string | null>(null);
 
   const mrUsers = useMemo(() => initialUsers.filter((u) => u.role === "MR"), [initialUsers]);
 
-  // ── URL-bound search (debounced) ───────────────────────────────────────────
   const { params, rawValues, setParam } = useUrlFilters({
     keys: ["search", "page"] as const,
     searchKey: "search",
@@ -41,7 +38,6 @@ export default function MrManagementClient({ initialUsers }: Props) {
     );
   }, [initialUsers, params.search]);
 
-  // ── Client-side pagination ────────────────────────────────────────────────
   const PAGE_SIZE = 20;
   const currentPage = Math.max(1, parseInt(params.page || "1", 10));
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
@@ -58,13 +54,13 @@ export default function MrManagementClient({ initialUsers }: Props) {
       });
       const json = await res.json();
       if (!res.ok || json.error) {
-        showToast("error", json.error ?? (isTh ? "เกิดข้อผิดพลาด" : "An error occurred"));
+        showToast("error", json.error ?? t("common.error"));
         return;
       }
-      showToast("success", isTh ? "อัปเดตสำเร็จ" : "Updated successfully");
+      showToast("success", t("common.success"));
       router.refresh();
     } catch {
-      showToast("error", isTh ? "เกิดข้อผิดพลาด" : "An error occurred");
+      showToast("error", t("common.error"));
     } finally {
       setLoadingId(null);
     }
@@ -72,26 +68,22 @@ export default function MrManagementClient({ initialUsers }: Props) {
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Page header */}
       <PageHeader
-        title={isTh ? "กำหนดผู้แทนฝ่ายบริหาร (MR)" : "Set Management Representative (MR)"}
-        subtitle={isTh ? "กำหนดสิทธิ์ MR ให้กับผู้ใช้ในระบบ" : "Assign MR role to users in the system"}
+        title={t("qms.mr.title")}
+        subtitle={t("qms.mr.subtitle")}
         actions={
           <span className="flex items-center gap-2">
-            <span className="text-[11px] text-neutral">{isTh ? "MR ปัจจุบัน" : "Current MR"}:</span>
+            <span className="text-[11px] text-neutral">{t("qms.mr.currentMr")}:</span>
             <span className="px-2.5 py-1 text-[12px] font-bold rounded-full bg-warning/15 text-warning">
-              {mrUsers.length} {isTh ? "คน" : "user(s)"}
+              {mrUsers.length} {t("qms.mr.userCount")}
             </span>
           </span>
         }
       />
 
-      {/* Current MR highlight */}
       {mrUsers.length > 0 && (
         <div className="bg-warning/5 border border-warning/20 rounded-xl px-5 py-4">
-          <p className="text-[12px] font-bold text-warning mb-3">
-            {isTh ? "ผู้แทนฝ่ายบริหาร (MR) ปัจจุบัน" : "Current Management Representatives"}
-          </p>
+          <p className="text-[12px] font-bold text-warning mb-3">{t("qms.mr.highlightTitle")}</p>
           <div className="flex flex-wrap gap-2">
             {mrUsers.map((u) => (
               <div key={u.id} className="flex items-center gap-2 bg-white border border-warning/30 rounded-lg px-3 py-2">
@@ -108,31 +100,27 @@ export default function MrManagementClient({ initialUsers }: Props) {
         </div>
       )}
 
-      {/* Search */}
       <FilterBar
         searchValue={rawValues.search}
         onSearchChange={(v) => setParam("search", v)}
-        searchPlaceholder={isTh ? "ค้นหาชื่อ, อีเมล, แผนก..." : "Search name, email, department..."}
+        searchPlaceholder={t("qms.mr.search")}
         resultCount={filtered.length}
         totalCount={initialUsers.length}
-        countLabel={isTh ? "คน" : "users"}
+        countLabel={t("qms.mr.countLabel")}
       />
 
       {/* Mobile Card List */}
       <div className="lg:hidden space-y-3">
         {filtered.length === 0 ? (
           <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-12 text-center">
-            <p className="text-slate-500 text-sm">{isTh ? "ไม่พบผู้ใช้" : "No users found"}</p>
+            <p className="text-slate-500 text-sm">{t("qms.mr.empty")}</p>
           </div>
         ) : (
           paginated.map((user) => {
             const isMr = user.role === "MR";
             const canToggle = user.role === "USER" || user.role === "MR";
             return (
-              <div
-                key={user.id}
-                className="bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-4 flex flex-col gap-3"
-              >
+              <div key={user.id} className="bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-4 flex flex-col gap-3">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
@@ -152,10 +140,8 @@ export default function MrManagementClient({ initialUsers }: Props) {
                       </div>
                     </div>
                   </div>
-                  <span className={`text-xs font-semibold px-2.5 py-1 rounded-full shrink-0 ${
-                    isMr ? "bg-amber-50 text-amber-700" : "bg-slate-100 text-slate-500"
-                  }`}>
-                    {isTh ? (isMr ? "ผู้แทนฝ่ายบริหาร" : "ผู้ใช้งาน") : (isMr ? "Mgmt. Rep." : "User")}
+                  <span className={`text-xs font-semibold px-2.5 py-1 rounded-full shrink-0 ${isMr ? "bg-amber-50 text-amber-700" : "bg-slate-100 text-slate-500"}`}>
+                    {isMr ? t("qms.mr.mobileRole") : t("qms.mr.mobileRoleUser")}
                   </span>
                 </div>
 
@@ -170,16 +156,12 @@ export default function MrManagementClient({ initialUsers }: Props) {
                       variant={isMr ? "outline" : "default"}
                       disabled={loadingId === user.id}
                       onClick={() => handleToggle(user.id, isMr ? "USER" : "MR")}
-                      className={`w-full gap-1.5 ${
-                        isMr ? "text-amber-600 border-amber-200 hover:bg-amber-50" : ""
-                      }`}
+                      className={`w-full gap-1.5 ${isMr ? "text-amber-600 border-amber-200 hover:bg-amber-50" : ""}`}
                     >
                       {loadingId === user.id && (
                         <span className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin" />
                       )}
-                      {isMr
-                        ? (isTh ? "ยกเลิก MR" : "Remove MR")
-                        : (isTh ? "ตั้งเป็น MR" : "Set as MR")}
+                      {isMr ? t("qms.mr.removeLabel") : t("qms.mr.setLabel")}
                     </Button>
                   </div>
                 )}
@@ -195,18 +177,18 @@ export default function MrManagementClient({ initialUsers }: Props) {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>{isTh ? "ชื่อ" : "Name"}</TableHead>
-                <TableHead className="hidden md:table-cell">{isTh ? "อีเมล" : "Email"}</TableHead>
-                <TableHead className="hidden md:table-cell">{isTh ? "แผนก" : "Department"}</TableHead>
+                <TableHead>{t("qms.mr.colName")}</TableHead>
+                <TableHead className="hidden md:table-cell">{t("qms.mr.colEmail")}</TableHead>
+                <TableHead className="hidden md:table-cell">{t("qms.mr.colDept")}</TableHead>
                 <TableHead>Role</TableHead>
-                <TableHead className="text-right">{isTh ? "การจัดการ" : "Action"}</TableHead>
+                <TableHead className="text-right">{t("qms.mr.colAction")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filtered.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={5} className="py-10 text-center text-sm text-slate-400">
-                    {isTh ? "ไม่พบผู้ใช้" : "No users found"}
+                    {t("qms.mr.empty")}
                   </TableCell>
                 </TableRow>
               ) : (
@@ -216,7 +198,6 @@ export default function MrManagementClient({ initialUsers }: Props) {
                     user={user}
                     onToggle={handleToggle}
                     loading={loadingId === user.id}
-                    isTh={isTh}
                   />
                 ))
               )}
@@ -229,7 +210,7 @@ export default function MrManagementClient({ initialUsers }: Props) {
         page={safePage}
         totalPages={totalPages}
         total={filtered.length}
-        countLabel={isTh ? "คน" : "users"}
+        countLabel={t("qms.mr.countLabel")}
         onPageChange={(p) => setParam("page", String(p))}
       />
 

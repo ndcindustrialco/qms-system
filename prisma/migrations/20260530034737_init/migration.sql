@@ -11,10 +11,16 @@ CREATE TYPE "DarStatus" AS ENUM ('DRAFT', 'PENDING_REVIEW', 'PENDING_APPROVE', '
 CREATE TYPE "ApprovalAction" AS ENUM ('PENDING', 'APPROVED', 'REJECTED');
 
 -- CreateEnum
-CREATE TYPE "ApprovalStep" AS ENUM ('PREPARER', 'REVIEWER', 'APPROVER_MR');
+CREATE TYPE "ApprovalStep" AS ENUM ('REQUESTER', 'REQUESTER_MANAGER', 'PREPARER', 'REVIEWER', 'APPROVER', 'APPROVER_MR', 'APPROVER_DCC', 'QMS_PROCESSOR');
+
+-- CreateEnum
+CREATE TYPE "ApprovalModule" AS ENUM ('DAR', 'KPI', 'KPI_MONTHLY');
 
 -- CreateEnum
 CREATE TYPE "SignatureType" AS ENUM ('DRAW', 'TYPE', 'IMAGE');
+
+-- CreateEnum
+CREATE TYPE "KpiObjectiveStatus" AS ENUM ('DRAFT', 'PENDING_REVIEW', 'APPROVED', 'REJECTED');
 
 -- CreateEnum
 CREATE TYPE "MonthlyStatus" AS ENUM ('DRAFT', 'PENDING_REVIEW', 'PENDING_APPROVAL', 'APPROVED', 'REJECTED');
@@ -172,6 +178,23 @@ CREATE TABLE "DarApproval" (
 );
 
 -- CreateTable
+CREATE TABLE "ApprovalSignature" (
+    "id" TEXT NOT NULL,
+    "module" "ApprovalModule" NOT NULL,
+    "documentId" TEXT NOT NULL,
+    "step" "ApprovalStep" NOT NULL,
+    "action" "ApprovalAction" NOT NULL DEFAULT 'PENDING',
+    "actionDate" TIMESTAMP(3),
+    "signerUserId" TEXT NOT NULL,
+    "signaturePath" TEXT,
+    "comment" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "ApprovalSignature_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "QmsProcessing" (
     "id" TEXT NOT NULL,
     "chkHasAttachment" BOOLEAN NOT NULL DEFAULT false,
@@ -217,6 +240,11 @@ CREATE TABLE "kpis" (
     "prepare" TEXT NOT NULL,
     "reviewer" TEXT NOT NULL,
     "approver" TEXT NOT NULL,
+    "status" "KpiObjectiveStatus" NOT NULL DEFAULT 'DRAFT',
+    "prepare_signature" TEXT,
+    "reviewer_user_id" TEXT,
+    "approver_user_id" TEXT,
+    "submitted_at" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -389,6 +417,15 @@ CREATE INDEX "DarApproval_darMasterId_idx" ON "DarApproval"("darMasterId");
 CREATE INDEX "DarApproval_assignedUserId_idx" ON "DarApproval"("assignedUserId");
 
 -- CreateIndex
+CREATE INDEX "ApprovalSignature_module_documentId_idx" ON "ApprovalSignature"("module", "documentId");
+
+-- CreateIndex
+CREATE INDEX "ApprovalSignature_signerUserId_idx" ON "ApprovalSignature"("signerUserId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "ApprovalSignature_module_documentId_step_key" ON "ApprovalSignature"("module", "documentId", "step");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "QmsProcessing_darMasterId_key" ON "QmsProcessing"("darMasterId");
 
 -- CreateIndex
@@ -453,6 +490,9 @@ ALTER TABLE "DarApproval" ADD CONSTRAINT "DarApproval_assignedUserId_fkey" FOREI
 
 -- AddForeignKey
 ALTER TABLE "DarApproval" ADD CONSTRAINT "DarApproval_darMasterId_fkey" FOREIGN KEY ("darMasterId") REFERENCES "DarMaster"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ApprovalSignature" ADD CONSTRAINT "ApprovalSignature_signerUserId_fkey" FOREIGN KEY ("signerUserId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "QmsProcessing" ADD CONSTRAINT "QmsProcessing_darMasterId_fkey" FOREIGN KEY ("darMasterId") REFERENCES "DarMaster"("id") ON DELETE CASCADE ON UPDATE CASCADE;

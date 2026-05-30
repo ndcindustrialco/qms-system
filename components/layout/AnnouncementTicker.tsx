@@ -1,28 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
-type TickerItem = { id: string; title: string; sourceSystem: string };
+import { useAnnouncementsTicker } from "@/hooks/api/use-announcements";
 
 type Props = {
   locale: "th" | "en";
 };
 
 export default function AnnouncementTicker({ locale }: Props) {
-  const [items, setItems] = useState<TickerItem[]>([]);
-  const [loaded, setLoaded] = useState(false);
+  const { data: items = [], isSuccess } = useAnnouncementsTicker();
 
-  useEffect(() => {
-    fetch("/api/announcements/ticker")
-      .then((r) => r.json())
-      .then((d: { data: TickerItem[] }) => {
-        if (d.data) setItems(d.data);
-      })
-      .catch(() => {})
-      .finally(() => setLoaded(true));
-  }, []);
-
-  if (!loaded || items.length === 0) return null;
+  if (!isSuccess || items.length === 0) return null;
 
   const tickerText = items.map((item) => `[${item.sourceSystem}]  ${item.title}`).join("     ·     ");
 

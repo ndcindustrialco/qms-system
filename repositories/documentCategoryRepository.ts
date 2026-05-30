@@ -28,6 +28,13 @@ export class DocumentCategoryRepository extends BaseRepository<DocumentCategory>
     });
   }
 
+  async findForDocControl(id: string, tx?: Prisma.TransactionClient) {
+    return this.delegate(tx).findUnique({
+      where: { id },
+      select: { name: true, departmentId: true },
+    });
+  }
+
   async hasDocuments(id: string, tx?: Prisma.TransactionClient): Promise<boolean> {
     const count = await this.delegate(tx).count({
       where: { id, documents: { some: {} } },

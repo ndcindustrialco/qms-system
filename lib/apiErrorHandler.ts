@@ -11,8 +11,10 @@ type ApiErrorContext = {
 };
 
 export function handleApiError(error: unknown, context?: ApiErrorContext): NextResponse {
-  // Only log unexpected server errors — 4xx errors are expected flow, not bugs
-  if (!(error instanceof AppError) || error.statusCode >= 500) {
+  // Only log unexpected server errors — validation and expected 4xx flow should not be error-level.
+  if (!(error instanceof AppError) && !(error instanceof ZodError)) {
+    logger.error("api_error", error, context);
+  } else if (error instanceof AppError && error.statusCode >= 500) {
     logger.error("api_error", error, context);
   }
 

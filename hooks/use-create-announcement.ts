@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { getErrorMessage } from "@/lib/error-message";
 
 export type CreateFormData = {
   title: string;
@@ -86,8 +87,8 @@ export function useCreateAnnouncement(
       }
 
       const res = await fetch("/api/announcements", { method: "POST", body: formData });
-      const json = (await res.json()) as { data: unknown; error: string | null };
-      if (!res.ok || json.error) { onCreated(false, json.error ?? undefined); return; }
+      const json = (await res.json()) as { data: unknown; error: unknown };
+      if (!res.ok || json.error) { onCreated(false, getErrorMessage(json.error)); return; }
       reset();
       onCreated(true);
     } catch {

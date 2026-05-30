@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 import { createAnnouncement } from "@/lib/actions/announcement";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -19,7 +20,7 @@ export default function PostAnnouncementModal() {
       setIsOpen(false);
     } catch (error) {
       console.error(error);
-      alert("Failed to post announcement.");
+      toast.error("Failed to post announcement.", { duration: Infinity });
     } finally {
       setLoading(false);
     }

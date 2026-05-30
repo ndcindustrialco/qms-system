@@ -5,17 +5,21 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import EmptyState from "@/components/common/EmptyState";
-import type { KPI } from "@/generated/prisma/client";
-import { Calendar, Briefcase, Pencil, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
+import { Calendar, Briefcase, Pencil, Trash2, ChevronLeft, ChevronRight, UserCheck, UserCog } from "lucide-react";
+import type { KpiWithUsers } from "@/hooks/api/use-kpi";
 
 interface Props {
-  data: KPI[];
+  data: KpiWithUsers[];
   isLoading: boolean;
-  onEdit: (kpi: KPI) => void;
+  onEdit: (kpi: KpiWithUsers) => void;
   onDelete: (id: string) => void;
   canEdit?: boolean;
   meta?: { page: number; limit: number; total: number };
   onPageChange?: (page: number) => void;
+}
+
+function resolvedName(user: { name: string | null; email: string } | null | undefined, fallback: string): string {
+  return user?.name || user?.email || fallback || "—";
 }
 
 export function KpiMasterTable({ data, isLoading, onEdit, onDelete, canEdit, meta, onPageChange }: Props) {
@@ -57,7 +61,7 @@ export function KpiMasterTable({ data, isLoading, onEdit, onDelete, canEdit, met
                 <h3 className="font-semibold text-base text-primary leading-snug">{kpi.department}</h3>
                 <div className="flex items-center gap-1.5 mt-1 text-sm text-slate-500">
                   <Briefcase className="w-3.5 h-3.5 shrink-0" />
-                  <span className="truncate">{kpi.prepare}</span>
+                  <span className="truncate">{kpi.prepare || "—"}</span>
                 </div>
               </div>
               <div className="flex items-center gap-1.5 text-slate-500 bg-slate-50/50 px-3 py-1.5 rounded-xl border border-slate-100 shrink-0">
@@ -65,10 +69,20 @@ export function KpiMasterTable({ data, isLoading, onEdit, onDelete, canEdit, met
                 <span className="font-mono text-slate-700 text-sm">{kpi.yearly}</span>
               </div>
             </div>
-            <div className="text-xs text-slate-400 space-y-0.5">
-              <p>{t("kpi.form.reviewer")}: <span className="text-slate-600">{kpi.reviewer}</span></p>
-              <p>{t("kpi.form.approver")}: <span className="text-slate-600">{kpi.approver}</span></p>
+
+            <div className="text-xs text-slate-400 space-y-1">
+              <p className="flex items-center gap-1.5">
+                <UserCheck className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                <span className="text-slate-500 w-16 shrink-0">{t("kpi.form.reviewer")}:</span>
+                <span className="text-slate-700 font-medium">{resolvedName(kpi.reviewerUser, kpi.reviewer)}</span>
+              </p>
+              <p className="flex items-center gap-1.5">
+                <UserCog className="w-3.5 h-3.5 text-sky-400 shrink-0" />
+                <span className="text-slate-500 w-16 shrink-0">{t("kpi.form.approver")}:</span>
+                <span className="text-slate-700 font-medium">{resolvedName(kpi.approverUser, kpi.approver)}</span>
+              </p>
             </div>
+
             {canEdit && (
               <div className="flex gap-2 pt-2 border-t border-slate-100">
                 <Button variant="outline" size="sm" className="flex-1 gap-1.5 text-slate-600 border-slate-200 hover:bg-slate-50" onClick={() => onEdit(kpi)}>
@@ -91,8 +105,16 @@ export function KpiMasterTable({ data, isLoading, onEdit, onDelete, canEdit, met
               <TableHead className="text-xs font-semibold uppercase tracking-wide text-slate-500 w-20">{t("kpi.reference.table.year")}</TableHead>
               <TableHead className="text-xs font-semibold uppercase tracking-wide text-slate-500">{t("kpi.form.department")}</TableHead>
               <TableHead className="text-xs font-semibold uppercase tracking-wide text-slate-500">{t("kpi.form.prepare")}</TableHead>
-              <TableHead className="text-xs font-semibold uppercase tracking-wide text-slate-500">{t("kpi.form.reviewer")}</TableHead>
-              <TableHead className="text-xs font-semibold uppercase tracking-wide text-slate-500">{t("kpi.form.approver")}</TableHead>
+              <TableHead className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                <span className="inline-flex items-center gap-1.5">
+                  <UserCheck className="w-3.5 h-3.5 text-amber-400" />{t("kpi.form.reviewer")}
+                </span>
+              </TableHead>
+              <TableHead className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                <span className="inline-flex items-center gap-1.5">
+                  <UserCog className="w-3.5 h-3.5 text-sky-400" />{t("kpi.form.approver")}
+                </span>
+              </TableHead>
               {canEdit && <TableHead className="w-24" />}
             </TableRow>
           </TableHeader>
@@ -101,9 +123,13 @@ export function KpiMasterTable({ data, isLoading, onEdit, onDelete, canEdit, met
               <TableRow key={kpi.id} className="hover:bg-slate-50/50">
                 <TableCell className="font-mono text-sm text-slate-700">{kpi.yearly}</TableCell>
                 <TableCell className="text-sm text-slate-800 font-medium">{kpi.department}</TableCell>
-                <TableCell className="text-sm text-slate-600">{kpi.prepare}</TableCell>
-                <TableCell className="text-sm text-slate-600">{kpi.reviewer}</TableCell>
-                <TableCell className="text-sm text-slate-600">{kpi.approver}</TableCell>
+                <TableCell className="text-sm text-slate-600">{kpi.prepare || "—"}</TableCell>
+                <TableCell className="text-sm text-slate-700 font-medium">
+                  {resolvedName(kpi.reviewerUser, kpi.reviewer)}
+                </TableCell>
+                <TableCell className="text-sm text-slate-700 font-medium">
+                  {resolvedName(kpi.approverUser, kpi.approver)}
+                </TableCell>
                 {canEdit && (
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1.5">

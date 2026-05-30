@@ -1,18 +1,15 @@
 "use client";
 
-import { useState, useCallback, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useReviewerCandidates, type ReviewerCandidate } from "@/hooks/api/use-reviewer-candidates";
+import { useDebounce } from "@/hooks/use-debounce";
 
-export interface ReviewerUser {
-  id: string;
-  name: string;
-  email: string;
-  employeeId: string | null;
-  department: string | null;
-  jobTitle: string | null;
-}
+export type { ReviewerCandidate };
+/** @deprecated import ReviewerCandidate from hooks/api/use-reviewer-candidates instead */
+export type ReviewerUser = ReviewerCandidate;
 
 type SortKey = "name" | "department" | "jobTitle";
 
@@ -20,7 +17,7 @@ interface Props {
   open: boolean;
   isSending: boolean;
   onBack: () => void;
-  onSend: (reviewer: ReviewerUser) => void;
+  onSend: (reviewer: ReviewerCandidate) => void;
 }
 
 const SORT_LABELS: Record<SortKey, string> = {
@@ -30,69 +27,29 @@ const SORT_LABELS: Record<SortKey, string> = {
 };
 
 export default function DarReviewerSelectModal({ open, isSending, onBack, onSend }: Props) {
-  const [allUsers, setAllUsers] = useState<ReviewerUser[]>([]);
-  const [selected, setSelected] = useState<ReviewerUser | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  // Filter / sort state
+  const [selected, setSelected] = useState<ReviewerCandidate | null>(null);
   const [search, setSearch] = useState("");
   const [filterDept, setFilterDept] = useState<string>("__all__");
   const [filterTitle, setFilterTitle] = useState<string>("__all__");
   const [sortBy, setSortBy] = useState<SortKey>("name");
 
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const abortRef = useRef<AbortController | null>(null);
+  const debouncedSearch = useDebounce(search, 350);
 
-  // Fetch users from API
-  const fetchUsers = useCallback(async (q: string) => {
-    abortRef.current?.abort();
-    const controller = new AbortController();
-    abortRef.current = controller;
+  const { data: allUsers = [], isLoading, isError } = useReviewerCandidates(debouncedSearch, open);
 
-    setIsLoading(true);
-    setError(null);
-    try {
-      const url = q.length > 0
-        ? `/api/ms-graph/users/search?q=${encodeURIComponent(q)}`
-        : `/api/ms-graph/users/search`;
-      const res = await fetch(url, { signal: controller.signal });
-      const json = await res.json() as { data: ReviewerUser[] | null; error: string | null };
-      if (json.error) { setError(json.error); return; }
-      setAllUsers(json.data ?? []);
-    } catch (e) {
-      if ((e as Error).name !== "AbortError") {
-        setError("ไม่สามารถโหลดรายชื่อผู้ใช้ได้ กรุณาลองใหม่");
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  // Load full list on open; reset on close
+  // Reset state when dialog closes
+  const prevOpen = useRef(open);
   useEffect(() => {
-    if (open) {
-      void fetchUsers("");
-    } else {
-      setAllUsers([]);
+    if (prevOpen.current && !open) {
       setSelected(null);
       setSearch("");
       setFilterDept("__all__");
       setFilterTitle("__all__");
       setSortBy("name");
-      setError(null);
     }
-  }, [open, fetchUsers]);
+    prevOpen.current = open;
+  }, [open]);
 
-  // Debounced search — re-queries Graph when user types
-  useEffect(() => {
-    if (!open) return;
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => { void fetchUsers(search); }, 350);
-    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
-  }, [search, open, fetchUsers]);
-
-  // Unique department / jobTitle options from the current user list
   const departments = useMemo(() => {
     const set = new Set(allUsers.map((u) => u.department).filter(Boolean) as string[]);
     return Array.from(set).sort((a, b) => a.localeCompare(b, "th"));
@@ -103,7 +60,6 @@ export default function DarReviewerSelectModal({ open, isSending, onBack, onSend
     return Array.from(set).sort((a, b) => a.localeCompare(b, "th"));
   }, [allUsers]);
 
-  // Filtered + sorted view
   const displayed = useMemo(() => {
     const q = search.toLowerCase();
     let list = allUsers.filter((u) => {
@@ -192,12 +148,12 @@ export default function DarReviewerSelectModal({ open, isSending, onBack, onSend
           )}
 
           {/* Error */}
-          {!isLoading && error && (
-            <p className="text-sm text-rose-600 text-center py-2">{error}</p>
+          {!isLoading && isError && (
+            <p className="text-sm text-rose-600 text-center py-2">ไม่สามารถโหลดรายชื่อผู้ใช้ได้ กรุณาลองใหม่</p>
           )}
 
           {/* User list */}
-          {!isLoading && !error && (
+          {!isLoading && !isError && (
             <div className="border border-slate-200 rounded-lg divide-y divide-slate-100 max-h-60 overflow-y-auto">
               {displayed.length === 0 ? (
                 <p className="text-sm text-slate-500 text-center py-6">ไม่พบผู้ใช้ที่ตรงกัน</p>
@@ -213,14 +169,14 @@ export default function DarReviewerSelectModal({ open, isSending, onBack, onSend
                       selected?.id === r.id ? "bg-emerald-50 border-l-2 border-l-emerald-500" : "",
                     ].join(" ")}
                   >
-                    <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 text-xs font-semibold flex-shrink-0">
+                    <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 text-xs font-semibold shrink-0">
                       {(r.name || "?").charAt(0).toUpperCase()}
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-baseline gap-2">
                         <p className="text-sm font-medium text-slate-800 truncate">{r.name}</p>
                         {r.employeeId && (
-                          <span className="text-xs text-slate-400 flex-shrink-0">#{r.employeeId}</span>
+                          <span className="text-xs text-slate-400 shrink-0">#{r.employeeId}</span>
                         )}
                       </div>
                       <p className="text-xs text-slate-500 truncate">
@@ -228,7 +184,7 @@ export default function DarReviewerSelectModal({ open, isSending, onBack, onSend
                       </p>
                     </div>
                     {selected?.id === r.id && (
-                      <svg className="w-4 h-4 text-emerald-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <svg className="w-4 h-4 text-emerald-600 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                       </svg>
                     )}
@@ -239,7 +195,7 @@ export default function DarReviewerSelectModal({ open, isSending, onBack, onSend
           )}
 
           {/* Result count */}
-          {!isLoading && !error && allUsers.length > 0 && (
+          {!isLoading && !isError && allUsers.length > 0 && (
             <p className="text-xs text-slate-400 text-right -mt-1">
               {displayed.length} / {allUsers.length} รายการ
             </p>
@@ -248,7 +204,7 @@ export default function DarReviewerSelectModal({ open, isSending, onBack, onSend
           {/* Selected reviewer card */}
           {selected && (
             <div className="bg-emerald-50 border border-emerald-200 rounded-lg px-4 py-3 flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 text-xs font-semibold flex-shrink-0">
+              <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 text-xs font-semibold shrink-0">
                 {(selected.name || "?").charAt(0).toUpperCase()}
               </div>
               <div className="min-w-0 flex-1">

@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useT } from "@/lib/i18n";
-import { useLocale } from "@/lib/locale-context";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
@@ -14,8 +13,6 @@ interface Props {
 export default function DarDraftActions({ darId }: Props) {
   const t = useT();
   const router = useRouter();
-  const locale = useLocale();
-  const isTh = locale === "th";
 
   const [showConfirm, setShowConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -46,7 +43,7 @@ export default function DarDraftActions({ darId }: Props) {
         <button
           type="button"
           onClick={() => setShowConfirm(true)}
-          className="h-11 min-w-[44px] inline-flex items-center gap-1.5 px-3 rounded-xl text-sm font-medium
+          className="h-11 min-w-11 inline-flex items-center gap-1.5 px-3 rounded-xl text-sm font-medium
                      text-rose-600 border border-rose-200 hover:bg-rose-50 transition-colors
                      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2"
         >
@@ -79,7 +76,7 @@ export default function DarDraftActions({ darId }: Props) {
               disabled={deleting}
               onClick={() => { setShowConfirm(false); setError(null); }}
             >
-              {isTh ? "ยกเลิก" : "Cancel"}
+              {t("common.cancel")}
             </Button>
             <Button
               disabled={deleting}

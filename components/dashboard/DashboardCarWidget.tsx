@@ -1,22 +1,22 @@
 "use client";
 
 import type { DarAttachment } from "@/generated/prisma/client";
+import { useT } from "@/lib/i18n";
+import { useLocale } from "@/lib/locale-context";
 
-interface CarWidgetProps {
-  isTh: boolean;
-}
-
-interface AttachmentsWidgetProps {
-  recentAttachments: DarAttachment[];
-  isTh: boolean;
-}
+interface AttachmentsWidgetProps { recentAttachments: DarAttachment[] }
 
 const CAR_ITEMS = [
-  { deptTh: "แผนกผลิต", deptEn: "Production", dueTh: "31 พ.ค. 2569", dueEn: "31 May 2026" },
-  { deptTh: "แผนกคุณภาพ", deptEn: "Quality", dueTh: "15 มิ.ย. 2569", dueEn: "15 Jun 2026" },
+  { dueTh: "31 พ.ค. 2569", dueEn: "31 May 2026" },
+  { dueTh: "15 มิ.ย. 2569", dueEn: "15 Jun 2026" },
 ];
 
-export function DashboardCarWidget({ isTh }: CarWidgetProps) {
+export function DashboardCarWidget() {
+  const t = useT();
+  const locale = useLocale();
+
+  const deptKeys = ["dashboard.carWidget.production", "dashboard.carWidget.quality"] as const;
+
   return (
     <div className="bg-white border border-base-300 rounded-xl shadow-sm overflow-hidden">
       <div className="px-5 py-4 border-b border-base-200">
@@ -31,27 +31,30 @@ export function DashboardCarWidget({ isTh }: CarWidgetProps) {
         {CAR_ITEMS.map((item, i) => (
           <div key={i} className="flex items-center justify-between py-2 border-b border-base-200 last:border-0">
             <div>
-              <p className="text-xs font-semibold text-neutral">{isTh ? item.deptTh : item.deptEn}</p>
+              <p className="text-xs font-semibold text-neutral">{t(deptKeys[i])}</p>
               <p className="text-[11px] text-gray-400 mt-0.5">
-                {isTh ? "ครบกำหนด" : "Due"}: {isTh ? item.dueTh : item.dueEn}
+                {t("dashboard.carWidget.dueLabel")}: {locale === "th" ? item.dueTh : item.dueEn}
               </p>
             </div>
             <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-warning/10 text-warning border border-warning/20">
-              {isTh ? "รอแก้ไข" : "Open"}
+              {t("dashboard.carWidget.openStatus")}
             </span>
           </div>
         ))}
-        <p className="text-[11px] text-gray-400 text-center pt-1">{isTh ? "กำลังพัฒนา" : "Coming soon"}</p>
+        <p className="text-[11px] text-gray-400 text-center pt-1">{t("dashboard.carWidget.comingSoon")}</p>
       </div>
     </div>
   );
 }
 
-export function DashboardAttachmentsWidget({ recentAttachments, isTh }: AttachmentsWidgetProps) {
+export function DashboardAttachmentsWidget({ recentAttachments }: AttachmentsWidgetProps) {
+  const t = useT();
+  const locale = useLocale();
+
   return (
     <div className="bg-white border border-base-300 rounded-xl shadow-sm overflow-hidden">
       <div className="px-5 py-4 border-b border-base-200">
-        <h2 className="text-sm font-bold text-primary">{isTh ? "เอกสารล่าสุด" : "Recent Documents"}</h2>
+        <h2 className="text-sm font-bold text-primary">{t("dashboard.carWidget.recentDocsTitle")}</h2>
       </div>
       <div className="p-5 flex flex-col gap-3">
         {recentAttachments.length > 0 ? recentAttachments.map((doc) => (
@@ -78,13 +81,13 @@ export function DashboardAttachmentsWidget({ recentAttachments, isTh }: Attachme
                 {doc.fileName}
               </p>
               <p className="text-[11px] text-gray-400 mt-0.5">
-                {new Date(doc.createdAt).toLocaleDateString(isTh ? "th-TH" : "en-US")}
+                {new Date(doc.createdAt).toLocaleDateString(locale === "th" ? "th-TH" : "en-US")}
               </p>
             </div>
           </a>
         )) : (
           <p className="text-xs text-gray-400 text-center py-3">
-            {isTh ? "ไม่มีเอกสารล่าสุด" : "No recent documents"}
+            {t("dashboard.carWidget.recentDocsEmpty")}
           </p>
         )}
       </div>

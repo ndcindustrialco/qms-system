@@ -51,8 +51,18 @@ export default function DarForm({ mode, initialData, departments, requesterInfo,
   const [showReviewerModal, setShowReviewerModal] = useState(false);
   const [pendingSignature, setPendingSignature] = useState<{ dataUrl: string; type: SignatureType; saveToProfile: boolean } | null>(null);
 
-  function handleSubmitClick() {
-    if (!validateAndStart()) return;
+  const isFormComplete =
+    !!state.objective &&
+    !!state.docType &&
+    state.reason.trim().length > 0 &&
+    state.items.length > 0 &&
+    state.items.every((item) => item.docNumber.trim() && item.docName.trim() && item.revision.trim()) &&
+    (state.docType !== "OTHER" || state.docTypeOther.trim().length > 0);
+
+  async function handleSubmitClick() {
+    if (!isFormComplete) return;
+    const isValid = await validateAndStart();
+    if (!isValid) return;
     setShowSignModal(true);
   }
 
@@ -148,6 +158,7 @@ export default function DarForm({ mode, initialData, departments, requesterInfo,
         mode={mode}
         isSaving={isSaving}
         isSubmitting={isSubmitting}
+        disableSubmit={!isFormComplete}
         onSaveDraft={saveDraft}
         onSubmit={handleSubmitClick}
         hideSubmit={hideSubmit}

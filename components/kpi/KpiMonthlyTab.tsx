@@ -2,10 +2,12 @@
 
 import KpiMonthlyClient from "@/components/kpi/KpiMonthlyClient";
 
+type UserRole = "USER" | "IT" | "QMS" | "MR";
+
 interface Props {
-  canApprove: boolean;
+  userRole: UserRole;
 }
 
-export default function KpiMonthlyTab({ canApprove }: Props) {
-  return <KpiMonthlyClient canApprove={canApprove} />;
+export default function KpiMonthlyTab({ userRole }: Props) {
+  return <KpiMonthlyClient userRole={userRole} />;
 }

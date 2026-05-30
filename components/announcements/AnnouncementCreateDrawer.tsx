@@ -20,7 +20,6 @@ const labelCls = "text-slate-800 text-sm font-semibold mb-2 block";
 export default function AnnouncementCreateDrawer({ open, onClose, onCreated }: Props) {
   const t = useT();
   const { form, setForm, file, setFile, bgImageFile, setBgImageFile, loading, handleSubmit } = useCreateAnnouncement(onCreated);
-  const isTh = t("common.cancel") === "ยกเลิก";
 
   useEffect(() => {
     if (!open) return;
@@ -50,7 +49,7 @@ export default function AnnouncementCreateDrawer({ open, onClose, onCreated }: P
             {t("announcement.createTitle")}
           </SheetTitle>
           <SheetDescription className="text-xs text-slate-500 mt-0.5">
-            {isTh ? "กรอกรายละเอียดประกาศด้านล่าง" : "Fill in the announcement details below"}
+            {t("announcement.createDescription")}
           </SheetDescription>
           <Button
             variant="ghost"
@@ -174,7 +173,6 @@ export default function AnnouncementCreateDrawer({ open, onClose, onCreated }: P
             onColorChange={(c) => setForm((f) => ({ ...f, bgColor: c }))}
             onImageChange={setBgImageFile}
             onTextColorChange={(c) => setForm((f) => ({ ...f, textColor: c }))}
-            isTh={isTh}
           />
         </div>
 

@@ -1,32 +1,33 @@
 "use client";
 
-interface Props { kpiOk: number; kpiNg: number; kpiPending: number; kpiTotal: number; isTh: boolean }
+import { useT } from "@/lib/i18n";
 
-const LEGEND = (p: Props) => [
-  { label: "OK",                              value: p.kpiOk,      dotClass: "bg-emerald-500", barClass: "bg-emerald-500", textClass: "text-emerald-600" },
-  { label: "NG",                              value: p.kpiNg,      dotClass: "bg-rose-500",    barClass: "bg-rose-500",    textClass: "text-rose-600"    },
-  { label: p.isTh ? "รอ" : "Pending",        value: p.kpiPending, dotClass: "bg-amber-500",   barClass: "bg-amber-500",   textClass: "text-amber-600"   },
-];
+interface Props { kpiOk: number; kpiNg: number; kpiPending: number; kpiTotal: number }
 
-// Hex literals kept only for the conic-gradient — Tailwind cannot generate
-// dynamic conic-gradient values at build time.
 const RING_COLORS = { ok: "#10B981", ng: "#EF4444", pending: "#F59E0B" };
 
-export default function DashboardKpiWidget({ kpiOk, kpiNg, kpiPending, kpiTotal, isTh }: Props) {
+export default function DashboardKpiWidget({ kpiOk, kpiNg, kpiPending, kpiTotal }: Props) {
+  const t = useT();
+
+  const legend = [
+    { label: "OK",                                  value: kpiOk,      dotClass: "bg-emerald-500", barClass: "bg-emerald-500", textClass: "text-emerald-600" },
+    { label: "NG",                                  value: kpiNg,      dotClass: "bg-rose-500",    barClass: "bg-rose-500",    textClass: "text-rose-600"    },
+    { label: t("dashboard.kpi.widgetPending"),       value: kpiPending, dotClass: "bg-amber-500",   barClass: "bg-amber-500",   textClass: "text-amber-600"   },
+  ];
+
   if (kpiTotal === 0) {
     return (
       <div className="py-4 text-center">
         <div className="w-20 h-20 rounded-full border-4 border-dashed border-slate-200 mx-auto flex items-center justify-center">
-          <span className="text-[11px] text-slate-400">{isTh ? "ไม่มีข้อมูล" : "No data"}</span>
+          <span className="text-[11px] text-slate-400">{t("dashboard.kpi.widgetNoData")}</span>
         </div>
       </div>
     );
   }
 
-  const okPct  = (kpiOk / kpiTotal) * 100;
-  const ngPct  = ((kpiOk + kpiNg) / kpiTotal) * 100;
+  const okPct = (kpiOk / kpiTotal) * 100;
+  const ngPct = ((kpiOk + kpiNg) / kpiTotal) * 100;
 
-  // conic-gradient requires inline style — hex values are isolated here
   const ringStyle = {
     background: `conic-gradient(
       ${RING_COLORS.ok} 0% ${okPct}%,
@@ -37,20 +38,17 @@ export default function DashboardKpiWidget({ kpiOk, kpiNg, kpiPending, kpiTotal,
 
   return (
     <div className="flex flex-col items-center gap-5">
-      {/* Ring chart */}
       <div className="relative w-28 h-28 rounded-full flex items-center justify-center" style={ringStyle}>
-        {/* Center hole */}
-        <div className="absolute w-[72px] h-[72px] rounded-full bg-white flex flex-col items-center justify-center">
-          <span className="text-2xl font-black font-mono text-[#0F1059] leading-none">{kpiTotal}</span>
+        <div className="absolute w-18 h-18 rounded-full bg-white flex flex-col items-center justify-center">
+          <span className="text-2xl font-black font-mono text-primary leading-none">{kpiTotal}</span>
           <span className="text-[9px] text-slate-400 uppercase tracking-wider mt-0.5">
-            {isTh ? "ทั้งหมด" : "total"}
+            {t("dashboard.kpi.widgetTotal")}
           </span>
         </div>
       </div>
 
-      {/* Legend bars */}
       <div className="w-full space-y-2.5">
-        {LEGEND({ kpiOk, kpiNg, kpiPending, kpiTotal, isTh }).map((item) => (
+        {legend.map((item) => (
           <div key={item.label}>
             <div className="flex justify-between items-center mb-1">
               <div className="flex items-center gap-1.5">

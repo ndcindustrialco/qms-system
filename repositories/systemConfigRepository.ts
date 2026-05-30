@@ -30,4 +30,29 @@ export class SystemConfigRepository extends BaseRepository<SystemConfig> {
       create: { configKey, configValue, description },
     });
   }
+
+  async upsertConfigWithDescription(
+    configKey: string,
+    configValue: string,
+    description: string,
+    tx?: Prisma.TransactionClient
+  ): Promise<SystemConfig> {
+    return this.delegate(tx).upsert({
+      where: { configKey },
+      update: { configValue, description },
+      create: { configKey, configValue, description },
+    });
+  }
+
+  async deleteByKey(configKey: string, tx?: Prisma.TransactionClient) {
+    return this.delegate(tx).deleteMany({ where: { configKey } });
+  }
+
+  async deleteByKeyAndValue(configKey: string, configValue: string, tx?: Prisma.TransactionClient) {
+    return this.delegate(tx).deleteMany({ where: { configKey, configValue } });
+  }
+
+  async findManyByKeys(configKeys: string[], tx?: Prisma.TransactionClient) {
+    return this.delegate(tx).findMany({ where: { configKey: { in: configKeys } } });
+  }
 }

@@ -393,6 +393,7 @@ export const ModelName = {
   DarDistribution: 'DarDistribution',
   DarAttachment: 'DarAttachment',
   DarApproval: 'DarApproval',
+  ApprovalSignature: 'ApprovalSignature',
   QmsProcessing: 'QmsProcessing',
   PublicDocument: 'PublicDocument',
   KPI: 'KPI',
@@ -418,7 +419,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "department" | "user" | "systemConfig" | "announcement" | "darMaster" | "darItem" | "darDistribution" | "darAttachment" | "darApproval" | "qmsProcessing" | "publicDocument" | "kPI" | "kPIObjective" | "kPIMonthlyReport" | "kPIMonthlyDetail" | "kPICorrectiveAction" | "documentControl" | "documentCategory" | "documentControlRevision"
+    modelProps: "department" | "user" | "systemConfig" | "announcement" | "darMaster" | "darItem" | "darDistribution" | "darAttachment" | "darApproval" | "approvalSignature" | "qmsProcessing" | "publicDocument" | "kPI" | "kPIObjective" | "kPIMonthlyReport" | "kPIMonthlyDetail" | "kPICorrectiveAction" | "documentControl" | "documentCategory" | "documentControlRevision"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1085,6 +1086,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.DarApprovalCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.DarApprovalCountAggregateOutputType> | number
+        }
+      }
+    }
+    ApprovalSignature: {
+      payload: Prisma.$ApprovalSignaturePayload<ExtArgs>
+      fields: Prisma.ApprovalSignatureFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ApprovalSignatureFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalSignaturePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ApprovalSignatureFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalSignaturePayload>
+        }
+        findFirst: {
+          args: Prisma.ApprovalSignatureFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalSignaturePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ApprovalSignatureFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalSignaturePayload>
+        }
+        findMany: {
+          args: Prisma.ApprovalSignatureFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalSignaturePayload>[]
+        }
+        create: {
+          args: Prisma.ApprovalSignatureCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalSignaturePayload>
+        }
+        createMany: {
+          args: Prisma.ApprovalSignatureCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ApprovalSignatureCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalSignaturePayload>[]
+        }
+        delete: {
+          args: Prisma.ApprovalSignatureDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalSignaturePayload>
+        }
+        update: {
+          args: Prisma.ApprovalSignatureUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalSignaturePayload>
+        }
+        deleteMany: {
+          args: Prisma.ApprovalSignatureDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ApprovalSignatureUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ApprovalSignatureUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalSignaturePayload>[]
+        }
+        upsert: {
+          args: Prisma.ApprovalSignatureUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalSignaturePayload>
+        }
+        aggregate: {
+          args: Prisma.ApprovalSignatureAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateApprovalSignature>
+        }
+        groupBy: {
+          args: Prisma.ApprovalSignatureGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ApprovalSignatureGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ApprovalSignatureCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ApprovalSignatureCountAggregateOutputType> | number
         }
       }
     }
@@ -2013,6 +2088,23 @@ export const DarApprovalScalarFieldEnum = {
 export type DarApprovalScalarFieldEnum = (typeof DarApprovalScalarFieldEnum)[keyof typeof DarApprovalScalarFieldEnum]
 
 
+export const ApprovalSignatureScalarFieldEnum = {
+  id: 'id',
+  module: 'module',
+  documentId: 'documentId',
+  step: 'step',
+  action: 'action',
+  actionDate: 'actionDate',
+  signerUserId: 'signerUserId',
+  signaturePath: 'signaturePath',
+  comment: 'comment',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ApprovalSignatureScalarFieldEnum = (typeof ApprovalSignatureScalarFieldEnum)[keyof typeof ApprovalSignatureScalarFieldEnum]
+
+
 export const QmsProcessingScalarFieldEnum = {
   id: 'id',
   chkHasAttachment: 'chkHasAttachment',
@@ -2357,6 +2449,20 @@ export type ListEnumApprovalActionFieldRefInput<$PrismaModel> = FieldRefInputTyp
 
 
 /**
+ * Reference to a field of type 'ApprovalModule'
+ */
+export type EnumApprovalModuleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ApprovalModule'>
+    
+
+
+/**
+ * Reference to a field of type 'ApprovalModule[]'
+ */
+export type ListEnumApprovalModuleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ApprovalModule[]'>
+    
+
+
+/**
  * Reference to a field of type 'KpiObjectiveStatus'
  */
 export type EnumKpiObjectiveStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'KpiObjectiveStatus'>
@@ -2544,6 +2650,7 @@ export type GlobalOmitConfig = {
   darDistribution?: Prisma.DarDistributionOmit
   darAttachment?: Prisma.DarAttachmentOmit
   darApproval?: Prisma.DarApprovalOmit
+  approvalSignature?: Prisma.ApprovalSignatureOmit
   qmsProcessing?: Prisma.QmsProcessingOmit
   publicDocument?: Prisma.PublicDocumentOmit
   kPI?: Prisma.KPIOmit

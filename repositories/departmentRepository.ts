@@ -42,11 +42,29 @@ export class DepartmentRepository extends BaseRepository<Department> {
     });
   }
 
+  async findNameById(id: string, tx?: Prisma.TransactionClient): Promise<{ name: string } | null> {
+    return this.delegate(tx).findUnique({ where: { id }, select: { name: true } });
+  }
+
   async upsertDepartment(name: string, tx?: Prisma.TransactionClient): Promise<Department> {
     return this.delegate(tx).upsert({
       where: { name },
       update: {},
       create: { name },
     });
+  }
+
+  async upsertDepartmentWithEmail(
+    name: string,
+    emailGroup: string | null,
+    tx?: Prisma.TransactionClient
+  ): Promise<{ created: boolean }> {
+    const existing = await this.delegate(tx).findUnique({ where: { name }, select: { id: true } });
+    if (existing) {
+      await this.delegate(tx).update({ where: { name }, data: { emailGroup } });
+      return { created: false };
+    }
+    await this.delegate(tx).create({ data: { name, emailGroup, isActive: true } });
+    return { created: true };
   }
 }

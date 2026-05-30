@@ -20,13 +20,10 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ det
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ detailId: string }> }) {
   try {
-    const session = await requireAuth();
+    await requireAuth();
     const { detailId } = await params;
     const body = createCorrectiveActionSchema.omit({ monthlyDetailId: true }).parse(await request.json());
-    const created = await service.addCorrectiveAction(
-      { ...body, monthlyDetailId: detailId, dueDate: new Date(body.dueDate) },
-      { userId: session.user.id, role: session.user.role, departmentId: session.user.departmentId }
-    );
+    const created = await service.addCorrectiveAction({ ...body, monthlyDetailId: detailId, dueDate: new Date(body.dueDate) });
     return sendSuccess(created, 'Corrective action created successfully', 201);
   } catch (error) {
     return handleApiError(error);

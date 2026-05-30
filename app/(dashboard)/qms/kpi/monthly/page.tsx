@@ -6,12 +6,11 @@ export const metadata: Metadata = { title: "Monthly KPI" };
 
 export default async function KpiMonthlyPage() {
   const session = await auth();
-  const role = session?.user?.role ?? "";
-  const canApprove = ["QMS", "MR", "IT"].includes(role);
+  const role = (session?.user?.role ?? "USER") as "USER" | "IT" | "QMS" | "MR";
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-      <KpiMonthlyClient canApprove={canApprove} />
+      <KpiMonthlyClient userRole={role} />
     </div>
   );
 }

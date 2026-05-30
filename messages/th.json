@@ -94,7 +94,8 @@
       "docName": "ชื่อเอกสาร",
       "revision": "Revision",
       "darNo": "เลขที่คำขอ",
-      "darNoDraft": "ยังไม่มีเลขที่ (ฉบับร่าง)"
+      "darNoDraft": "ยังไม่มีเลขที่ (ฉบับร่าง)",
+      "status": "สถานะ"
     },
     "placeholder": {
       "reason": "ระบุเหตุผลในการขอเอกสาร",
@@ -185,6 +186,53 @@
     "signModal": {
       "title": "ลงลายมือชื่อยืนยันคำขอ",
       "subtitle": "กรุณาลงลายมือชื่อของคุณก่อนส่งคำขอ DAR"
+    },
+    "drawer": {
+      "title": "สร้างคำขอเอกสาร (DAR)",
+      "subtitle": "กรอกรายละเอียดคำขอเอกสารด้านล่าง",
+      "depsError": "โหลดข้อมูลไม่สำเร็จ",
+      "tryAgain": "ลองใหม่"
+    },
+    "editDrawer": {
+      "title": "แก้ไขคำขอเอกสาร (DAR)",
+      "draft": "ฉบับร่าง",
+      "darNoPrefix": "เลขที่",
+      "deleteLabel": "ลบคำขอ",
+      "loadError": "โหลดข้อมูลไม่สำเร็จ",
+      "deleteConfirmTitle": "ยืนยันการลบ",
+      "deleteIrreversible": "คำขอนี้จะถูกลบถาวร ไม่สามารถกู้คืนได้",
+      "deleteForever": "ลบถาวร"
+    },
+    "list": {
+      "title": "จัดการคำขอเอกสาร (DAR)",
+      "subtitle": "ภาพรวมคำขอเอกสารทั้งหมดในระบบ",
+      "search": "ค้นหา DAR No., ประเภท, สถานะ...",
+      "filterStatus": "สถานะ",
+      "allStatuses": "ทุกสถานะ",
+      "filterObjective": "วัตถุประสงค์",
+      "allObjectives": "ทุกวัตถุประสงค์",
+      "clearFilters": "ล้างตัวกรอง",
+      "sortDateLabel": "วันที่ขอ",
+      "sortDarNo": "เลขที่ DAR",
+      "sortStatus": "สถานะ",
+      "sortAsc": "น้อย → มาก",
+      "sortDesc": "มาก → น้อย",
+      "emptyTitle": "ยังไม่มีคำขอเอกสาร",
+      "emptyDesc": "คำขอที่ผู้ใช้ส่งมาจะแสดงที่นี่",
+      "filteredEmptyTitle": "ไม่พบผลลัพธ์",
+      "filteredEmptyDesc": "ลองปรับตัวกรองหรือคำค้นหา",
+      "filteredEmptyClear": "ล้างตัวกรอง",
+      "deleteConfirmTitle": "ลบคำขอ {darNo}?",
+      "deleteConfirmMsg": "การลบคำขอเอกสารนี้จะลบข้อมูลทั้งหมดรวมถึงไฟล์แนบ และไม่สามารถกู้คืนได้",
+      "deleteConfirmYes": "ยืนยันลบ",
+      "deleteSuccess": "ลบคำขอสำเร็จ",
+      "countLabel": "รายการ",
+      "statusPendingReview": "รอตรวจสอบ",
+      "statusPendingApprove": "รออนุมัติ",
+      "statusQmsProcessing": "QMS ดำเนินการ",
+      "statusCompleted": "เสร็จสิ้น",
+      "statusCancelled": "ยกเลิก",
+      "statusDraft": "ฉบับร่าง"
     },
     "attachment": {
       "download": "ดาวน์โหลด",
@@ -326,7 +374,16 @@
     "displayTypeScrolling": "ข้อความวิ่ง (แถบด้านบน)",
     "unauthorized": "ไม่มีสิทธิ์เข้าถึง",
     "uploadFail": "อัปเดตไฟล์แนบไม่สำเร็จ",
-    "saveFail": "บันทึกประกาศไม่สำเร็จ"
+    "saveFail": "บันทึกประกาศไม่สำเร็จ",
+    "createDescription": "กรอกรายละเอียดประกาศด้านล่าง",
+    "bg": {
+      "background": "พื้นหลัง",
+      "colorTab": "สี",
+      "imageTab": "รูปภาพ",
+      "noImage": "ยังไม่มีรูปภาพ",
+      "textColor": "สีตัวอักษร",
+      "previewText": "ตัวอย่างข้อความ"
+    }
   },
   "profile": {
     "title": "โปรไฟล์ของฉัน",
@@ -361,6 +418,14 @@
     "retryBtn": "ลองใหม่อีกครั้ง"
   },
   "kpi": {
+    "metaCard": {
+      "title": "รายละเอียด KPI",
+      "assigned": "มอบหมายแล้ว",
+      "submittedAt": "ส่งเมื่อ"
+    },
+    "rolePrivilegedDesc": "มีสิทธิ์ CRUD ไม่จำกัดสำหรับรายการ KPI ทั้งหมดตลอดเวลา",
+    "roleUserDesc": "คุณสามารถสร้างและแก้ไขวัตถุประสงค์ได้เฉพาะเมื่อสถานะ KPI เป็น Draft หรือ Rejected เท่านั้น การดำเนินการจะถูกล็อกเมื่ออนุมัติแล้ว",
+    "roleUserApprovedDesc": "KPI นี้ได้รับการอนุมัติครบถ้วนแล้ว การ CRUD ถูกล็อกสำหรับบทบาทของคุณ",
     "reference": {
       "title": "ระบบ KPI",
       "add": "เพิ่ม KPI",
@@ -416,7 +481,8 @@
         "target": "เป้าหมาย",
         "frequency": "ความถี่",
         "empty": "ไม่พบวัตถุประสงค์"
-      }
+      },
+      "emptyHint": "ใช้ปุ่มเพิ่มวัตถุประสงค์ด้านบนเพื่อเริ่มต้น"
     },
     "submit": {
       "button": "ส่งตรวจสอบ",
@@ -426,6 +492,7 @@
     },
     "monthly": {
       "title": "รายงาน KPI รายเดือน",
+      "subtitle": "ติดตามและจัดการรายงาน KPI รายเดือนตามแผนก",
       "createReport": "สร้างรายงาน",
       "filter": {
         "allMonths": "ทุกเดือน",
@@ -494,7 +561,8 @@
     },
     "placeholder": {
       "name": "เช่น SOP, คู่มือ, แบบฟอร์ม",
-      "description": "คำอธิบาย (ไม่บังคับ)"
+      "description": "คำอธิบาย (ไม่บังคับ)",
+      "search": "ค้นหาหมวดหมู่..."
     },
     "button": {
       "add": "เพิ่มหมวดหมู่"
@@ -503,7 +571,8 @@
       "createSuccess": "สร้างหมวดหมู่สำเร็จ",
       "updateSuccess": "อัปเดตหมวดหมู่สำเร็จ",
       "deleteSuccess": "ลบหมวดหมู่สำเร็จ"
-    }
+    },
+    "countLabel": "หมวดหมู่"
   },
   "documentControl": {
     "title": "ควบคุมเอกสาร",
@@ -599,6 +668,21 @@
       "page": "หน้า",
       "of": "จาก",
       "items": "รายการ"
+    },
+    "sort": {
+      "label": "จัดเรียงตาม",
+      "displayOrder": "ลำดับแสดงผล",
+      "nameAsc": "ชื่อ (ก-ฮ)",
+      "nameDesc": "ชื่อ (ฮ-ก)",
+      "categoriesDesc": "จำนวนหมวดหมู่ (มาก-น้อย)",
+      "documentsDesc": "จำนวนเอกสาร (มาก-น้อย)",
+      "latestCreated": "วันที่สร้างล่าสุด",
+      "docNumberAsc": "เลขที่เอกสาร (ก-ฮ)",
+      "docNumberDesc": "เลขที่เอกสาร (ฮ-ก)",
+      "docNameAsc": "ชื่อเอกสาร (ก-ฮ)",
+      "docNameDesc": "ชื่อเอกสาร (ฮ-ก)",
+      "effectiveDateDesc": "วันที่มีผลบังคับใช้ (ใหม่-เก่า)",
+      "effectiveDateAsc": "วันที่มีผลบังคับใช้ (เก่า-ใหม่)"
     }
   },
   "documentDepartment": {
@@ -617,7 +701,8 @@
     },
     "placeholder": {
       "name": "เช่น Production, QA, HR",
-      "emailGroup": "เช่น production-dept@company.com"
+      "emailGroup": "เช่น production-dept@company.com",
+      "search": "ค้นหาแผนก..."
     },
     "button": {
       "add": "เพิ่มแผนก"
@@ -626,33 +711,137 @@
       "createSuccess": "สร้างแผนกสำเร็จ",
       "updateSuccess": "อัปเดตแผนกสำเร็จ",
       "deleteSuccess": "ลบแผนกสำเร็จ"
-    }
+    },
+    "countLabel": "แผนก"
   },
   "approve": {
-    "title": "Approve Queue",
-    "subtitle": "Overview of items waiting for your approval action",
-    "totalPending": "Total Pending",
-    "pendingDar": "DAR Pending",
-    "pendingKpi": "KPI Pending",
-    "pendingDarList": "DAR Waiting For Your Action",
-    "pendingKpiReviewList": "KPI Waiting For Your Review",
-    "pendingKpiApproveList": "KPI Waiting For Your Approval",
-    "requester": "Requester",
-    "date": "Date",
-    "department": "Department",
-    "type": "Type",
-    "typeObjective": "KPI Objective",
-    "typeMonthly": "KPI Monthly",
-    "period": "Period",
-    "status": "Status",
-    "actual": "Actual",
-    "action": "Action",
-    "openAction": "Open",
-    "successTitle": "Action completed",
-    "successDesc": "The approval action was saved successfully.",
-    "backToQueue": "Back to Approve Queue",
-    "empty": "No pending DAR items",
-    "emptyKpiReview": "No pending KPI review items",
-    "emptyKpiApprove": "No pending KPI approval items"
+    "title": "คิวการอนุมัติ",
+    "subtitle": "ภาพรวมของรายการที่รอการดำเนินการอนุมัติของคุณ",
+    "totalPending": "รอดำเนินการทั้งหมด",
+    "pendingDar": "DAR รอดำเนินการ",
+    "pendingKpi": "KPI รอดำเนินการ",
+    "pendingDarList": "DAR ที่รอการดำเนินการของคุณ",
+    "pendingKpiReviewList": "KPI ที่รอการตรวจสอบของคุณ",
+    "pendingKpiApproveList": "KPI ที่รอการอนุมัติของคุณ",
+    "requester": "ผู้ขอ",
+    "date": "วันที่",
+    "department": "แผนก",
+    "type": "ประเภท",
+    "typeObjective": "วัตถุประสงค์ KPI",
+    "typeMonthly": "KPI รายเดือน",
+    "period": "ช่วงเวลา",
+    "status": "สถานะ",
+    "actual": "ผลจริง",
+    "action": "การดำเนินการ",
+    "openAction": "เปิด",
+    "successTitle": "ดำเนินการสำเร็จ",
+    "successDesc": "บันทึกการดำเนินการอนุมัติเรียบร้อยแล้ว",
+    "backToQueue": "กลับไปยังคิวการอนุมัติ",
+    "empty": "ไม่มีรายการ DAR ที่รอดำเนินการ",
+    "emptyKpiReview": "ไม่มีรายการ KPI ที่รอตรวจสอบ",
+    "emptyKpiApprove": "ไม่มีรายการ KPI ที่รออนุมัติ",
+    "role": "บทบาท",
+    "stepReview": "ตรวจสอบ",
+    "stepApprove": "อนุมัติ",
+    "accessLevel": "ระดับการเข้าถึง",
+    "fullAccess": "เข้าถึงเต็มรูปแบบ",
+    "rolePrivilegedDesc": "มีสิทธิ์ CRUD ไม่จำกัดสำหรับรายการอนุมัติทั้งหมดตลอดเวลา",
+    "roleUserDesc": "คุณสามารถดำเนินการกับรายการที่ได้รับมอบหมายเท่านั้น การดำเนินการจะถูกจำกัดเมื่อการอนุมัติของแผนกคุณเสร็จสมบูรณ์แล้ว"
+  },
+  "qms": {
+    "approval": {
+      "title": "ตั้งค่าผู้อนุมัติ DAR",
+      "subtitle": "กำหนดผู้ใช้สำหรับ MR และ QMS signer จากหน้าเดียว",
+      "mrLabel": "ผู้อนุมัติ MR (CURRENT_MR_USER_ID)",
+      "qmsLabel": "ผู้อนุมัติ QMS ขั้นสุดท้าย (CURRENT_QMS_USER_ID)",
+      "notSet": "ไม่กำหนด",
+      "saveFail": "บันทึกไม่สำเร็จ",
+      "saveSuccess": "บันทึกการตั้งค่าเรียบร้อยแล้ว",
+      "connectionError": "เกิดข้อผิดพลาดในการเชื่อมต่อ",
+      "savingLabel": "กำลังบันทึก...",
+      "saveButton": "บันทึกการตั้งค่า"
+    },
+    "mr": {
+      "title": "กำหนดผู้แทนฝ่ายบริหาร (MR)",
+      "subtitle": "กำหนดสิทธิ์ MR ให้กับผู้ใช้ในระบบ",
+      "currentMr": "MR ปัจจุบัน",
+      "userCount": "คน",
+      "highlightTitle": "ผู้แทนฝ่ายบริหาร (MR) ปัจจุบัน",
+      "search": "ค้นหาชื่อ, อีเมล, แผนก...",
+      "empty": "ไม่พบผู้ใช้",
+      "mobileRole": "ผู้แทนฝ่ายบริหาร",
+      "mobileRoleUser": "ผู้ใช้งาน",
+      "colName": "ชื่อ",
+      "colEmail": "อีเมล",
+      "colDept": "แผนก",
+      "colAction": "การจัดการ",
+      "countLabel": "คน",
+      "removeLabel": "ยกเลิก MR",
+      "setLabel": "ตั้งเป็น MR",
+      "protected": "ไม่สามารถเปลี่ยนได้"
+    }
+  },
+  "dashboard": {
+    "departments": {
+      "title": "แผนกที่ใช้งานเอกสาร",
+      "viewAll": "ดูทั้งหมด",
+      "allDepartments": "ทุกแผนก",
+      "searchPlaceholder": "ค้นหาแผนก...",
+      "documentsUnit": "เอกสาร"
+    },
+    "announcements": {
+      "title": "ข่าวสารและประกาศ",
+      "manage": "จัดการ",
+      "empty": "ไม่มีข่าวสารในขณะนี้"
+    },
+    "recentDocuments": {
+      "title": "เอกสารเปลี่ยนแปลงล่าสุด",
+      "empty": "ไม่มีเอกสารอัปเดตล่าสุด",
+      "badgeNew": "ใหม่"
+    },
+    "kpi": {
+      "title": "KPI รายเดือน",
+      "indicatorsUnit": "ตัวชี้วัด",
+      "stripTotal": "ตัวชี้วัดทั้งหมด",
+      "stripMonth": "ประจำเดือน",
+      "stripPassed": "ผ่านแล้ว",
+      "stripFailed": "ไม่ผ่าน",
+      "stripPending": "รอดำเนินการ",
+      "stripInReview": "รอผล",
+      "widgetNoData": "ไม่มีข้อมูล",
+      "widgetTotal": "ทั้งหมด",
+      "widgetPending": "รอ"
+    },
+    "carWidget": {
+      "production": "แผนกผลิต",
+      "quality": "แผนกคุณภาพ",
+      "dueLabel": "ครบกำหนด",
+      "openStatus": "รอแก้ไข",
+      "comingSoon": "กำลังพัฒนา",
+      "recentDocsTitle": "เอกสารล่าสุด",
+      "recentDocsEmpty": "ไม่มีเอกสารล่าสุด"
+    },
+    "quickActions": {
+      "newDar": "สร้างคำขอ",
+      "docRequest": "คำขออนุมัติเอกสาร",
+      "trackDar": "ติดตามคำขอ",
+      "myRequests": "สถานะคำขอของฉัน",
+      "manageDar": "จัดการ DAR",
+      "reviewApprove": "ตรวจสอบและอนุมัติ",
+      "documents": "คลังเอกสาร",
+      "sharepointFiles": "SharePoint Files",
+      "announcements": "จัดการประกาศ",
+      "manageNews": "เพิ่มและแก้ไขข่าวสาร",
+      "mr": "กำหนด MR",
+      "mgmtRep": "ผู้แทนฝ่ายบริหาร",
+      "users": "จัดการผู้ใช้",
+      "userAccounts": "บัญชีผู้ใช้งาน",
+      "departments": "จัดการแผนก",
+      "organization": "โครงสร้างองค์กร"
+    },
+    "heroBanner": {
+      "viewDetails": "ดูรายละเอียด",
+      "empty": "ยังไม่มีประกาศ"
+    }
   }
 }

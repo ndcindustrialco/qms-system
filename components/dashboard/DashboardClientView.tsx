@@ -1,8 +1,8 @@
-"use client";
+﻿"use client";
 
-import { useContext, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
-import { LocaleContext } from "@/lib/locale-context";
+import { useT } from "@/lib/i18n";
 import type {
   Announcement,
   PublicDocument,
@@ -49,27 +49,27 @@ interface Props {
 function getDeptIcon(name: string) {
   const n = name.toUpperCase();
   if (n.includes("IT")) return <Laptop className="w-6 h-6 text-white" />;
-  if (n.includes("QA") || n.includes("QC") || n.includes("ตรวจสอบ"))
+  if (n.includes("QA") || n.includes("QC") || n.includes("à¸•à¸£à¸§à¸ˆà¸ªà¸­à¸š"))
     return <ClipboardCheck className="w-6 h-6 text-white" />;
   if (
     n.includes("PROCUR") ||
     n.includes("PURCHAS") ||
     n.includes("BUY") ||
-    n.includes("จัดซื้อ")
+    n.includes("à¸ˆà¸±à¸”à¸‹à¸·à¹‰à¸­")
   )
     return <Truck className="w-6 h-6 text-white" />;
   if (
     n.includes("SAFE") ||
     n.includes("SECURE") ||
     n.includes("HEALTH") ||
-    n.includes("ความปลอดภัย")
+    n.includes("à¸„à¸§à¸²à¸¡à¸›à¸¥à¸­à¸”à¸ à¸±à¸¢")
   )
     return <ShieldCheck className="w-6 h-6 text-white" />;
   if (
     n.includes("HR") ||
     n.includes("HUMAN") ||
     n.includes("PEOPLE") ||
-    n.includes("บุคคล")
+    n.includes("à¸šà¸¸à¸„à¸„à¸¥")
   )
     return <Users className="w-6 h-6 text-white" />;
   if (n.includes("QMS") || n.includes("ISO") || n.includes("QUAL"))
@@ -90,8 +90,7 @@ export default function DashboardClientView({
   kpiPending,
   kpiTotal,
 }: Props) {
-  const locale = useContext(LocaleContext);
-  const isTh = locale === "th";
+  const t = useT();
   const [deptFilter, setDeptFilter] = useState("");
   const [deptSelected, setDeptSelected] = useState("all");
   const previewDepartments = useMemo(() => {
@@ -107,7 +106,7 @@ export default function DashboardClientView({
     <div className="max-w-7xl mx-auto w-full flex flex-col gap-6 pb-10">
       <HeroBanner announcements={tickerAnnouncements} />
 
-      <DashboardQuickActions isTh={isTh} role={role} />
+      <DashboardQuickActions role={role} />
 
       <div className="bg-white border border-slate-100 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6">
           <div className="flex items-center justify-between gap-3 mb-6 border-b border-slate-100 pb-3">
@@ -116,14 +115,14 @@ export default function DashboardClientView({
               <Network className="w-4 h-4 text-[rgb(15,16,89)]" />
             </div>
             <h2 className="text-base font-semibold text-[rgb(15,16,89)]">
-              {isTh ? "แผนกที่ใช้งานเอกสาร" : "Document Departments"}
+              {t("dashboard.departments.title")}
             </h2>
           </div>
           <Link
             href="/qms/document-controls"
             className="h-11 inline-flex items-center rounded-xl border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
           >
-            {isTh ? "ดูทั้งหมด" : "View all"}
+            {t("dashboard.departments.viewAll")}
             </Link>
           </div>
 
@@ -133,7 +132,7 @@ export default function DashboardClientView({
               onChange={(e) => setDeptSelected(e.target.value)}
               className="h-11 rounded-xl border border-slate-200 bg-white px-4 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-[rgb(15,16,89)]/20"
             >
-              <option value="all">{isTh ? "ทุกแผนก" : "All departments"}</option>
+              <option value="all">{t("dashboard.departments.allDepartments")}</option>
               {departments.map((dept) => (
                 <option key={dept.id} value={dept.id}>
                   {dept.name}
@@ -144,7 +143,7 @@ export default function DashboardClientView({
               type="text"
               value={deptFilter}
               onChange={(e) => setDeptFilter(e.target.value)}
-              placeholder={isTh ? "ค้นหาแผนก..." : "Filter departments..."}
+              placeholder={t("dashboard.departments.searchPlaceholder")}
               className="w-full md:col-span-2 h-11 rounded-xl border border-slate-200 bg-white px-4 text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[rgb(15,16,89)]/20"
             />
           </div>
@@ -164,7 +163,7 @@ export default function DashboardClientView({
                 {dept.name}
               </span>
               <span className="text-slate-300/80 font-medium text-[11px] mt-1">
-                {dept.documentCount} {isTh ? "เอกสาร" : "documents"}
+                {dept.documentCount} {t("dashboard.departments.documentsUnit")}
               </span>
               <div className="absolute right-3 top-1/2 -translate-y-1/2 opacity-40 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all duration-300">
                 <ChevronRight className="w-4 h-4 text-white" />
@@ -193,21 +192,20 @@ export default function DashboardClientView({
                     d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"
                   />
                 </svg>
-                {isTh ? "ข่าวสารและประกาศ" : "Announcements"}
+                {t("dashboard.announcements.title")}
               </h2>
               {canManage && (
                 <Link
                   href="/qms/announcements"
                   className="text-xs text-[rgb(15,16,89)] font-semibold hover:underline"
                 >
-                  {isTh ? "จัดการ" : "Manage"}
+                  {t("dashboard.announcements.manage")}
                 </Link>
               )}
             </div>
             <DashboardAnnouncementsFeed
               announcements={announcements}
               canManage={canManage}
-              isTh={isTh}
             />
           </div>
 
@@ -228,12 +226,10 @@ export default function DashboardClientView({
                     d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                   />
                 </svg>
-                {isTh
-                  ? "เอกสารเปลี่ยนแปลงล่าสุด"
-                  : "Recently Changed Documents"}
+                {t("dashboard.recentDocuments.title")}
               </h2>
             </div>
-            <DashboardDocsFeed docs={recentPublicDocs} isTh={isTh} />
+            <DashboardDocsFeed docs={recentPublicDocs} />
           </div>
         </div>
 
@@ -241,10 +237,10 @@ export default function DashboardClientView({
           <div className="bg-white border border-slate-100 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
             <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
               <h2 className="text-base font-semibold text-[rgb(15,16,89)]">
-                {isTh ? "KPI รายเดือน" : "KPI Monthly"}
+                {t("dashboard.kpi.title")}
               </h2>
               <span className="text-xs text-slate-400">
-                {kpiTotal} {isTh ? "ตัวชี้วัด" : "indicators"}
+                {kpiTotal} {t("dashboard.kpi.indicatorsUnit")}
               </span>
             </div>
             <div className="p-6">
@@ -253,18 +249,19 @@ export default function DashboardClientView({
                 kpiNg={kpiNg}
                 kpiPending={kpiPending}
                 kpiTotal={kpiTotal}
-                isTh={isTh}
               />
             </div>
           </div>
 
-          <DashboardCarWidget isTh={isTh} />
-          <DashboardAttachmentsWidget
-            recentAttachments={recentAttachments}
-            isTh={isTh}
-          />
+          <DashboardCarWidget />
+          <DashboardAttachmentsWidget recentAttachments={recentAttachments} />
         </div>
       </div>
     </div>
   );
 }
+
+
+
+
+

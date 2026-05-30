@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useT } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
+import { getErrorMessage } from "@/lib/error-message";
 import type { SignatureType } from "@/types/dar";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -283,7 +284,7 @@ function SignatureEditor({
       });
       const json = await res.json();
       if (!res.ok || json.error) {
-        toast.error(json.error ?? t("profile.sigSaveFail"));
+        toast.error(getErrorMessage(json.error, t("profile.sigSaveFail")));
         return;
       }
       toast.success(t("profile.sigSaved"));
@@ -307,7 +308,7 @@ function SignatureEditor({
       });
       const json = await res.json();
       if (!res.ok || json.error) {
-        toast.error(json.error ?? t("profile.sigRemoveFail"));
+        toast.error(getErrorMessage(json.error, t("profile.sigRemoveFail")));
         return;
       }
       toast.success(t("profile.sigRemoved"));
@@ -452,7 +453,7 @@ export default function ProfileClient({ profile, departmentName }: Props) {
       });
       const json = await res.json();
       if (!res.ok || json.error) {
-        toast.error(json.error ?? t("profile.saveFail"));
+        toast.error(getErrorMessage(json.error, t("profile.saveFail")));
         return;
       }
       toast.success(t("profile.saveSuccess"));

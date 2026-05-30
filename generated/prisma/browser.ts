@@ -63,6 +63,11 @@ export type DarAttachment = Prisma.DarAttachmentModel
  */
 export type DarApproval = Prisma.DarApprovalModel
 /**
+ * Model ApprovalSignature
+ * 
+ */
+export type ApprovalSignature = Prisma.ApprovalSignatureModel
+/**
  * Model QmsProcessing
  * 
  */

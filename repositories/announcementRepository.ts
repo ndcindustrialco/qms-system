@@ -35,4 +35,19 @@ export class AnnouncementRepository extends BaseRepository<Announcement> {
       take,
     });
   }
+
+  async findActiveTicker(now: Date, take: number, tx?: Prisma.TransactionClient) {
+    return this.delegate(tx).findMany({
+      where: {
+        displayType: "SCROLLING",
+        OR: [{ startDate: null }, { startDate: { lte: now } }],
+        AND: [
+          { OR: [{ endDate: null }, { endDate: { gte: now } }] },
+          { OR: [{ expiryDate: null }, { expiryDate: { gte: now } }] },
+        ],
+      },
+      select: { id: true, title: true, sourceSystem: true },
+      take,
+    });
+  }
 }

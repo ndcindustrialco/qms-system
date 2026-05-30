@@ -259,6 +259,7 @@ export type UserWhereInput = {
   darAttachments?: Prisma.DarAttachmentListRelationFilter
   darMasters?: Prisma.DarMasterListRelationFilter
   qmsProcessings?: Prisma.QmsProcessingListRelationFilter
+  approvalSignatures?: Prisma.ApprovalSignatureListRelationFilter
   docControlsCreated?: Prisma.DocumentControlListRelationFilter
   docControlsUpdated?: Prisma.DocumentControlListRelationFilter
   docRevisionsCreated?: Prisma.DocumentControlRevisionListRelationFilter
@@ -285,6 +286,7 @@ export type UserOrderByWithRelationInput = {
   darAttachments?: Prisma.DarAttachmentOrderByRelationAggregateInput
   darMasters?: Prisma.DarMasterOrderByRelationAggregateInput
   qmsProcessings?: Prisma.QmsProcessingOrderByRelationAggregateInput
+  approvalSignatures?: Prisma.ApprovalSignatureOrderByRelationAggregateInput
   docControlsCreated?: Prisma.DocumentControlOrderByRelationAggregateInput
   docControlsUpdated?: Prisma.DocumentControlOrderByRelationAggregateInput
   docRevisionsCreated?: Prisma.DocumentControlRevisionOrderByRelationAggregateInput
@@ -314,6 +316,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   darAttachments?: Prisma.DarAttachmentListRelationFilter
   darMasters?: Prisma.DarMasterListRelationFilter
   qmsProcessings?: Prisma.QmsProcessingListRelationFilter
+  approvalSignatures?: Prisma.ApprovalSignatureListRelationFilter
   docControlsCreated?: Prisma.DocumentControlListRelationFilter
   docControlsUpdated?: Prisma.DocumentControlListRelationFilter
   docRevisionsCreated?: Prisma.DocumentControlRevisionListRelationFilter
@@ -379,6 +382,7 @@ export type UserCreateInput = {
   darAttachments?: Prisma.DarAttachmentCreateNestedManyWithoutUploadedByInput
   darMasters?: Prisma.DarMasterCreateNestedManyWithoutRequesterInput
   qmsProcessings?: Prisma.QmsProcessingCreateNestedManyWithoutQmsUserInput
+  approvalSignatures?: Prisma.ApprovalSignatureCreateNestedManyWithoutSignerUserInput
   docControlsCreated?: Prisma.DocumentControlCreateNestedManyWithoutCreatedByInput
   docControlsUpdated?: Prisma.DocumentControlCreateNestedManyWithoutUpdatedByInput
   docRevisionsCreated?: Prisma.DocumentControlRevisionCreateNestedManyWithoutCreatedByInput
@@ -405,6 +409,7 @@ export type UserUncheckedCreateInput = {
   darAttachments?: Prisma.DarAttachmentUncheckedCreateNestedManyWithoutUploadedByInput
   darMasters?: Prisma.DarMasterUncheckedCreateNestedManyWithoutRequesterInput
   qmsProcessings?: Prisma.QmsProcessingUncheckedCreateNestedManyWithoutQmsUserInput
+  approvalSignatures?: Prisma.ApprovalSignatureUncheckedCreateNestedManyWithoutSignerUserInput
   docControlsCreated?: Prisma.DocumentControlUncheckedCreateNestedManyWithoutCreatedByInput
   docControlsUpdated?: Prisma.DocumentControlUncheckedCreateNestedManyWithoutUpdatedByInput
   docRevisionsCreated?: Prisma.DocumentControlRevisionUncheckedCreateNestedManyWithoutCreatedByInput
@@ -429,6 +434,7 @@ export type UserUpdateInput = {
   darAttachments?: Prisma.DarAttachmentUpdateManyWithoutUploadedByNestedInput
   darMasters?: Prisma.DarMasterUpdateManyWithoutRequesterNestedInput
   qmsProcessings?: Prisma.QmsProcessingUpdateManyWithoutQmsUserNestedInput
+  approvalSignatures?: Prisma.ApprovalSignatureUpdateManyWithoutSignerUserNestedInput
   docControlsCreated?: Prisma.DocumentControlUpdateManyWithoutCreatedByNestedInput
   docControlsUpdated?: Prisma.DocumentControlUpdateManyWithoutUpdatedByNestedInput
   docRevisionsCreated?: Prisma.DocumentControlRevisionUpdateManyWithoutCreatedByNestedInput
@@ -455,6 +461,7 @@ export type UserUncheckedUpdateInput = {
   darAttachments?: Prisma.DarAttachmentUncheckedUpdateManyWithoutUploadedByNestedInput
   darMasters?: Prisma.DarMasterUncheckedUpdateManyWithoutRequesterNestedInput
   qmsProcessings?: Prisma.QmsProcessingUncheckedUpdateManyWithoutQmsUserNestedInput
+  approvalSignatures?: Prisma.ApprovalSignatureUncheckedUpdateManyWithoutSignerUserNestedInput
   docControlsCreated?: Prisma.DocumentControlUncheckedUpdateManyWithoutCreatedByNestedInput
   docControlsUpdated?: Prisma.DocumentControlUncheckedUpdateManyWithoutUpdatedByNestedInput
   docRevisionsCreated?: Prisma.DocumentControlRevisionUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -691,6 +698,20 @@ export type UserUpdateOneRequiredWithoutDarApprovalsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutDarApprovalsInput, Prisma.UserUpdateWithoutDarApprovalsInput>, Prisma.UserUncheckedUpdateWithoutDarApprovalsInput>
 }
 
+export type UserCreateNestedOneWithoutApprovalSignaturesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutApprovalSignaturesInput, Prisma.UserUncheckedCreateWithoutApprovalSignaturesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutApprovalSignaturesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutApprovalSignaturesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutApprovalSignaturesInput, Prisma.UserUncheckedCreateWithoutApprovalSignaturesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutApprovalSignaturesInput
+  upsert?: Prisma.UserUpsertWithoutApprovalSignaturesInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutApprovalSignaturesInput, Prisma.UserUpdateWithoutApprovalSignaturesInput>, Prisma.UserUncheckedUpdateWithoutApprovalSignaturesInput>
+}
+
 export type UserCreateNestedOneWithoutQmsProcessingsInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutQmsProcessingsInput, Prisma.UserUncheckedCreateWithoutQmsProcessingsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutQmsProcessingsInput
@@ -768,6 +789,7 @@ export type UserCreateWithoutDepartmentInput = {
   darAttachments?: Prisma.DarAttachmentCreateNestedManyWithoutUploadedByInput
   darMasters?: Prisma.DarMasterCreateNestedManyWithoutRequesterInput
   qmsProcessings?: Prisma.QmsProcessingCreateNestedManyWithoutQmsUserInput
+  approvalSignatures?: Prisma.ApprovalSignatureCreateNestedManyWithoutSignerUserInput
   docControlsCreated?: Prisma.DocumentControlCreateNestedManyWithoutCreatedByInput
   docControlsUpdated?: Prisma.DocumentControlCreateNestedManyWithoutUpdatedByInput
   docRevisionsCreated?: Prisma.DocumentControlRevisionCreateNestedManyWithoutCreatedByInput
@@ -792,6 +814,7 @@ export type UserUncheckedCreateWithoutDepartmentInput = {
   darAttachments?: Prisma.DarAttachmentUncheckedCreateNestedManyWithoutUploadedByInput
   darMasters?: Prisma.DarMasterUncheckedCreateNestedManyWithoutRequesterInput
   qmsProcessings?: Prisma.QmsProcessingUncheckedCreateNestedManyWithoutQmsUserInput
+  approvalSignatures?: Prisma.ApprovalSignatureUncheckedCreateNestedManyWithoutSignerUserInput
   docControlsCreated?: Prisma.DocumentControlUncheckedCreateNestedManyWithoutCreatedByInput
   docControlsUpdated?: Prisma.DocumentControlUncheckedCreateNestedManyWithoutUpdatedByInput
   docRevisionsCreated?: Prisma.DocumentControlRevisionUncheckedCreateNestedManyWithoutCreatedByInput
@@ -861,6 +884,7 @@ export type UserCreateWithoutAnnouncementsInput = {
   darAttachments?: Prisma.DarAttachmentCreateNestedManyWithoutUploadedByInput
   darMasters?: Prisma.DarMasterCreateNestedManyWithoutRequesterInput
   qmsProcessings?: Prisma.QmsProcessingCreateNestedManyWithoutQmsUserInput
+  approvalSignatures?: Prisma.ApprovalSignatureCreateNestedManyWithoutSignerUserInput
   docControlsCreated?: Prisma.DocumentControlCreateNestedManyWithoutCreatedByInput
   docControlsUpdated?: Prisma.DocumentControlCreateNestedManyWithoutUpdatedByInput
   docRevisionsCreated?: Prisma.DocumentControlRevisionCreateNestedManyWithoutCreatedByInput
@@ -886,6 +910,7 @@ export type UserUncheckedCreateWithoutAnnouncementsInput = {
   darAttachments?: Prisma.DarAttachmentUncheckedCreateNestedManyWithoutUploadedByInput
   darMasters?: Prisma.DarMasterUncheckedCreateNestedManyWithoutRequesterInput
   qmsProcessings?: Prisma.QmsProcessingUncheckedCreateNestedManyWithoutQmsUserInput
+  approvalSignatures?: Prisma.ApprovalSignatureUncheckedCreateNestedManyWithoutSignerUserInput
   docControlsCreated?: Prisma.DocumentControlUncheckedCreateNestedManyWithoutCreatedByInput
   docControlsUpdated?: Prisma.DocumentControlUncheckedCreateNestedManyWithoutUpdatedByInput
   docRevisionsCreated?: Prisma.DocumentControlRevisionUncheckedCreateNestedManyWithoutCreatedByInput
@@ -925,6 +950,7 @@ export type UserUpdateWithoutAnnouncementsInput = {
   darAttachments?: Prisma.DarAttachmentUpdateManyWithoutUploadedByNestedInput
   darMasters?: Prisma.DarMasterUpdateManyWithoutRequesterNestedInput
   qmsProcessings?: Prisma.QmsProcessingUpdateManyWithoutQmsUserNestedInput
+  approvalSignatures?: Prisma.ApprovalSignatureUpdateManyWithoutSignerUserNestedInput
   docControlsCreated?: Prisma.DocumentControlUpdateManyWithoutCreatedByNestedInput
   docControlsUpdated?: Prisma.DocumentControlUpdateManyWithoutUpdatedByNestedInput
   docRevisionsCreated?: Prisma.DocumentControlRevisionUpdateManyWithoutCreatedByNestedInput
@@ -950,6 +976,7 @@ export type UserUncheckedUpdateWithoutAnnouncementsInput = {
   darAttachments?: Prisma.DarAttachmentUncheckedUpdateManyWithoutUploadedByNestedInput
   darMasters?: Prisma.DarMasterUncheckedUpdateManyWithoutRequesterNestedInput
   qmsProcessings?: Prisma.QmsProcessingUncheckedUpdateManyWithoutQmsUserNestedInput
+  approvalSignatures?: Prisma.ApprovalSignatureUncheckedUpdateManyWithoutSignerUserNestedInput
   docControlsCreated?: Prisma.DocumentControlUncheckedUpdateManyWithoutCreatedByNestedInput
   docControlsUpdated?: Prisma.DocumentControlUncheckedUpdateManyWithoutUpdatedByNestedInput
   docRevisionsCreated?: Prisma.DocumentControlRevisionUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -973,6 +1000,7 @@ export type UserCreateWithoutDarMastersInput = {
   darApprovals?: Prisma.DarApprovalCreateNestedManyWithoutAssignedUserInput
   darAttachments?: Prisma.DarAttachmentCreateNestedManyWithoutUploadedByInput
   qmsProcessings?: Prisma.QmsProcessingCreateNestedManyWithoutQmsUserInput
+  approvalSignatures?: Prisma.ApprovalSignatureCreateNestedManyWithoutSignerUserInput
   docControlsCreated?: Prisma.DocumentControlCreateNestedManyWithoutCreatedByInput
   docControlsUpdated?: Prisma.DocumentControlCreateNestedManyWithoutUpdatedByInput
   docRevisionsCreated?: Prisma.DocumentControlRevisionCreateNestedManyWithoutCreatedByInput
@@ -998,6 +1026,7 @@ export type UserUncheckedCreateWithoutDarMastersInput = {
   darApprovals?: Prisma.DarApprovalUncheckedCreateNestedManyWithoutAssignedUserInput
   darAttachments?: Prisma.DarAttachmentUncheckedCreateNestedManyWithoutUploadedByInput
   qmsProcessings?: Prisma.QmsProcessingUncheckedCreateNestedManyWithoutQmsUserInput
+  approvalSignatures?: Prisma.ApprovalSignatureUncheckedCreateNestedManyWithoutSignerUserInput
   docControlsCreated?: Prisma.DocumentControlUncheckedCreateNestedManyWithoutCreatedByInput
   docControlsUpdated?: Prisma.DocumentControlUncheckedCreateNestedManyWithoutUpdatedByInput
   docRevisionsCreated?: Prisma.DocumentControlRevisionUncheckedCreateNestedManyWithoutCreatedByInput
@@ -1037,6 +1066,7 @@ export type UserUpdateWithoutDarMastersInput = {
   darApprovals?: Prisma.DarApprovalUpdateManyWithoutAssignedUserNestedInput
   darAttachments?: Prisma.DarAttachmentUpdateManyWithoutUploadedByNestedInput
   qmsProcessings?: Prisma.QmsProcessingUpdateManyWithoutQmsUserNestedInput
+  approvalSignatures?: Prisma.ApprovalSignatureUpdateManyWithoutSignerUserNestedInput
   docControlsCreated?: Prisma.DocumentControlUpdateManyWithoutCreatedByNestedInput
   docControlsUpdated?: Prisma.DocumentControlUpdateManyWithoutUpdatedByNestedInput
   docRevisionsCreated?: Prisma.DocumentControlRevisionUpdateManyWithoutCreatedByNestedInput
@@ -1062,6 +1092,7 @@ export type UserUncheckedUpdateWithoutDarMastersInput = {
   darApprovals?: Prisma.DarApprovalUncheckedUpdateManyWithoutAssignedUserNestedInput
   darAttachments?: Prisma.DarAttachmentUncheckedUpdateManyWithoutUploadedByNestedInput
   qmsProcessings?: Prisma.QmsProcessingUncheckedUpdateManyWithoutQmsUserNestedInput
+  approvalSignatures?: Prisma.ApprovalSignatureUncheckedUpdateManyWithoutSignerUserNestedInput
   docControlsCreated?: Prisma.DocumentControlUncheckedUpdateManyWithoutCreatedByNestedInput
   docControlsUpdated?: Prisma.DocumentControlUncheckedUpdateManyWithoutUpdatedByNestedInput
   docRevisionsCreated?: Prisma.DocumentControlRevisionUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -1085,6 +1116,7 @@ export type UserCreateWithoutDarAttachmentsInput = {
   darApprovals?: Prisma.DarApprovalCreateNestedManyWithoutAssignedUserInput
   darMasters?: Prisma.DarMasterCreateNestedManyWithoutRequesterInput
   qmsProcessings?: Prisma.QmsProcessingCreateNestedManyWithoutQmsUserInput
+  approvalSignatures?: Prisma.ApprovalSignatureCreateNestedManyWithoutSignerUserInput
   docControlsCreated?: Prisma.DocumentControlCreateNestedManyWithoutCreatedByInput
   docControlsUpdated?: Prisma.DocumentControlCreateNestedManyWithoutUpdatedByInput
   docRevisionsCreated?: Prisma.DocumentControlRevisionCreateNestedManyWithoutCreatedByInput
@@ -1110,6 +1142,7 @@ export type UserUncheckedCreateWithoutDarAttachmentsInput = {
   darApprovals?: Prisma.DarApprovalUncheckedCreateNestedManyWithoutAssignedUserInput
   darMasters?: Prisma.DarMasterUncheckedCreateNestedManyWithoutRequesterInput
   qmsProcessings?: Prisma.QmsProcessingUncheckedCreateNestedManyWithoutQmsUserInput
+  approvalSignatures?: Prisma.ApprovalSignatureUncheckedCreateNestedManyWithoutSignerUserInput
   docControlsCreated?: Prisma.DocumentControlUncheckedCreateNestedManyWithoutCreatedByInput
   docControlsUpdated?: Prisma.DocumentControlUncheckedCreateNestedManyWithoutUpdatedByInput
   docRevisionsCreated?: Prisma.DocumentControlRevisionUncheckedCreateNestedManyWithoutCreatedByInput
@@ -1149,6 +1182,7 @@ export type UserUpdateWithoutDarAttachmentsInput = {
   darApprovals?: Prisma.DarApprovalUpdateManyWithoutAssignedUserNestedInput
   darMasters?: Prisma.DarMasterUpdateManyWithoutRequesterNestedInput
   qmsProcessings?: Prisma.QmsProcessingUpdateManyWithoutQmsUserNestedInput
+  approvalSignatures?: Prisma.ApprovalSignatureUpdateManyWithoutSignerUserNestedInput
   docControlsCreated?: Prisma.DocumentControlUpdateManyWithoutCreatedByNestedInput
   docControlsUpdated?: Prisma.DocumentControlUpdateManyWithoutUpdatedByNestedInput
   docRevisionsCreated?: Prisma.DocumentControlRevisionUpdateManyWithoutCreatedByNestedInput
@@ -1174,6 +1208,7 @@ export type UserUncheckedUpdateWithoutDarAttachmentsInput = {
   darApprovals?: Prisma.DarApprovalUncheckedUpdateManyWithoutAssignedUserNestedInput
   darMasters?: Prisma.DarMasterUncheckedUpdateManyWithoutRequesterNestedInput
   qmsProcessings?: Prisma.QmsProcessingUncheckedUpdateManyWithoutQmsUserNestedInput
+  approvalSignatures?: Prisma.ApprovalSignatureUncheckedUpdateManyWithoutSignerUserNestedInput
   docControlsCreated?: Prisma.DocumentControlUncheckedUpdateManyWithoutCreatedByNestedInput
   docControlsUpdated?: Prisma.DocumentControlUncheckedUpdateManyWithoutUpdatedByNestedInput
   docRevisionsCreated?: Prisma.DocumentControlRevisionUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -1197,6 +1232,7 @@ export type UserCreateWithoutDarApprovalsInput = {
   darAttachments?: Prisma.DarAttachmentCreateNestedManyWithoutUploadedByInput
   darMasters?: Prisma.DarMasterCreateNestedManyWithoutRequesterInput
   qmsProcessings?: Prisma.QmsProcessingCreateNestedManyWithoutQmsUserInput
+  approvalSignatures?: Prisma.ApprovalSignatureCreateNestedManyWithoutSignerUserInput
   docControlsCreated?: Prisma.DocumentControlCreateNestedManyWithoutCreatedByInput
   docControlsUpdated?: Prisma.DocumentControlCreateNestedManyWithoutUpdatedByInput
   docRevisionsCreated?: Prisma.DocumentControlRevisionCreateNestedManyWithoutCreatedByInput
@@ -1222,6 +1258,7 @@ export type UserUncheckedCreateWithoutDarApprovalsInput = {
   darAttachments?: Prisma.DarAttachmentUncheckedCreateNestedManyWithoutUploadedByInput
   darMasters?: Prisma.DarMasterUncheckedCreateNestedManyWithoutRequesterInput
   qmsProcessings?: Prisma.QmsProcessingUncheckedCreateNestedManyWithoutQmsUserInput
+  approvalSignatures?: Prisma.ApprovalSignatureUncheckedCreateNestedManyWithoutSignerUserInput
   docControlsCreated?: Prisma.DocumentControlUncheckedCreateNestedManyWithoutCreatedByInput
   docControlsUpdated?: Prisma.DocumentControlUncheckedCreateNestedManyWithoutUpdatedByInput
   docRevisionsCreated?: Prisma.DocumentControlRevisionUncheckedCreateNestedManyWithoutCreatedByInput
@@ -1261,6 +1298,7 @@ export type UserUpdateWithoutDarApprovalsInput = {
   darAttachments?: Prisma.DarAttachmentUpdateManyWithoutUploadedByNestedInput
   darMasters?: Prisma.DarMasterUpdateManyWithoutRequesterNestedInput
   qmsProcessings?: Prisma.QmsProcessingUpdateManyWithoutQmsUserNestedInput
+  approvalSignatures?: Prisma.ApprovalSignatureUpdateManyWithoutSignerUserNestedInput
   docControlsCreated?: Prisma.DocumentControlUpdateManyWithoutCreatedByNestedInput
   docControlsUpdated?: Prisma.DocumentControlUpdateManyWithoutUpdatedByNestedInput
   docRevisionsCreated?: Prisma.DocumentControlRevisionUpdateManyWithoutCreatedByNestedInput
@@ -1283,6 +1321,123 @@ export type UserUncheckedUpdateWithoutDarApprovalsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   announcements?: Prisma.AnnouncementUncheckedUpdateManyWithoutCreatedByNestedInput
+  darAttachments?: Prisma.DarAttachmentUncheckedUpdateManyWithoutUploadedByNestedInput
+  darMasters?: Prisma.DarMasterUncheckedUpdateManyWithoutRequesterNestedInput
+  qmsProcessings?: Prisma.QmsProcessingUncheckedUpdateManyWithoutQmsUserNestedInput
+  approvalSignatures?: Prisma.ApprovalSignatureUncheckedUpdateManyWithoutSignerUserNestedInput
+  docControlsCreated?: Prisma.DocumentControlUncheckedUpdateManyWithoutCreatedByNestedInput
+  docControlsUpdated?: Prisma.DocumentControlUncheckedUpdateManyWithoutUpdatedByNestedInput
+  docRevisionsCreated?: Prisma.DocumentControlRevisionUncheckedUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserCreateWithoutApprovalSignaturesInput = {
+  id?: string
+  employeeId?: string | null
+  msUserId?: string | null
+  name?: string | null
+  email: string
+  emailVerified?: Date | string | null
+  image?: string | null
+  role?: $Enums.UserRole
+  position?: string | null
+  savedSignatureUrl?: string | null
+  signatureType?: $Enums.SignatureType | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  announcements?: Prisma.AnnouncementCreateNestedManyWithoutCreatedByInput
+  darApprovals?: Prisma.DarApprovalCreateNestedManyWithoutAssignedUserInput
+  darAttachments?: Prisma.DarAttachmentCreateNestedManyWithoutUploadedByInput
+  darMasters?: Prisma.DarMasterCreateNestedManyWithoutRequesterInput
+  qmsProcessings?: Prisma.QmsProcessingCreateNestedManyWithoutQmsUserInput
+  docControlsCreated?: Prisma.DocumentControlCreateNestedManyWithoutCreatedByInput
+  docControlsUpdated?: Prisma.DocumentControlCreateNestedManyWithoutUpdatedByInput
+  docRevisionsCreated?: Prisma.DocumentControlRevisionCreateNestedManyWithoutCreatedByInput
+  department?: Prisma.DepartmentCreateNestedOneWithoutUsersInput
+}
+
+export type UserUncheckedCreateWithoutApprovalSignaturesInput = {
+  id?: string
+  employeeId?: string | null
+  msUserId?: string | null
+  name?: string | null
+  email: string
+  emailVerified?: Date | string | null
+  image?: string | null
+  role?: $Enums.UserRole
+  position?: string | null
+  savedSignatureUrl?: string | null
+  signatureType?: $Enums.SignatureType | null
+  departmentId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  announcements?: Prisma.AnnouncementUncheckedCreateNestedManyWithoutCreatedByInput
+  darApprovals?: Prisma.DarApprovalUncheckedCreateNestedManyWithoutAssignedUserInput
+  darAttachments?: Prisma.DarAttachmentUncheckedCreateNestedManyWithoutUploadedByInput
+  darMasters?: Prisma.DarMasterUncheckedCreateNestedManyWithoutRequesterInput
+  qmsProcessings?: Prisma.QmsProcessingUncheckedCreateNestedManyWithoutQmsUserInput
+  docControlsCreated?: Prisma.DocumentControlUncheckedCreateNestedManyWithoutCreatedByInput
+  docControlsUpdated?: Prisma.DocumentControlUncheckedCreateNestedManyWithoutUpdatedByInput
+  docRevisionsCreated?: Prisma.DocumentControlRevisionUncheckedCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserCreateOrConnectWithoutApprovalSignaturesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutApprovalSignaturesInput, Prisma.UserUncheckedCreateWithoutApprovalSignaturesInput>
+}
+
+export type UserUpsertWithoutApprovalSignaturesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutApprovalSignaturesInput, Prisma.UserUncheckedUpdateWithoutApprovalSignaturesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutApprovalSignaturesInput, Prisma.UserUncheckedCreateWithoutApprovalSignaturesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutApprovalSignaturesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutApprovalSignaturesInput, Prisma.UserUncheckedUpdateWithoutApprovalSignaturesInput>
+}
+
+export type UserUpdateWithoutApprovalSignaturesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  employeeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  msUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  position?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  savedSignatureUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  signatureType?: Prisma.NullableEnumSignatureTypeFieldUpdateOperationsInput | $Enums.SignatureType | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  announcements?: Prisma.AnnouncementUpdateManyWithoutCreatedByNestedInput
+  darApprovals?: Prisma.DarApprovalUpdateManyWithoutAssignedUserNestedInput
+  darAttachments?: Prisma.DarAttachmentUpdateManyWithoutUploadedByNestedInput
+  darMasters?: Prisma.DarMasterUpdateManyWithoutRequesterNestedInput
+  qmsProcessings?: Prisma.QmsProcessingUpdateManyWithoutQmsUserNestedInput
+  docControlsCreated?: Prisma.DocumentControlUpdateManyWithoutCreatedByNestedInput
+  docControlsUpdated?: Prisma.DocumentControlUpdateManyWithoutUpdatedByNestedInput
+  docRevisionsCreated?: Prisma.DocumentControlRevisionUpdateManyWithoutCreatedByNestedInput
+  department?: Prisma.DepartmentUpdateOneWithoutUsersNestedInput
+}
+
+export type UserUncheckedUpdateWithoutApprovalSignaturesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  employeeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  msUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  position?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  savedSignatureUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  signatureType?: Prisma.NullableEnumSignatureTypeFieldUpdateOperationsInput | $Enums.SignatureType | null
+  departmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  announcements?: Prisma.AnnouncementUncheckedUpdateManyWithoutCreatedByNestedInput
+  darApprovals?: Prisma.DarApprovalUncheckedUpdateManyWithoutAssignedUserNestedInput
   darAttachments?: Prisma.DarAttachmentUncheckedUpdateManyWithoutUploadedByNestedInput
   darMasters?: Prisma.DarMasterUncheckedUpdateManyWithoutRequesterNestedInput
   qmsProcessings?: Prisma.QmsProcessingUncheckedUpdateManyWithoutQmsUserNestedInput
@@ -1309,6 +1464,7 @@ export type UserCreateWithoutQmsProcessingsInput = {
   darApprovals?: Prisma.DarApprovalCreateNestedManyWithoutAssignedUserInput
   darAttachments?: Prisma.DarAttachmentCreateNestedManyWithoutUploadedByInput
   darMasters?: Prisma.DarMasterCreateNestedManyWithoutRequesterInput
+  approvalSignatures?: Prisma.ApprovalSignatureCreateNestedManyWithoutSignerUserInput
   docControlsCreated?: Prisma.DocumentControlCreateNestedManyWithoutCreatedByInput
   docControlsUpdated?: Prisma.DocumentControlCreateNestedManyWithoutUpdatedByInput
   docRevisionsCreated?: Prisma.DocumentControlRevisionCreateNestedManyWithoutCreatedByInput
@@ -1334,6 +1490,7 @@ export type UserUncheckedCreateWithoutQmsProcessingsInput = {
   darApprovals?: Prisma.DarApprovalUncheckedCreateNestedManyWithoutAssignedUserInput
   darAttachments?: Prisma.DarAttachmentUncheckedCreateNestedManyWithoutUploadedByInput
   darMasters?: Prisma.DarMasterUncheckedCreateNestedManyWithoutRequesterInput
+  approvalSignatures?: Prisma.ApprovalSignatureUncheckedCreateNestedManyWithoutSignerUserInput
   docControlsCreated?: Prisma.DocumentControlUncheckedCreateNestedManyWithoutCreatedByInput
   docControlsUpdated?: Prisma.DocumentControlUncheckedCreateNestedManyWithoutUpdatedByInput
   docRevisionsCreated?: Prisma.DocumentControlRevisionUncheckedCreateNestedManyWithoutCreatedByInput
@@ -1373,6 +1530,7 @@ export type UserUpdateWithoutQmsProcessingsInput = {
   darApprovals?: Prisma.DarApprovalUpdateManyWithoutAssignedUserNestedInput
   darAttachments?: Prisma.DarAttachmentUpdateManyWithoutUploadedByNestedInput
   darMasters?: Prisma.DarMasterUpdateManyWithoutRequesterNestedInput
+  approvalSignatures?: Prisma.ApprovalSignatureUpdateManyWithoutSignerUserNestedInput
   docControlsCreated?: Prisma.DocumentControlUpdateManyWithoutCreatedByNestedInput
   docControlsUpdated?: Prisma.DocumentControlUpdateManyWithoutUpdatedByNestedInput
   docRevisionsCreated?: Prisma.DocumentControlRevisionUpdateManyWithoutCreatedByNestedInput
@@ -1398,6 +1556,7 @@ export type UserUncheckedUpdateWithoutQmsProcessingsInput = {
   darApprovals?: Prisma.DarApprovalUncheckedUpdateManyWithoutAssignedUserNestedInput
   darAttachments?: Prisma.DarAttachmentUncheckedUpdateManyWithoutUploadedByNestedInput
   darMasters?: Prisma.DarMasterUncheckedUpdateManyWithoutRequesterNestedInput
+  approvalSignatures?: Prisma.ApprovalSignatureUncheckedUpdateManyWithoutSignerUserNestedInput
   docControlsCreated?: Prisma.DocumentControlUncheckedUpdateManyWithoutCreatedByNestedInput
   docControlsUpdated?: Prisma.DocumentControlUncheckedUpdateManyWithoutUpdatedByNestedInput
   docRevisionsCreated?: Prisma.DocumentControlRevisionUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -1422,6 +1581,7 @@ export type UserCreateWithoutDocControlsCreatedInput = {
   darAttachments?: Prisma.DarAttachmentCreateNestedManyWithoutUploadedByInput
   darMasters?: Prisma.DarMasterCreateNestedManyWithoutRequesterInput
   qmsProcessings?: Prisma.QmsProcessingCreateNestedManyWithoutQmsUserInput
+  approvalSignatures?: Prisma.ApprovalSignatureCreateNestedManyWithoutSignerUserInput
   docControlsUpdated?: Prisma.DocumentControlCreateNestedManyWithoutUpdatedByInput
   docRevisionsCreated?: Prisma.DocumentControlRevisionCreateNestedManyWithoutCreatedByInput
   department?: Prisma.DepartmentCreateNestedOneWithoutUsersInput
@@ -1447,6 +1607,7 @@ export type UserUncheckedCreateWithoutDocControlsCreatedInput = {
   darAttachments?: Prisma.DarAttachmentUncheckedCreateNestedManyWithoutUploadedByInput
   darMasters?: Prisma.DarMasterUncheckedCreateNestedManyWithoutRequesterInput
   qmsProcessings?: Prisma.QmsProcessingUncheckedCreateNestedManyWithoutQmsUserInput
+  approvalSignatures?: Prisma.ApprovalSignatureUncheckedCreateNestedManyWithoutSignerUserInput
   docControlsUpdated?: Prisma.DocumentControlUncheckedCreateNestedManyWithoutUpdatedByInput
   docRevisionsCreated?: Prisma.DocumentControlRevisionUncheckedCreateNestedManyWithoutCreatedByInput
 }
@@ -1475,6 +1636,7 @@ export type UserCreateWithoutDocControlsUpdatedInput = {
   darAttachments?: Prisma.DarAttachmentCreateNestedManyWithoutUploadedByInput
   darMasters?: Prisma.DarMasterCreateNestedManyWithoutRequesterInput
   qmsProcessings?: Prisma.QmsProcessingCreateNestedManyWithoutQmsUserInput
+  approvalSignatures?: Prisma.ApprovalSignatureCreateNestedManyWithoutSignerUserInput
   docControlsCreated?: Prisma.DocumentControlCreateNestedManyWithoutCreatedByInput
   docRevisionsCreated?: Prisma.DocumentControlRevisionCreateNestedManyWithoutCreatedByInput
   department?: Prisma.DepartmentCreateNestedOneWithoutUsersInput
@@ -1500,6 +1662,7 @@ export type UserUncheckedCreateWithoutDocControlsUpdatedInput = {
   darAttachments?: Prisma.DarAttachmentUncheckedCreateNestedManyWithoutUploadedByInput
   darMasters?: Prisma.DarMasterUncheckedCreateNestedManyWithoutRequesterInput
   qmsProcessings?: Prisma.QmsProcessingUncheckedCreateNestedManyWithoutQmsUserInput
+  approvalSignatures?: Prisma.ApprovalSignatureUncheckedCreateNestedManyWithoutSignerUserInput
   docControlsCreated?: Prisma.DocumentControlUncheckedCreateNestedManyWithoutCreatedByInput
   docRevisionsCreated?: Prisma.DocumentControlRevisionUncheckedCreateNestedManyWithoutCreatedByInput
 }
@@ -1539,6 +1702,7 @@ export type UserUpdateWithoutDocControlsCreatedInput = {
   darAttachments?: Prisma.DarAttachmentUpdateManyWithoutUploadedByNestedInput
   darMasters?: Prisma.DarMasterUpdateManyWithoutRequesterNestedInput
   qmsProcessings?: Prisma.QmsProcessingUpdateManyWithoutQmsUserNestedInput
+  approvalSignatures?: Prisma.ApprovalSignatureUpdateManyWithoutSignerUserNestedInput
   docControlsUpdated?: Prisma.DocumentControlUpdateManyWithoutUpdatedByNestedInput
   docRevisionsCreated?: Prisma.DocumentControlRevisionUpdateManyWithoutCreatedByNestedInput
   department?: Prisma.DepartmentUpdateOneWithoutUsersNestedInput
@@ -1564,6 +1728,7 @@ export type UserUncheckedUpdateWithoutDocControlsCreatedInput = {
   darAttachments?: Prisma.DarAttachmentUncheckedUpdateManyWithoutUploadedByNestedInput
   darMasters?: Prisma.DarMasterUncheckedUpdateManyWithoutRequesterNestedInput
   qmsProcessings?: Prisma.QmsProcessingUncheckedUpdateManyWithoutQmsUserNestedInput
+  approvalSignatures?: Prisma.ApprovalSignatureUncheckedUpdateManyWithoutSignerUserNestedInput
   docControlsUpdated?: Prisma.DocumentControlUncheckedUpdateManyWithoutUpdatedByNestedInput
   docRevisionsCreated?: Prisma.DocumentControlRevisionUncheckedUpdateManyWithoutCreatedByNestedInput
 }
@@ -1598,6 +1763,7 @@ export type UserUpdateWithoutDocControlsUpdatedInput = {
   darAttachments?: Prisma.DarAttachmentUpdateManyWithoutUploadedByNestedInput
   darMasters?: Prisma.DarMasterUpdateManyWithoutRequesterNestedInput
   qmsProcessings?: Prisma.QmsProcessingUpdateManyWithoutQmsUserNestedInput
+  approvalSignatures?: Prisma.ApprovalSignatureUpdateManyWithoutSignerUserNestedInput
   docControlsCreated?: Prisma.DocumentControlUpdateManyWithoutCreatedByNestedInput
   docRevisionsCreated?: Prisma.DocumentControlRevisionUpdateManyWithoutCreatedByNestedInput
   department?: Prisma.DepartmentUpdateOneWithoutUsersNestedInput
@@ -1623,6 +1789,7 @@ export type UserUncheckedUpdateWithoutDocControlsUpdatedInput = {
   darAttachments?: Prisma.DarAttachmentUncheckedUpdateManyWithoutUploadedByNestedInput
   darMasters?: Prisma.DarMasterUncheckedUpdateManyWithoutRequesterNestedInput
   qmsProcessings?: Prisma.QmsProcessingUncheckedUpdateManyWithoutQmsUserNestedInput
+  approvalSignatures?: Prisma.ApprovalSignatureUncheckedUpdateManyWithoutSignerUserNestedInput
   docControlsCreated?: Prisma.DocumentControlUncheckedUpdateManyWithoutCreatedByNestedInput
   docRevisionsCreated?: Prisma.DocumentControlRevisionUncheckedUpdateManyWithoutCreatedByNestedInput
 }
@@ -1646,6 +1813,7 @@ export type UserCreateWithoutDocRevisionsCreatedInput = {
   darAttachments?: Prisma.DarAttachmentCreateNestedManyWithoutUploadedByInput
   darMasters?: Prisma.DarMasterCreateNestedManyWithoutRequesterInput
   qmsProcessings?: Prisma.QmsProcessingCreateNestedManyWithoutQmsUserInput
+  approvalSignatures?: Prisma.ApprovalSignatureCreateNestedManyWithoutSignerUserInput
   docControlsCreated?: Prisma.DocumentControlCreateNestedManyWithoutCreatedByInput
   docControlsUpdated?: Prisma.DocumentControlCreateNestedManyWithoutUpdatedByInput
   department?: Prisma.DepartmentCreateNestedOneWithoutUsersInput
@@ -1671,6 +1839,7 @@ export type UserUncheckedCreateWithoutDocRevisionsCreatedInput = {
   darAttachments?: Prisma.DarAttachmentUncheckedCreateNestedManyWithoutUploadedByInput
   darMasters?: Prisma.DarMasterUncheckedCreateNestedManyWithoutRequesterInput
   qmsProcessings?: Prisma.QmsProcessingUncheckedCreateNestedManyWithoutQmsUserInput
+  approvalSignatures?: Prisma.ApprovalSignatureUncheckedCreateNestedManyWithoutSignerUserInput
   docControlsCreated?: Prisma.DocumentControlUncheckedCreateNestedManyWithoutCreatedByInput
   docControlsUpdated?: Prisma.DocumentControlUncheckedCreateNestedManyWithoutUpdatedByInput
 }
@@ -1710,6 +1879,7 @@ export type UserUpdateWithoutDocRevisionsCreatedInput = {
   darAttachments?: Prisma.DarAttachmentUpdateManyWithoutUploadedByNestedInput
   darMasters?: Prisma.DarMasterUpdateManyWithoutRequesterNestedInput
   qmsProcessings?: Prisma.QmsProcessingUpdateManyWithoutQmsUserNestedInput
+  approvalSignatures?: Prisma.ApprovalSignatureUpdateManyWithoutSignerUserNestedInput
   docControlsCreated?: Prisma.DocumentControlUpdateManyWithoutCreatedByNestedInput
   docControlsUpdated?: Prisma.DocumentControlUpdateManyWithoutUpdatedByNestedInput
   department?: Prisma.DepartmentUpdateOneWithoutUsersNestedInput
@@ -1735,6 +1905,7 @@ export type UserUncheckedUpdateWithoutDocRevisionsCreatedInput = {
   darAttachments?: Prisma.DarAttachmentUncheckedUpdateManyWithoutUploadedByNestedInput
   darMasters?: Prisma.DarMasterUncheckedUpdateManyWithoutRequesterNestedInput
   qmsProcessings?: Prisma.QmsProcessingUncheckedUpdateManyWithoutQmsUserNestedInput
+  approvalSignatures?: Prisma.ApprovalSignatureUncheckedUpdateManyWithoutSignerUserNestedInput
   docControlsCreated?: Prisma.DocumentControlUncheckedUpdateManyWithoutCreatedByNestedInput
   docControlsUpdated?: Prisma.DocumentControlUncheckedUpdateManyWithoutUpdatedByNestedInput
 }
@@ -1774,6 +1945,7 @@ export type UserUpdateWithoutDepartmentInput = {
   darAttachments?: Prisma.DarAttachmentUpdateManyWithoutUploadedByNestedInput
   darMasters?: Prisma.DarMasterUpdateManyWithoutRequesterNestedInput
   qmsProcessings?: Prisma.QmsProcessingUpdateManyWithoutQmsUserNestedInput
+  approvalSignatures?: Prisma.ApprovalSignatureUpdateManyWithoutSignerUserNestedInput
   docControlsCreated?: Prisma.DocumentControlUpdateManyWithoutCreatedByNestedInput
   docControlsUpdated?: Prisma.DocumentControlUpdateManyWithoutUpdatedByNestedInput
   docRevisionsCreated?: Prisma.DocumentControlRevisionUpdateManyWithoutCreatedByNestedInput
@@ -1798,6 +1970,7 @@ export type UserUncheckedUpdateWithoutDepartmentInput = {
   darAttachments?: Prisma.DarAttachmentUncheckedUpdateManyWithoutUploadedByNestedInput
   darMasters?: Prisma.DarMasterUncheckedUpdateManyWithoutRequesterNestedInput
   qmsProcessings?: Prisma.QmsProcessingUncheckedUpdateManyWithoutQmsUserNestedInput
+  approvalSignatures?: Prisma.ApprovalSignatureUncheckedUpdateManyWithoutSignerUserNestedInput
   docControlsCreated?: Prisma.DocumentControlUncheckedUpdateManyWithoutCreatedByNestedInput
   docControlsUpdated?: Prisma.DocumentControlUncheckedUpdateManyWithoutUpdatedByNestedInput
   docRevisionsCreated?: Prisma.DocumentControlRevisionUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -1830,6 +2003,7 @@ export type UserCountOutputType = {
   darAttachments: number
   darMasters: number
   qmsProcessings: number
+  approvalSignatures: number
   docControlsCreated: number
   docControlsUpdated: number
   docRevisionsCreated: number
@@ -1841,6 +2015,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   darAttachments?: boolean | UserCountOutputTypeCountDarAttachmentsArgs
   darMasters?: boolean | UserCountOutputTypeCountDarMastersArgs
   qmsProcessings?: boolean | UserCountOutputTypeCountQmsProcessingsArgs
+  approvalSignatures?: boolean | UserCountOutputTypeCountApprovalSignaturesArgs
   docControlsCreated?: boolean | UserCountOutputTypeCountDocControlsCreatedArgs
   docControlsUpdated?: boolean | UserCountOutputTypeCountDocControlsUpdatedArgs
   docRevisionsCreated?: boolean | UserCountOutputTypeCountDocRevisionsCreatedArgs
@@ -1894,6 +2069,13 @@ export type UserCountOutputTypeCountQmsProcessingsArgs<ExtArgs extends runtime.T
 /**
  * UserCountOutputType without action
  */
+export type UserCountOutputTypeCountApprovalSignaturesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ApprovalSignatureWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
 export type UserCountOutputTypeCountDocControlsCreatedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.DocumentControlWhereInput
 }
@@ -1933,6 +2115,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   darAttachments?: boolean | Prisma.User$darAttachmentsArgs<ExtArgs>
   darMasters?: boolean | Prisma.User$darMastersArgs<ExtArgs>
   qmsProcessings?: boolean | Prisma.User$qmsProcessingsArgs<ExtArgs>
+  approvalSignatures?: boolean | Prisma.User$approvalSignaturesArgs<ExtArgs>
   docControlsCreated?: boolean | Prisma.User$docControlsCreatedArgs<ExtArgs>
   docControlsUpdated?: boolean | Prisma.User$docControlsUpdatedArgs<ExtArgs>
   docRevisionsCreated?: boolean | Prisma.User$docRevisionsCreatedArgs<ExtArgs>
@@ -2000,6 +2183,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   darAttachments?: boolean | Prisma.User$darAttachmentsArgs<ExtArgs>
   darMasters?: boolean | Prisma.User$darMastersArgs<ExtArgs>
   qmsProcessings?: boolean | Prisma.User$qmsProcessingsArgs<ExtArgs>
+  approvalSignatures?: boolean | Prisma.User$approvalSignaturesArgs<ExtArgs>
   docControlsCreated?: boolean | Prisma.User$docControlsCreatedArgs<ExtArgs>
   docControlsUpdated?: boolean | Prisma.User$docControlsUpdatedArgs<ExtArgs>
   docRevisionsCreated?: boolean | Prisma.User$docRevisionsCreatedArgs<ExtArgs>
@@ -2021,6 +2205,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     darAttachments: Prisma.$DarAttachmentPayload<ExtArgs>[]
     darMasters: Prisma.$DarMasterPayload<ExtArgs>[]
     qmsProcessings: Prisma.$QmsProcessingPayload<ExtArgs>[]
+    approvalSignatures: Prisma.$ApprovalSignaturePayload<ExtArgs>[]
     docControlsCreated: Prisma.$DocumentControlPayload<ExtArgs>[]
     docControlsUpdated: Prisma.$DocumentControlPayload<ExtArgs>[]
     docRevisionsCreated: Prisma.$DocumentControlRevisionPayload<ExtArgs>[]
@@ -2440,6 +2625,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   darAttachments<T extends Prisma.User$darAttachmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$darAttachmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DarAttachmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   darMasters<T extends Prisma.User$darMastersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$darMastersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DarMasterPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   qmsProcessings<T extends Prisma.User$qmsProcessingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$qmsProcessingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$QmsProcessingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  approvalSignatures<T extends Prisma.User$approvalSignaturesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$approvalSignaturesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ApprovalSignaturePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   docControlsCreated<T extends Prisma.User$docControlsCreatedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$docControlsCreatedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DocumentControlPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   docControlsUpdated<T extends Prisma.User$docControlsUpdatedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$docControlsUpdatedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DocumentControlPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   docRevisionsCreated<T extends Prisma.User$docRevisionsCreatedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$docRevisionsCreatedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DocumentControlRevisionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -3005,6 +3191,30 @@ export type User$qmsProcessingsArgs<ExtArgs extends runtime.Types.Extensions.Int
   take?: number
   skip?: number
   distinct?: Prisma.QmsProcessingScalarFieldEnum | Prisma.QmsProcessingScalarFieldEnum[]
+}
+
+/**
+ * User.approvalSignatures
+ */
+export type User$approvalSignaturesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ApprovalSignature
+   */
+  select?: Prisma.ApprovalSignatureSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ApprovalSignature
+   */
+  omit?: Prisma.ApprovalSignatureOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ApprovalSignatureInclude<ExtArgs> | null
+  where?: Prisma.ApprovalSignatureWhereInput
+  orderBy?: Prisma.ApprovalSignatureOrderByWithRelationInput | Prisma.ApprovalSignatureOrderByWithRelationInput[]
+  cursor?: Prisma.ApprovalSignatureWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ApprovalSignatureScalarFieldEnum | Prisma.ApprovalSignatureScalarFieldEnum[]
 }
 
 /**

@@ -1,30 +1,31 @@
 import { ConflictError, ForbiddenError, NotFoundError } from '@/errors/customErrors';
-import { db } from '@/lib/db';
+import { db } from '@/lib/db'; // used only for $transaction boundaries
 import { ensureMonthlyStatusTransition } from '@/lib/kpi-state-machine';
 import { KpiMonthlyReportRepository } from '@/repositories/kpiMonthlyReportRepository';
 import { KpiMonthlyDetailRepository } from '@/repositories/kpiMonthlyDetailRepository';
 import { KpiCorrectiveActionRepository } from '@/repositories/kpiCorrectiveActionRepository';
 import { KpiObjectiveRepository } from '@/repositories/kpiObjectiveRepository';
+import { ApprovalSignatureRepository } from '@/repositories/approvalSignatureRepository';
+import { UserRepository } from '@/repositories/userRepository';
 import { ActorContext, CreateMonthlyReportDTO, CreateCorrectiveActionDTO, ListMonthlyQuery, UpdateMonthlyDetailDTO } from '@/types/kpi';
+import type { SignatureType } from '@/generated/prisma/client';
 
 export class KpiMonthlyService {
   private reportRepo = new KpiMonthlyReportRepository();
   private detailRepo = new KpiMonthlyDetailRepository();
   private correctiveRepo = new KpiCorrectiveActionRepository();
   private objectiveRepo = new KpiObjectiveRepository();
+  private approvalSignatureRepo = new ApprovalSignatureRepository();
+  private userRepo = new UserRepository();
 
-  async createMonthlyReport(dto: CreateMonthlyReportDTO, actor: ActorContext) {
-    const existing = await db.kPIMonthlyReport.findUnique({
-      where: { kpiId_month_year: { kpiId: dto.kpiId, month: dto.month, year: dto.year } },
-    });
+  async createMonthlyReport(dto: CreateMonthlyReportDTO) {
+    const existing = await this.reportRepo.findByCompositeKey(dto.kpiId, dto.month, dto.year);
     if (existing) throw new ConflictError(`Monthly report for ${dto.month} ${dto.year} already exists`);
 
     const objectives = await this.objectiveRepo.findByKpiId(dto.kpiId);
 
     return db.$transaction(async (tx) => {
-      const report = await db.kPIMonthlyReport.create({
-        data: { kpiId: dto.kpiId, month: dto.month, year: dto.year },
-      });
+      const report = await this.reportRepo.createReport(dto.kpiId, dto.month, dto.year, tx);
 
       for (const obj of objectives) {
         await this.detailRepo.createForReport(report.id, obj.id, tx);
@@ -44,11 +45,8 @@ export class KpiMonthlyService {
     return report;
   }
 
-  async updateDetail(detailId: string, dto: UpdateMonthlyDetailDTO, actor: ActorContext) {
-    const detail = await db.kPIMonthlyDetail.findUnique({
-      where: { id: detailId },
-      include: { monthlyReport: true, kpiObjective: true },
-    });
+  async updateDetail(detailId: string, dto: UpdateMonthlyDetailDTO) {
+    const detail = await this.detailRepo.findByIdWithReport(detailId);
     if (!detail) throw new NotFoundError(`Monthly detail ${detailId} not found`);
     if (detail.monthlyReport.status !== 'DRAFT' && detail.monthlyReport.status !== 'REJECTED') {
       throw new ConflictError('Can only edit details in DRAFT or REJECTED reports');
@@ -67,33 +65,104 @@ export class KpiMonthlyService {
   async submitReport(reportId: string, actor: ActorContext) {
     const report = await this.getReportById(reportId);
     ensureMonthlyStatusTransition(report.status, 'PENDING_REVIEW');
+    const now = new Date();
+    return db.$transaction(async (tx) => {
+      const updated = await this.reportRepo.updateStatus(reportId, 'PENDING_REVIEW', {
+        prepareBy: actor.userId,
+        submittedAt: now,
+      }, tx);
 
-    return this.reportRepo.updateStatus(reportId, 'PENDING_REVIEW', {
-      prepareBy: actor.userId,
-      submittedAt: new Date(),
+      await this.approvalSignatureRepo.deleteByDocument('KPI_MONTHLY', reportId, tx);
+      await this.approvalSignatureRepo.upsertStep({
+        module: 'KPI_MONTHLY',
+        documentId: reportId,
+        step: 'PREPARER',
+        signerUserId: actor.userId,
+        action: 'APPROVED',
+        actionDate: now,
+      }, tx);
+      if (report.kpi.approverUserId) {
+        await this.approvalSignatureRepo.upsertStep({
+          module: 'KPI_MONTHLY',
+          documentId: reportId,
+          step: 'APPROVER',
+          signerUserId: report.kpi.approverUserId,
+          action: 'PENDING',
+        }, tx);
+      }
+      return updated;
     });
   }
 
-  async reviewReport(reportId: string, actor: ActorContext) {
+  async reviewReport(
+    reportId: string,
+    actor: ActorContext,
+    sigBody?: { signatureDataUrl?: string; signatureType?: SignatureType; saveSignature?: boolean }
+  ) {
     if (!['QMS', 'MR', 'IT'].includes(actor.role)) {
       throw new ForbiddenError('Only QMS/MR/IT can review monthly reports');
     }
     const report = await this.getReportById(reportId);
     ensureMonthlyStatusTransition(report.status, 'PENDING_APPROVAL');
 
-    return this.reportRepo.updateStatus(reportId, 'PENDING_APPROVAL', { reviewBy: actor.userId });
+    return db.$transaction(async (tx) => {
+      const updated = await this.reportRepo.updateStatus(reportId, 'PENDING_APPROVAL', { reviewBy: actor.userId }, tx);
+      await this.approvalSignatureRepo.upsertStep({
+        module: 'KPI_MONTHLY',
+        documentId: reportId,
+        step: 'REVIEWER',
+        signerUserId: actor.userId,
+        action: 'APPROVED',
+        actionDate: new Date(),
+        signaturePath: sigBody?.signatureDataUrl,
+      }, tx);
+
+      if (sigBody?.saveSignature && sigBody.signatureDataUrl) {
+        await this.userRepo.saveSignature(actor.userId, {
+          savedSignatureUrl: sigBody.signatureDataUrl,
+          signatureType: sigBody.signatureType || 'DRAW',
+        }, tx);
+      }
+
+      return updated;
+    });
   }
 
-  async approveReport(reportId: string, actor: ActorContext) {
+  async approveReport(
+    reportId: string,
+    actor: ActorContext,
+    sigBody?: { signatureDataUrl?: string; signatureType?: SignatureType; saveSignature?: boolean }
+  ) {
     if (!['QMS', 'MR', 'IT'].includes(actor.role)) {
       throw new ForbiddenError('Only QMS/MR/IT can approve monthly reports');
     }
     const report = await this.getReportById(reportId);
     ensureMonthlyStatusTransition(report.status, 'APPROVED');
 
-    return this.reportRepo.updateStatus(reportId, 'APPROVED', {
-      approveBy: actor.userId,
-      approvedAt: new Date(),
+    const now = new Date();
+    return db.$transaction(async (tx) => {
+      const updated = await this.reportRepo.updateStatus(reportId, 'APPROVED', {
+        approveBy: actor.userId,
+        approvedAt: now,
+      }, tx);
+      await this.approvalSignatureRepo.upsertStep({
+        module: 'KPI_MONTHLY',
+        documentId: reportId,
+        step: 'APPROVER',
+        signerUserId: actor.userId,
+        action: 'APPROVED',
+        actionDate: now,
+        signaturePath: sigBody?.signatureDataUrl,
+      }, tx);
+
+      if (sigBody?.saveSignature && sigBody.signatureDataUrl) {
+        await this.userRepo.saveSignature(actor.userId, {
+          savedSignatureUrl: sigBody.signatureDataUrl,
+          signatureType: sigBody.signatureType || 'DRAW',
+        }, tx);
+      }
+
+      return updated;
     });
   }
 
@@ -107,11 +176,23 @@ export class KpiMonthlyService {
     }
     ensureMonthlyStatusTransition(report.status, 'REJECTED');
 
-    return this.reportRepo.updateStatus(reportId, 'REJECTED');
+    return db.$transaction(async (tx) => {
+      const updated = await this.reportRepo.updateStatus(reportId, 'REJECTED', undefined, tx);
+      await this.approvalSignatureRepo.upsertStep({
+        module: 'KPI_MONTHLY',
+        documentId: reportId,
+        step: 'APPROVER',
+        signerUserId: actor.userId,
+        action: 'REJECTED',
+        actionDate: new Date(),
+        comment: reason,
+      }, tx);
+      return updated;
+    });
   }
 
-  async addCorrectiveAction(dto: CreateCorrectiveActionDTO, actor: ActorContext) {
-    const detail = await db.kPIMonthlyDetail.findUnique({ where: { id: dto.monthlyDetailId } });
+  async addCorrectiveAction(dto: CreateCorrectiveActionDTO) {
+    const detail = await this.detailRepo.findById(dto.monthlyDetailId);
     if (!detail) throw new NotFoundError(`Monthly detail ${dto.monthlyDetailId} not found`);
     if (detail.achievedStatus !== 'NOT_OK') {
       throw new ConflictError('Corrective actions are only allowed for NOT_OK results');
@@ -119,7 +200,7 @@ export class KpiMonthlyService {
     return this.correctiveRepo.createAction(dto);
   }
 
-  async deleteCorrectiveAction(actionId: string, actor: ActorContext) {
+  async deleteCorrectiveAction(actionId: string) {
     const action = await this.correctiveRepo.findById(actionId);
     if (!action) throw new NotFoundError(`Corrective action ${actionId} not found`);
     return this.correctiveRepo.delete(actionId);

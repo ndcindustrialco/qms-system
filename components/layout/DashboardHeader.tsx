@@ -25,6 +25,7 @@ const ROUTE_LABELS: Record<string, { th: string; en: string }> = {
   "/qms/announcements/new":  { th: "ประกาศใหม่",      en: "New Announcement" },
   "/qms/sharepoint":         { th: "SharePoint Files", en: "SharePoint Files" },
   "/qms/mr":                 { th: "กำหนด MR",         en: "Set MR" },
+  "/qms/approval-config":    { th: "ตั้งค่าผู้อนุมัติ", en: "Approver Config" },
   "/approve":                { th: "งานรออนุมัติ",     en: "Approve Queue" },
   "/it/users":               { th: "จัดการผู้ใช้",    en: "Manage Users" },
   "/it/departments":         { th: "จัดการแผนก",      en: "Manage Departments" },

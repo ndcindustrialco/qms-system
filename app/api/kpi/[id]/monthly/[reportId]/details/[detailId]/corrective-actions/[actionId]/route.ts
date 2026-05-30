@@ -8,9 +8,9 @@ const service = new KpiMonthlyService();
 
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ actionId: string }> }) {
   try {
-    const session = await requireAuth();
+    await requireAuth();
     const { actionId } = await params;
-    await service.deleteCorrectiveAction(actionId, { userId: session.user.id, role: session.user.role, departmentId: session.user.departmentId });
+    await service.deleteCorrectiveAction(actionId);
     return sendSuccess(null, 'Corrective action deleted successfully');
   } catch (error) {
     return handleApiError(error);

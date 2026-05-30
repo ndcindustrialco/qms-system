@@ -13,18 +13,20 @@ import ConfirmModal from "@/components/common/ConfirmModal";
 import { useKpiList, useDeleteKpi } from "@/hooks/api/use-kpi";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import type { KPI } from "@/generated/prisma/client";
+import type { KpiWithUsers } from "@/hooks/api/use-kpi";
 import { toast } from "sonner";
+
+type UserRole = "USER" | "IT" | "QMS" | "MR";
 
 interface Props {
   canEdit: boolean;
-  canApprove: boolean;
+  userRole: UserRole;
 }
 
-export default function KpiClient({ canEdit, canApprove }: Props) {
+export default function KpiClient({ canEdit, userRole }: Props) {
   const t = useT();
   const [formOpen, setFormOpen] = useState(false);
-  const [editingKpi, setEditingKpi] = useState<KPI | null>(null);
+  const [editingKpi, setEditingKpi] = useState<KpiWithUsers | null>(null);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [kpiToDelete, setKpiToDelete] = useState<string | null>(null);
 
@@ -140,7 +142,7 @@ export default function KpiClient({ canEdit, canApprove }: Props) {
 
         {/* Monthly Tab */}
         <Tabs.Content value="monthly">
-          <KpiMonthlyClient canApprove={canApprove} />
+          <KpiMonthlyClient userRole={userRole} />
         </Tabs.Content>
       </Tabs.Root>
     </div>

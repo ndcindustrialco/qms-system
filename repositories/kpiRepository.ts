@@ -66,6 +66,7 @@ export class KpiRepository extends BaseRepository<KPI, CreateKpiDTO, UpdateKpiDT
         approverUserId: payload.approverUserId,
         submittedAt: payload.submittedAt,
       },
+      include: { objectives: true }
     });
   }
 

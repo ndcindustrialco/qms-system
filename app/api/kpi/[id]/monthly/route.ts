@@ -20,13 +20,10 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const session = await requireAuth();
+    await requireAuth();
     const { id } = await params;
     const body = createMonthlyReportSchema.omit({ kpiId: true }).parse(await request.json());
-    const report = await service.createMonthlyReport(
-      { ...body, kpiId: id },
-      { userId: session.user.id, role: session.user.role, departmentId: session.user.departmentId }
-    );
+    const report = await service.createMonthlyReport({ ...body, kpiId: id });
     return sendSuccess(report, 'Monthly report created successfully', 201);
   } catch (error) {
     return handleApiError(error);

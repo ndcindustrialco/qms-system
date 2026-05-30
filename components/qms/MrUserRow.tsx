@@ -5,12 +5,12 @@ import type { UserRole } from "@/generated/prisma/client";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useT } from "@/lib/i18n";
 
 type Props = {
   user: UserWithDept;
   onToggle: (userId: string, newRole: "MR" | "USER") => void;
   loading: boolean;
-  isTh: boolean;
 };
 
 const ROLE_BADGE: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
@@ -20,13 +20,11 @@ const ROLE_BADGE: Record<string, "default" | "secondary" | "destructive" | "outl
   IT:   "default",
 };
 
-const ROLE_LABEL_TH: Record<UserRole, string> = { USER: "ผู้ใช้งาน", QMS: "QMS", MR: "ผู้แทนฝ่ายบริหาร", IT: "IT" };
-const ROLE_LABEL_EN: Record<UserRole, string> = { USER: "User", QMS: "QMS", MR: "Mgmt. Rep.", IT: "IT" };
-
-export default function MrUserRow({ user, onToggle, loading, isTh }: Props) {
+export default function MrUserRow({ user, onToggle, loading }: Props) {
+  const t = useT();
   const canToggle = user.role === "USER" || user.role === "MR";
   const isMr = user.role === "MR";
-  const roleLabel = isTh ? ROLE_LABEL_TH[user.role] : ROLE_LABEL_EN[user.role];
+  const roleLabel = t(`roles.${user.role as UserRole}`);
 
   return (
     <TableRow>
@@ -52,13 +50,11 @@ export default function MrUserRow({ user, onToggle, loading, isTh }: Props) {
             onClick={() => onToggle(user.id, isMr ? "USER" : "MR")}
             className={isMr ? "text-amber-600 border-amber-200 hover:bg-amber-50" : ""}
           >
-            {loading ? <span className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" /> : null}
-            {isMr
-              ? (isTh ? "ยกเลิก MR" : "Remove MR")
-              : (isTh ? "ตั้งเป็น MR" : "Set as MR")}
+            {loading && <span className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />}
+            {isMr ? t("qms.mr.removeLabel") : t("qms.mr.setLabel")}
           </Button>
         ) : (
-          <span className="text-[11px] text-gray-400 italic">{isTh ? "ไม่สามารถเปลี่ยนได้" : "Protected"}</span>
+          <span className="text-[11px] text-gray-400 italic">{t("qms.mr.protected")}</span>
         )}
       </TableCell>
     </TableRow>

@@ -9,10 +9,10 @@ const service = new KpiMonthlyService();
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ detailId: string }> }) {
   try {
-    const session = await requireAuth();
+    await requireAuth();
     const { detailId } = await params;
     const body = updateMonthlyDetailSchema.parse(await request.json());
-    const updated = await service.updateDetail(detailId, body, { userId: session.user.id, role: session.user.role, departmentId: session.user.departmentId });
+    const updated = await service.updateDetail(detailId, body);
     return sendSuccess(updated, 'Monthly detail updated successfully');
   } catch (error) {
     return handleApiError(error);

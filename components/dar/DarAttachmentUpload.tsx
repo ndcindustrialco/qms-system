@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import type { DarAttachmentRow, TempAttachmentInput } from "@/types/dar";
 
@@ -54,49 +55,34 @@ function PreviewModal({ target, onClose }: { target: PreviewTarget; onClose: () 
   const isPdf    = target.mimeType === "application/pdf";
   const isOffice = isOfficeMime(target.mimeType);
 
-  // RULE 2.2 — PDF blob URL
-  const [pdfBlobUrl, setPdfBlobUrl] = useState<string | null>(null);
-  const [pdfLoading, setPdfLoading] = useState(false);
+  // RULE 2.2 — PDF blob URL via useQuery; revoke object URL on unmount / item change
   const pdfBlobRef = useRef<string | null>(null);
-
+  const { data: pdfBuffer, isFetching: pdfLoading } = useQuery<ArrayBuffer>({
+    queryKey: ["darPdfPreview", target.spItemId],
+    queryFn: () => fetch(`/api/sharepoint/preview-proxy?itemId=${target.spItemId}`).then((r) => r.arrayBuffer()),
+    enabled: isPdf,
+    staleTime: Infinity,
+  });
+  const pdfBlobUrl = useRef<string | null>(null);
   useEffect(() => {
-    if (!isPdf) return;
-    let cancelled = false;
-    setPdfLoading(true);
-    fetch(`/api/sharepoint/preview-proxy?itemId=${target.spItemId}`)
-      .then((res) => res.arrayBuffer())
-      .then((buf) => {
-        if (cancelled) return;
-        const blob = new Blob([buf], { type: "application/pdf" });
-        const url  = URL.createObjectURL(blob);
-        pdfBlobRef.current = url;
-        setPdfBlobUrl(url);
-      })
-      .catch(() => {})
-      .finally(() => { if (!cancelled) setPdfLoading(false); });
-    return () => {
-      cancelled = true;
-      if (pdfBlobRef.current) { URL.revokeObjectURL(pdfBlobRef.current); pdfBlobRef.current = null; }
-    };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [target.spItemId]);
+    if (!pdfBuffer) return;
+    if (pdfBlobRef.current) URL.revokeObjectURL(pdfBlobRef.current);
+    const url = URL.createObjectURL(new Blob([pdfBuffer], { type: "application/pdf" }));
+    pdfBlobRef.current = url;
+    pdfBlobUrl.current = url;
+    return () => { if (pdfBlobRef.current) { URL.revokeObjectURL(pdfBlobRef.current); pdfBlobRef.current = null; } };
+  }, [pdfBuffer]);
 
-  // RULE 2.3 — Office embed URL from Graph /preview
-  const [officeEmbedUrl, setOfficeEmbedUrl] = useState<string | null>(null);
-  const [officeLoading, setOfficeLoading] = useState(false);
-
-  useEffect(() => {
-    if (!isOffice) return;
-    let cancelled = false;
-    setOfficeLoading(true);
-    fetch(`/api/sharepoint/office-embed?itemId=${target.spItemId}`)
-      .then((res) => res.json())
-      .then((json: { data: string | null }) => { if (!cancelled && json.data) setOfficeEmbedUrl(json.data); })
-      .catch(() => {})
-      .finally(() => { if (!cancelled) setOfficeLoading(false); });
-    return () => { cancelled = true; };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [target.spItemId]);
+  // RULE 2.3 — Office embed URL via useQuery
+  const { data: officeEmbedUrl, isFetching: officeLoading } = useQuery<string | null>({
+    queryKey: ["darOfficeEmbed", target.spItemId],
+    queryFn: () =>
+      fetch(`/api/sharepoint/office-embed?itemId=${target.spItemId}`)
+        .then((r) => r.json())
+        .then((json: { data: string | null }) => json.data ?? null),
+    enabled: isOffice,
+    staleTime: Infinity,
+  });
 
   const proxyUrl = `/api/sharepoint/preview-proxy?itemId=${target.spItemId}`;
 
@@ -159,9 +145,9 @@ function PreviewModal({ target, onClose }: { target: PreviewTarget; onClose: () 
 
           {/* RULE 2.2 — PDF: client-side blob via <object> */}
           {isPdf && (
-            pdfLoading || !pdfBlobUrl
+            pdfLoading || !pdfBlobUrl.current
               ? <span className="w-6 h-6 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin inline-block" />
-              : <object data={pdfBlobUrl} type="application/pdf" className="w-full border-0" style={{ height: "70vh" }}>
+              : <object data={pdfBlobUrl.current} type="application/pdf" className="w-full border-0" style={{ height: "70vh" }}>
                   <p className="text-[14px] text-neutral p-4">เบราว์เซอร์ไม่รองรับ PDF viewer</p>
                 </object>
           )}
@@ -241,48 +227,33 @@ function InlinePreviewCard({
   const proxyUrl = `/api/sharepoint/preview-proxy?itemId=${spItemId}`;
 
   // PDF — fetch as blob so browser renders inline
-  const [pdfBlobUrl, setPdfBlobUrl] = useState<string | null>(null);
-  const [pdfLoading, setPdfLoading] = useState(false);
   const pdfBlobRef = useRef<string | null>(null);
-
+  const { data: pdfBuffer, isFetching: pdfLoading } = useQuery<ArrayBuffer>({
+    queryKey: ["darPdfPreview", spItemId],
+    queryFn: () => fetch(proxyUrl).then((r) => r.arrayBuffer()),
+    enabled: isPdf,
+    staleTime: Infinity,
+  });
+  const pdfBlobUrl = useRef<string | null>(null);
   useEffect(() => {
-    if (!isPdf) return;
-    let cancelled = false;
-    setPdfLoading(true);
-    fetch(proxyUrl)
-      .then((res) => res.arrayBuffer())
-      .then((buf) => {
-        if (cancelled) return;
-        const blob = new Blob([buf], { type: "application/pdf" });
-        const url  = URL.createObjectURL(blob);
-        pdfBlobRef.current = url;
-        setPdfBlobUrl(url);
-      })
-      .catch(() => {})
-      .finally(() => { if (!cancelled) setPdfLoading(false); });
-    return () => {
-      cancelled = true;
-      if (pdfBlobRef.current) { URL.revokeObjectURL(pdfBlobRef.current); pdfBlobRef.current = null; }
-    };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [spItemId]);
+    if (!pdfBuffer) return;
+    if (pdfBlobRef.current) URL.revokeObjectURL(pdfBlobRef.current);
+    const url = URL.createObjectURL(new Blob([pdfBuffer], { type: "application/pdf" }));
+    pdfBlobRef.current = url;
+    pdfBlobUrl.current = url;
+    return () => { if (pdfBlobRef.current) { URL.revokeObjectURL(pdfBlobRef.current); pdfBlobRef.current = null; } };
+  }, [pdfBuffer]);
 
   // Office — fetch embed URL from Graph /preview
-  const [officeEmbedUrl, setOfficeEmbedUrl] = useState<string | null>(null);
-  const [officeLoading, setOfficeLoading] = useState(false);
-
-  useEffect(() => {
-    if (!isOffice) return;
-    let cancelled = false;
-    setOfficeLoading(true);
-    fetch(`/api/sharepoint/office-embed?itemId=${spItemId}`)
-      .then((res) => res.json())
-      .then((json: { data: string | null }) => { if (!cancelled && json.data) setOfficeEmbedUrl(json.data); })
-      .catch(() => {})
-      .finally(() => { if (!cancelled) setOfficeLoading(false); });
-    return () => { cancelled = true; };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [spItemId]);
+  const { data: officeEmbedUrl, isFetching: officeLoading } = useQuery<string | null>({
+    queryKey: ["darOfficeEmbed", spItemId],
+    queryFn: () =>
+      fetch(`/api/sharepoint/office-embed?itemId=${spItemId}`)
+        .then((r) => r.json())
+        .then((json: { data: string | null }) => json.data ?? null),
+    enabled: isOffice,
+    staleTime: Infinity,
+  });
 
   const spinner = (
     <div className="flex items-center justify-center py-16">
@@ -331,8 +302,8 @@ function InlinePreviewCard({
           <img src={proxyUrl} alt={fileName} className="w-full object-contain max-h-[70vh]" />
         )}
         {isPdf && (
-          pdfLoading || !pdfBlobUrl ? spinner : (
-            <object data={pdfBlobUrl} type="application/pdf" className="w-full border-0" style={{ height: "70vh" }}>
+          pdfLoading || !pdfBlobUrl.current ? spinner : (
+            <object data={pdfBlobUrl.current} type="application/pdf" className="w-full border-0" style={{ height: "70vh" }}>
               <div className="flex flex-col items-center gap-3 py-12 text-center">
                 <p className="text-sm text-slate-500">เบราว์เซอร์ไม่รองรับ PDF viewer</p>
                 <a href={proxyUrl} download={fileName} className="text-sm font-medium text-primary underline">ดาวน์โหลดไฟล์</a>

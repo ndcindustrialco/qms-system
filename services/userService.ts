@@ -1,8 +1,10 @@
 import { UserRepository } from "@/repositories/userRepository";
 import { DepartmentRepository } from "@/repositories/departmentRepository";
+import { NotFoundError, ValidationError } from "@/lib/errors";
+import { pushUserToEntra } from "@/services/ms-graph";
 import type { UserWithDept } from "@/types/user";
 import type { GraphUser } from "@/services/ms-graph";
-import type { UserRole } from "@/generated/prisma/client";
+import { Prisma, type UserRole } from "@/generated/prisma/client";
 
 export class UserService {
   private userRepo = new UserRepository();
@@ -92,5 +94,47 @@ export class UserService {
     }
 
     return result;
+  }
+
+  async verifyUserExists(id: string): Promise<void> {
+    const user = await this.userRepo.findById(id);
+    if (!user) throw new NotFoundError("ไม่พบผู้ใช้");
+  }
+
+  async updateUserAttributes(
+    id: string,
+    data: { role?: UserRole; departmentId?: string | null; employeeId?: string | null }
+  ): Promise<{ id: string; role: string }> {
+    const existing = await this.userRepo.findById(id);
+    if (!existing) throw new NotFoundError("ไม่พบผู้ใช้");
+
+    if (Object.keys(data).length === 0) throw new ValidationError("Nothing to update");
+
+    const updateData: Prisma.UserUpdateInput = {
+      ...(data.role !== undefined ? { role: data.role } : {}),
+      ...(data.departmentId !== undefined
+        ? { department: data.departmentId ? { connect: { id: data.departmentId } } : { disconnect: true } }
+        : {}),
+      ...(data.employeeId !== undefined ? { employeeId: data.employeeId } : {}),
+    };
+
+    const updated = await this.userRepo.updateAttributes(id, updateData);
+    return { id: updated.id, role: updated.role };
+  }
+
+  async pushUserToM365(id: string): Promise<void> {
+    const user = await this.userRepo.findForM365Push(id);
+    if (!user) throw new NotFoundError("ไม่พบผู้ใช้");
+    if (!user.msUserId) throw new ValidationError("ผู้ใช้นี้ยังไม่เชื่อมกับ Microsoft 365");
+
+    await pushUserToEntra(user.msUserId, {
+      displayName: user.name ?? undefined,
+      department: user.department?.name ?? null,
+      employeeId: user.employeeId ?? null,
+    });
+  }
+
+  async findByMsUserIds(msUserIds: string[]) {
+    return this.userRepo.findByMsUserIds(msUserIds);
   }
 }

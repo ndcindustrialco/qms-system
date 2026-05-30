@@ -2,7 +2,7 @@ import { requireAuth } from "@/lib/auth";
 import { DarService } from "@/services/darService";
 import { UserRepository } from "@/repositories/userRepository";
 import { SystemConfigRepository } from "@/repositories/systemConfigRepository";
-import { sendMrApprovalRequestEmail } from "@/services/email";
+import { sendMrApprovalRequestEmail, sendQmsApprovalRequestEmail, sendApprovalNotificationEmail } from "@/services/email";
 import { OBJECTIVE_LABELS, DOC_TYPE_LABELS } from "@/types/dar";
 import { sendSuccess } from "@/lib/apiResponse";
 import { handleApiError } from "@/lib/apiErrorHandler";
@@ -21,6 +21,16 @@ const schema = z.object({
   signatureType: z.enum(["DRAW", "TYPE", "IMAGE"]),
   saveSignature: z.boolean().default(false),
   comment: z.string().max(1000).optional().nullable(),
+  qmsProcessing: z.object({
+    chkHasAttachment: z.boolean(),
+    chkPrintAndValidate: z.boolean(),
+    chkRenumber: z.boolean(),
+    chkImpactInvestigated: z.boolean(),
+    chkSubmitVerification: z.boolean(),
+    chkGetBackProcess: z.boolean(),
+    chkCopyDistribute: z.boolean(),
+    comments: z.string().max(2000).optional().nullable(),
+  }).optional().nullable(),
 });
 
 type Params = { params: Promise<{ id: string }> };
@@ -38,6 +48,7 @@ export async function POST(req: NextRequest, { params }: Params) {
       signatureType: parsed.signatureType,
       saveSignature: parsed.saveSignature,
       comment: parsed.comment ?? null,
+      qmsProcessing: parsed.qmsProcessing ?? null,
     });
 
     revalidateTag(`dar-${id}`);
@@ -49,6 +60,15 @@ export async function POST(req: NextRequest, { params }: Params) {
     );
     const hasPendingMrStep = dar.approvals.some(
       (a) => a.stepRole === "APPROVER_MR" && a.action === "PENDING"
+    );
+    const mrApprovedThisStep = dar.approvals.some(
+      (a) => a.stepRole === "APPROVER_MR" && a.assignedUser.id === session.user.id && a.action === "APPROVED"
+    );
+    const hasPendingQmsStep = dar.approvals.some(
+      (a) => a.stepRole === "QMS_PROCESSOR" && a.action === "PENDING"
+    );
+    const qmsApprovedThisStep = dar.approvals.some(
+      (a) => a.stepRole === "QMS_PROCESSOR" && a.assignedUser.id === session.user.id && a.action === "APPROVED"
     );
 
     if (reviewerApprovedThisStep && hasPendingMrStep && dar.darNo) {
@@ -79,6 +99,41 @@ export async function POST(req: NextRequest, { params }: Params) {
             senderEmail: requesterUser?.email ?? undefined,
           }).catch((e) => console.error("[email] Failed to send MR approval request email:", e));
         }
+      }
+    }
+
+    if (mrApprovedThisStep && hasPendingQmsStep && dar.darNo) {
+      const [qmsConfigValue, requesterUser] = await Promise.all([
+        configRepo.findValueByKey("CURRENT_QMS_USER_ID"),
+        userRepo.findById(dar.requester.id),
+      ]);
+
+      const qmsUser = qmsConfigValue
+        ? await userRepo.findById(qmsConfigValue)
+        : await userRepo.findFirstByRole("QMS");
+
+      if (qmsUser?.email) {
+        sendQmsApprovalRequestEmail({
+          qms: { name: qmsUser.name ?? "", email: qmsUser.email },
+          requesterName: dar.requester.name ?? "",
+          darNo: dar.darNo,
+          darId: dar.id,
+          senderEmail: requesterUser?.email ?? undefined,
+        }).catch((e) => console.error("[email] Failed to send QMS approval request email:", e));
+      }
+    }
+
+    if (qmsApprovedThisStep && dar.darNo) {
+      const requesterUser = await userRepo.findById(dar.requester.id);
+      if (requesterUser?.email) {
+        sendApprovalNotificationEmail({
+          to: { name: requesterUser.name ?? "", email: requesterUser.email },
+          darNo: dar.darNo,
+          darId: dar.id,
+          approverName: session.user.name ?? "QMS",
+          stepLabel: "QMS",
+          nextStepLabel: "Completed",
+        }).catch((e) => console.error("[email] Failed to send DAR completion email:", e));
       }
     }
 

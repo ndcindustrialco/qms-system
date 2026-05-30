@@ -3,7 +3,11 @@ import { DarRepository } from "@/repositories/darRepository";
 import { SystemConfigRepository } from "@/repositories/systemConfigRepository";
 import { UserRepository } from "@/repositories/userRepository";
 import { DepartmentRepository } from "@/repositories/departmentRepository";
+import { ApprovalSignatureRepository } from "@/repositories/approvalSignatureRepository";
+import { QmsProcessingRepository } from "@/repositories/qmsProcessingRepository";
 import { NotFoundError, ValidationError, ForbiddenError, AppError } from "@/errors/customErrors";
+import { uploadFileToDar, deleteSpItem } from "@/services/sharepoint";
+import { getFileInfo } from "@/lib/sharepoint";
 import type { DarDetail, DarSummary, CreateDarInput, DarApprovalRow, ReviewerCandidate, DarAttachmentRow, TempAttachmentInput } from "@/types/dar";
 import { Prisma, type DarStatus, type SignatureType } from "@/generated/prisma/client";
 import { redis } from "@/lib/redis";
@@ -16,6 +20,16 @@ type ApproveDarInput = {
   signatureType: SignatureType;
   saveSignature: boolean;
   comment: string | null;
+  qmsProcessing?: {
+    chkHasAttachment: boolean;
+    chkPrintAndValidate: boolean;
+    chkRenumber: boolean;
+    chkImpactInvestigated: boolean;
+    chkSubmitVerification: boolean;
+    chkGetBackProcess: boolean;
+    chkCopyDistribute: boolean;
+    comments?: string | null;
+  } | null;
 };
 
 type MovedAttachmentResult = {
@@ -29,6 +43,8 @@ export class DarService {
   private configRepo = new SystemConfigRepository();
   private userRepo = new UserRepository();
   private deptRepo = new DepartmentRepository();
+  private approvalSignatureRepo = new ApprovalSignatureRepository();
+  private qmsProcessingRepo = new QmsProcessingRepository();
 
   private mapApproval(a: DarApprovalRaw): DarApprovalRow {
     return {
@@ -87,6 +103,20 @@ export class DarService {
         createdAt: a.createdAt.toISOString(),
         uploadedBy: { id: a.uploadedBy.id, name: a.uploadedBy.name },
       })),
+      qmsProcessing: master.qmsProcessing
+        ? {
+            chkHasAttachment: master.qmsProcessing.chkHasAttachment,
+            chkPrintAndValidate: master.qmsProcessing.chkPrintAndValidate,
+            chkRenumber: master.qmsProcessing.chkRenumber,
+            chkImpactInvestigated: master.qmsProcessing.chkImpactInvestigated,
+            chkSubmitVerification: master.qmsProcessing.chkSubmitVerification,
+            chkGetBackProcess: master.qmsProcessing.chkGetBackProcess,
+            chkCopyDistribute: master.qmsProcessing.chkCopyDistribute,
+            comments: master.qmsProcessing.comments ?? null,
+            processDate: master.qmsProcessing.processDate?.toISOString() ?? null,
+            qmsUserId: master.qmsProcessing.qmsUserId,
+          }
+        : null,
     };
   }
 
@@ -323,8 +353,19 @@ export class DarService {
       const darNo = existing.darNo || await this.generateDarNo(year, tx);
       await this.darRepo.update(id, { status: "PENDING_REVIEW" as DarStatus, darNo }, tx);
       await this.darRepo.deleteApprovalsByDarId(id, tx);
+      await this.approvalSignatureRepo.deleteByDocument("DAR", id, tx);
       await this.darRepo.createApproval(
         { stepRole: "PREPARER", action: "PENDING", assignedUserId: requesterId, darMasterId: id },
+        tx
+      );
+      await this.approvalSignatureRepo.upsertStep(
+        {
+          module: "DAR",
+          documentId: id,
+          step: "PREPARER",
+          signerUserId: requesterId,
+          action: "PENDING",
+        },
         tx
       );
     });
@@ -338,19 +379,29 @@ export class DarService {
 
     if (!dar) throw new NotFoundError("DAR");
     if (dar.requesterId !== requesterId) throw new ForbiddenError();
-    if (dar.status !== "PENDING_REVIEW") throw new ValidationError("DAR à¸•à¹‰à¸­à¸‡à¸­à¸¢à¸¹à¹ˆà¹ƒà¸™à¸ªà¸–à¸²à¸™à¸° PENDING_REVIEW");
+    if (dar.status !== "PENDING_REVIEW") throw new ValidationError("DAR must be in PENDING_REVIEW status");
 
     const currentApprovals = await this.darRepo.findApprovalsByDarId(darId);
     const preparer = currentApprovals.find((a) => a.stepRole === "PREPARER");
-    if (!preparer || preparer.action !== "APPROVED") throw new ValidationError("à¸œà¸¹à¹‰à¸ˆà¸±à¸”à¸—à¸³à¸•à¹‰à¸­à¸‡à¸¢à¸·à¸™à¸¢à¸±à¸™à¸à¹ˆà¸­à¸™à¸à¸³à¸«à¸™à¸”à¸œà¸¹à¹‰à¸•à¸£à¸§à¸ˆà¸ªà¸­à¸š");
+    if (!preparer || preparer.action !== "APPROVED") throw new ValidationError("Preparer must approve before assigning a reviewer");
 
     const reviewer = await this.userRepo.findById(reviewerUserId);
-    if (!reviewer) throw new NotFoundError("à¸œà¸¹à¹‰à¸•à¸£à¸§à¸ˆà¸ªà¸­à¸š");
+    if (!reviewer) throw new NotFoundError("Reviewer not found");
 
     await db.$transaction(async (tx) => {
       await this.darRepo.deleteApprovalsByDarIdExceptPreparer(darId, tx);
       await this.darRepo.createApproval(
         { stepRole: "REVIEWER", action: "PENDING", assignedUserId: reviewerUserId, darMasterId: darId },
+        tx
+      );
+      await this.approvalSignatureRepo.upsertStep(
+        {
+          module: "DAR",
+          documentId: darId,
+          step: "REVIEWER",
+          signerUserId: reviewerUserId,
+          action: "PENDING",
+        },
         tx
       );
     });
@@ -365,11 +416,13 @@ export class DarService {
 
     const currentApprovals = await this.darRepo.findApprovalsByDarId(darId);
     const myStep = currentApprovals.find((a) => a.assignedUserId === userId && a.action === "PENDING");
-    if (!myStep) throw new ForbiddenError("à¹„à¸¡à¹ˆà¸žà¸šà¸‚à¸±à¹‰à¸™à¸•à¸­à¸™à¸—à¸µà¹ˆà¸£à¸­à¸à¸²à¸£à¸­à¸™à¸¸à¸¡à¸±à¸•à¸´à¸‚à¸­à¸‡à¸„à¸¸à¸“");
+    if (!myStep) throw new ForbiddenError("No pending approval step assigned to you");
 
-    if (myStep.stepRole === "PREPARER" && dar.status !== "PENDING_REVIEW") throw new ValidationError("à¸ªà¸–à¸²à¸™à¸° DAR à¹„à¸¡à¹ˆà¸–à¸¹à¸à¸•à¹‰à¸­à¸‡");
-    if (myStep.stepRole === "REVIEWER" && dar.status !== "PENDING_REVIEW") throw new ValidationError("à¸ªà¸–à¸²à¸™à¸° DAR à¹„à¸¡à¹ˆà¸–à¸¹à¸à¸•à¹‰à¸­à¸‡");
-    if (myStep.stepRole === "APPROVER_MR" && dar.status !== "PENDING_APPROVE") throw new ValidationError("à¸ªà¸–à¸²à¸™à¸° DAR à¹„à¸¡à¹ˆà¸–à¸¹à¸à¸•à¹‰à¸­à¸‡");
+    if (myStep.stepRole === "PREPARER" && dar.status !== "PENDING_REVIEW") throw new ValidationError("Invalid DAR status for PREPARER approval");
+    if (myStep.stepRole === "REVIEWER" && dar.status !== "PENDING_REVIEW") throw new ValidationError("Invalid DAR status for REVIEWER approval");
+    if (myStep.stepRole === "APPROVER_MR" && dar.status !== "PENDING_APPROVE") throw new ValidationError("Invalid DAR status for MR approval");
+    if (myStep.stepRole === "QMS_PROCESSOR" && dar.status !== "QMS_PROCESSING") throw new ValidationError("Invalid DAR status for QMS approval");
+    // QMS checklist is optional for approval; if provided, it will be saved.
 
     let nextStatus: DarStatus = dar.status;
     let createMrStep = false;
@@ -381,13 +434,24 @@ export class DarService {
       createMrStep = true;
     } else if (myStep.stepRole === "APPROVER_MR") {
       nextStatus = "QMS_PROCESSING" as DarStatus;
+    } else if (myStep.stepRole === "QMS_PROCESSOR") {
+      nextStatus = "COMPLETED" as DarStatus;
     }
 
     let mrUserId: string | null = null;
+    let qmsUserId: string | null = null;
     if (createMrStep) {
       // Keep this uncached: tiny config lookup and avoids stale config risk.
       mrUserId = await this.configRepo.findValueByKey("CURRENT_MR_USER_ID");
-      if (!mrUserId) throw new AppError("à¸¢à¸±à¸‡à¹„à¸¡à¹ˆà¹„à¸”à¹‰à¸•à¸±à¹‰à¸‡à¸„à¹ˆà¸² MR à¹ƒà¸™à¸£à¸°à¸šà¸š à¸à¸£à¸¸à¸“à¸²à¸•à¸´à¸”à¸•à¹ˆà¸­ QMS", 400);
+      if (!mrUserId) throw new AppError("MR user is not configured. Please contact QMS/IT administrator.", 400, "MR_NOT_CONFIGURED");
+    }
+    if (myStep.stepRole === "APPROVER_MR") {
+      qmsUserId = await this.configRepo.findValueByKey("CURRENT_QMS_USER_ID");
+      if (!qmsUserId) {
+        const qmsUser = await this.userRepo.findFirstByRole("QMS");
+        qmsUserId = qmsUser?.id ?? null;
+      }
+      if (!qmsUserId) throw new AppError("QMS signer is not configured in the system", 400, "QMS_NOT_CONFIGURED");
     }
 
     const now = new Date();
@@ -399,6 +463,19 @@ export class DarService {
           actionDate: now,
           signatureUsedUrl: input.signatureDataUrl,
           signatureTypeUsed: input.signatureType,
+          comment: input.comment ?? null,
+        },
+        tx
+      );
+      await this.approvalSignatureRepo.upsertStep(
+        {
+          module: "DAR",
+          documentId: darId,
+          step: myStep.stepRole,
+          signerUserId: userId,
+          action: "APPROVED",
+          actionDate: now,
+          signaturePath: input.signatureDataUrl,
           comment: input.comment ?? null,
         },
         tx
@@ -417,6 +494,52 @@ export class DarService {
           { stepRole: "APPROVER_MR", action: "PENDING", assignedUserId: mrUserId, darMasterId: darId },
           tx
         );
+        await this.approvalSignatureRepo.upsertStep(
+          {
+            module: "DAR",
+            documentId: darId,
+            step: "APPROVER_MR",
+            signerUserId: mrUserId,
+            action: "PENDING",
+          },
+          tx
+        );
+      }
+
+      if (myStep.stepRole === "APPROVER_MR" && qmsUserId) {
+        await this.darRepo.createApproval(
+          { stepRole: "QMS_PROCESSOR", action: "PENDING", assignedUserId: qmsUserId, darMasterId: darId },
+          tx
+        );
+        await this.approvalSignatureRepo.upsertStep(
+          {
+            module: "DAR",
+            documentId: darId,
+            step: "QMS_PROCESSOR",
+            signerUserId: qmsUserId,
+            action: "PENDING",
+          },
+          tx
+        );
+      }
+
+      if (myStep.stepRole === "QMS_PROCESSOR" && input.qmsProcessing) {
+        await this.qmsProcessingRepo.upsertByDarMasterId(
+          {
+            darMasterId: darId,
+            qmsUserId: userId,
+            chkHasAttachment: input.qmsProcessing.chkHasAttachment,
+            chkPrintAndValidate: input.qmsProcessing.chkPrintAndValidate,
+            chkRenumber: input.qmsProcessing.chkRenumber,
+            chkImpactInvestigated: input.qmsProcessing.chkImpactInvestigated,
+            chkSubmitVerification: input.qmsProcessing.chkSubmitVerification,
+            chkGetBackProcess: input.qmsProcessing.chkGetBackProcess,
+            chkCopyDistribute: input.qmsProcessing.chkCopyDistribute,
+            comments: input.qmsProcessing.comments ?? null,
+            processDate: now,
+          },
+          tx
+        );
       }
 
       await this.darRepo.update(darId, { status: nextStatus }, tx);
@@ -431,11 +554,23 @@ export class DarService {
     if (!dar) throw new NotFoundError("DAR");
 
     const myStep = await this.darRepo.findPendingApproval(darId, userId);
-    if (!myStep) throw new ForbiddenError("à¹„à¸¡à¹ˆà¸žà¸šà¸‚à¸±à¹‰à¸™à¸•à¸­à¸™à¸—à¸µà¹ˆà¸£à¸­à¸à¸²à¸£à¸­à¸™à¸¸à¸¡à¸±à¸•à¸´à¸‚à¸­à¸‡à¸„à¸¸à¸“");
+    if (!myStep) throw new ForbiddenError("No pending approval step assigned to you");
 
     const now = new Date();
     await db.$transaction(async (tx) => {
       await this.darRepo.updateApproval(myStep.id, { action: "REJECTED", actionDate: now, comment }, tx);
+      await this.approvalSignatureRepo.upsertStep(
+        {
+          module: "DAR",
+          documentId: darId,
+          step: myStep.stepRole,
+          signerUserId: userId,
+          action: "REJECTED",
+          actionDate: now,
+          comment,
+        },
+        tx
+      );
       await this.darRepo.update(darId, { status: "DRAFT" as DarStatus }, tx);
     });
 
@@ -489,7 +624,7 @@ export class DarService {
 
     if (!dar) throw new NotFoundError("DAR");
     if (!isPrivileged && dar.requesterId !== requesterId) throw new ForbiddenError();
-    if (!isPrivileged && dar.status !== "DRAFT") throw new ValidationError("à¸¥à¸šà¹„à¸”à¹‰à¹€à¸‰à¸žà¸²à¸°à¸„à¸³à¸‚à¸­à¸—à¸µà¹ˆà¹€à¸›à¹‡à¸™à¸‰à¸šà¸±à¸šà¸£à¹ˆà¸²à¸‡à¹€à¸—à¹ˆà¸²à¸™à¸±à¹‰à¸™");
+    if (!isPrivileged && dar.status !== "DRAFT") throw new ValidationError("Only DRAFT DAR can be deleted");
 
     const attachments = await this.darRepo.findAttachmentsByDarId(id);
     if (attachments.length > 0) {
@@ -499,6 +634,7 @@ export class DarService {
 
     await db.$transaction(async (tx) => {
       await this.darRepo.deleteApprovalsByDarId(id, tx);
+      await this.approvalSignatureRepo.deleteByDocument("DAR", id, tx);
       await this.darRepo.deleteAttachmentsByDarId(id, tx);
       await this.darRepo.deleteItemsByDarId(id, tx);
       await this.darRepo.deleteDistributionsByDarId(id, tx);
@@ -511,5 +647,166 @@ export class DarService {
     if (!user?.savedSignatureUrl || !user.signatureType) return null;
     return { url: user.savedSignatureUrl, type: user.signatureType };
   }
-}
 
+  private static readonly MAX_FILE_SIZE = 20 * 1024 * 1024;
+  private static readonly ALLOWED_MIME = new Set([
+    "application/pdf",
+    "application/msword",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "application/vnd.ms-excel",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "image/png", "image/jpeg", "image/gif", "image/webp",
+  ]);
+
+  private static hasValidMagicBytes(buffer: Uint8Array, mimeType: string): boolean {
+    if (buffer.length < 12) return false;
+    const b = buffer;
+    switch (mimeType) {
+      case "application/pdf":
+        return b[0] === 0x25 && b[1] === 0x50 && b[2] === 0x44 && b[3] === 0x46;
+      case "image/png":
+        return b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4E && b[3] === 0x47;
+      case "image/jpeg":
+        return b[0] === 0xFF && b[1] === 0xD8 && b[2] === 0xFF;
+      case "image/gif":
+        return b[0] === 0x47 && b[1] === 0x49 && b[2] === 0x46 && b[3] === 0x38;
+      case "image/webp":
+        return b[0] === 0x52 && b[1] === 0x49 && b[2] === 0x46 && b[3] === 0x46 &&
+               b[8] === 0x57 && b[9] === 0x45 && b[10] === 0x42 && b[11] === 0x50;
+      case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+      case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+        return b[0] === 0x50 && b[1] === 0x4B;
+      case "application/msword":
+      case "application/vnd.ms-excel":
+        return b[0] === 0xD0 && b[1] === 0xCF && b[2] === 0x11 && b[3] === 0xE0;
+      default:
+        return false;
+    }
+  }
+
+  async uploadAttachment(
+    darId: string,
+    file: File,
+    uploaderId: string,
+    uploaderRole: string
+  ): Promise<DarAttachmentRow> {
+    const dar = await this.darRepo.findDarForAttachmentUpload(darId);
+    if (!dar) throw new NotFoundError("DAR");
+
+    const isPrivileged = uploaderRole === "QMS" || uploaderRole === "MR";
+    const isAssigned = dar.approvals.some((a) => a.assignedUserId === uploaderId);
+    if (!isPrivileged && dar.requesterId !== uploaderId && !isAssigned) throw new ForbiddenError();
+
+    if (dar.status === "COMPLETED" || dar.status === "CANCELLED") {
+      throw new ValidationError("ไม่สามารถเพิ่มไฟล์ในคำขอที่เสร็จสิ้นหรือยกเลิกแล้ว");
+    }
+
+    if (file.size > DarService.MAX_FILE_SIZE) throw new ValidationError("ไฟล์ต้องมีขนาดไม่เกิน 20 MB");
+    if (!DarService.ALLOWED_MIME.has(file.type)) throw new ValidationError("ประเภทไฟล์ไม่รองรับ");
+
+    const buffer = new Uint8Array(await file.arrayBuffer());
+    if (!DarService.hasValidMagicBytes(buffer, file.type)) {
+      throw new ValidationError("เนื้อหาไฟล์ไม่ตรงกับประเภทที่ระบุ");
+    }
+
+    const sp = await uploadFileToDar({
+      fileBuffer: buffer,
+      fileName: file.name,
+      mimeType: file.type,
+      darNo: dar.darNo ?? darId,
+      departmentName: dar.department?.name ?? "",
+      objective: dar.objective as Parameters<typeof uploadFileToDar>[0]["objective"],
+      docType: dar.docType as Parameters<typeof uploadFileToDar>[0]["docType"],
+    });
+
+    let attachment;
+    try {
+      attachment = await this.darRepo.createAttachment({
+        fileName: file.name,
+        fileSize: file.size,
+        mimeType: file.type,
+        spItemId: sp.spItemId,
+        spWebUrl: sp.spWebUrl,
+        spDownloadUrl: sp.spDownloadUrl,
+        folderPath: sp.folderPath,
+        darMasterId: darId,
+        uploadedById: uploaderId,
+      });
+    } catch (dbErr) {
+      console.error("[DarService.uploadAttachment] DB insert failed after SP upload. Compensating by deleting SP item.", dbErr);
+      try {
+        await deleteSpItem(sp.spItemId);
+      } catch (delErr) {
+        console.error("[DarService.uploadAttachment] Compensation SP delete also failed for item:", sp.spItemId, delErr);
+      }
+      throw dbErr;
+    }
+
+    return {
+      id: attachment.id,
+      fileName: attachment.fileName,
+      fileSize: attachment.fileSize,
+      mimeType: attachment.mimeType,
+      spItemId: attachment.spItemId,
+      spWebUrl: attachment.spWebUrl,
+      spDownloadUrl: attachment.spDownloadUrl,
+      folderPath: attachment.folderPath,
+      createdAt: attachment.createdAt.toISOString(),
+      uploadedBy: { id: uploaderId, name: null },
+    };
+  }
+
+  async deleteAttachment(
+    darId: string,
+    attachmentId: string,
+    userId: string,
+    userRole: string
+  ): Promise<void> {
+    const attachment = await this.darRepo.findAttachmentById(attachmentId);
+    if (!attachment || attachment.darMasterId !== darId) throw new NotFoundError("ไฟล์แนบ");
+
+    const dar = await this.darRepo.findDarStatusAndRequester(darId);
+    if (!dar) throw new NotFoundError("DAR");
+
+    const isPrivileged = userRole === "QMS" || userRole === "MR";
+    const isOwner = attachment.uploadedById === userId || dar.requesterId === userId;
+    if (!isPrivileged && !isOwner) throw new ForbiddenError();
+
+    if (dar.status === "COMPLETED" || dar.status === "CANCELLED") {
+      throw new ValidationError("ไม่สามารถลบไฟล์ในคำขอที่เสร็จสิ้นหรือยกเลิกแล้ว");
+    }
+
+    try {
+      await deleteSpItem(attachment.spItemId);
+    } catch (spErr) {
+      console.error("[DarService.deleteAttachment] SharePoint delete failed (continuing):", spErr);
+    }
+
+    await this.darRepo.deleteAttachmentById(attachmentId);
+  }
+
+  async getPreviewFileInfo(
+    spItemId: string,
+    userId: string,
+    userRole: string
+  ): Promise<{ downloadUrl: string; mimeType: string; name: string }> {
+    const isPrivileged = userRole === "QMS" || userRole === "MR" || userRole === "IT";
+
+    if (!isPrivileged) {
+      const attachment = await this.darRepo.findAttachmentBySpItemId(spItemId);
+      if (!attachment) throw new NotFoundError("File");
+
+      const dar = await this.darRepo.findDarStatusAndRequester(attachment.darMasterId);
+      const isRequester = dar?.requesterId === userId;
+      if (!isRequester) {
+        const assigned = await this.darRepo.findApprovalByDarAndUser(attachment.darMasterId, userId);
+        if (!assigned) throw new ForbiddenError();
+      }
+    }
+
+    const info = await getFileInfo(spItemId);
+    if (!info.downloadUrl) throw new ValidationError("File not available");
+
+    return { downloadUrl: info.downloadUrl, mimeType: info.mimeType, name: info.name };
+  }
+}

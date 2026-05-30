@@ -43,6 +43,7 @@ model User {
   darAttachments      DarAttachment[]
   darMasters          DarMaster[]
   qmsProcessings      QmsProcessing[]
+  approvalSignatures ApprovalSignature[]
   docControlsCreated  DocumentControl[]         @relation("DocCreatedBy")
   docControlsUpdated  DocumentControl[]         @relation("DocUpdatedBy")
   docRevisionsCreated DocumentControlRevision[] @relation("DocRevCreatedBy")
@@ -180,6 +181,26 @@ model DarApproval {
   @@index([darMasterId])
   @@index([assignedUserId])
   @@map("DarApproval")
+}
+
+model ApprovalSignature {
+  id            String         @id @default(uuid())
+  module        ApprovalModule
+  documentId    String
+  step          ApprovalStep
+  action        ApprovalAction @default(PENDING)
+  actionDate    DateTime?
+  signerUserId  String
+  signaturePath String?
+  comment       String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  signerUser    User           @relation(fields: [signerUserId], references: [id])
+
+  @@index([module, documentId])
+  @@index([signerUserId])
+  @@unique([module, documentId, step])
+  @@map("ApprovalSignature")
 }
 
 model QmsProcessing {
@@ -337,9 +358,20 @@ enum ApprovalAction {
 }
 
 enum ApprovalStep {
+  REQUESTER
+  REQUESTER_MANAGER
   PREPARER
   REVIEWER
+  APPROVER
   APPROVER_MR
+  APPROVER_DCC
+  QMS_PROCESSOR
+}
+
+enum ApprovalModule {
+  DAR
+  KPI
+  KPI_MONTHLY
 }
 
 enum SignatureType {

@@ -14,14 +14,10 @@ import Pagination from "@/components/common/Pagination";
 import EmptyState from "@/components/common/EmptyState";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { useLocale } from "@/lib/locale-context";
+import { useT } from "@/lib/i18n";
 import { useUrlFilters } from "@/hooks/use-url-filters";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 
 const OBJECTIVE_LABELS_EN: Record<DarObjective, string> = {
@@ -32,38 +28,26 @@ const OBJECTIVE_LABELS_EN: Record<DarObjective, string> = {
   CANCEL: "Cancel Doc",
 };
 
-type StatusMeta = {
-  label: string;
-  labelTh: string;
-  dot: string;
-  count: string;
-  active: string;
-};
+type StatusMeta = { label: string; labelKey: string; dot: string; count: string; active: string };
 
 const STATUS_META: Record<DarStatus, StatusMeta> = {
-  PENDING_REVIEW:  { label: "Pending Review",  labelTh: "รอตรวจสอบ",    dot: "bg-sky-400",     count: "text-sky-600",     active: "border-sky-300 bg-sky-50/50" },
-  PENDING_APPROVE: { label: "Pending Approve", labelTh: "รออนุมัติ",     dot: "bg-violet-400",  count: "text-violet-600",  active: "border-violet-300 bg-violet-50/50" },
-  QMS_PROCESSING:  { label: "QMS Processing",  labelTh: "QMS ดำเนินการ", dot: "bg-amber-400",   count: "text-amber-600",   active: "border-amber-300 bg-amber-50/50" },
-  COMPLETED:       { label: "Completed",        labelTh: "เสร็จสิ้น",     dot: "bg-emerald-400", count: "text-emerald-600", active: "border-emerald-300 bg-emerald-50/50" },
-  CANCELLED:       { label: "Cancelled",        labelTh: "ยกเลิก",        dot: "bg-rose-300",    count: "text-rose-400",    active: "border-rose-200 bg-rose-50/40" },
-  DRAFT:           { label: "Draft",            labelTh: "ฉบับร่าง",      dot: "bg-slate-300",   count: "text-slate-500",   active: "border-slate-300 bg-slate-50" },
+  PENDING_REVIEW:  { label: "Pending Review",  labelKey: "dar.list.statusPendingReview",  dot: "bg-sky-400",     count: "text-sky-600",     active: "border-sky-300 bg-sky-50/50" },
+  PENDING_APPROVE: { label: "Pending Approve", labelKey: "dar.list.statusPendingApprove", dot: "bg-violet-400",  count: "text-violet-600",  active: "border-violet-300 bg-violet-50/50" },
+  QMS_PROCESSING:  { label: "QMS Processing",  labelKey: "dar.list.statusQmsProcessing",  dot: "bg-amber-400",   count: "text-amber-600",   active: "border-amber-300 bg-amber-50/50" },
+  COMPLETED:       { label: "Completed",        labelKey: "dar.list.statusCompleted",      dot: "bg-emerald-400", count: "text-emerald-600", active: "border-emerald-300 bg-emerald-50/50" },
+  CANCELLED:       { label: "Cancelled",        labelKey: "dar.list.statusCancelled",      dot: "bg-rose-300",    count: "text-rose-400",    active: "border-rose-200 bg-rose-50/40" },
+  DRAFT:           { label: "Draft",            labelKey: "dar.list.statusDraft",          dot: "bg-slate-300",   count: "text-slate-500",   active: "border-slate-300 bg-slate-50" },
 };
 
 const ORDERED_STATUSES: DarStatus[] = [
-  "PENDING_REVIEW",
-  "PENDING_APPROVE",
-  "QMS_PROCESSING",
-  "COMPLETED",
-  "CANCELLED",
-  "DRAFT",
+  "PENDING_REVIEW", "PENDING_APPROVE", "QMS_PROCESSING", "COMPLETED", "CANCELLED", "DRAFT",
 ];
 
 type SortKey = "requestDate" | "darNo" | "status";
 type SortDir = "asc" | "desc";
 
 export default function QmsDarListClient({ dars: initialDars }: { dars: DarSummary[] }) {
-  const locale = useLocale();
-  const isTh = locale === "th";
+  const t = useT();
   const queryClient = useQueryClient();
 
   const queryResult = useQuery<DarSummary[]>({
@@ -79,8 +63,6 @@ export default function QmsDarListClient({ dars: initialDars }: { dars: DarSumma
 
   const [sortKey, setSortKey] = useState<SortKey>("requestDate");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
-
-  // Delete state
   const [pendingDelete, setPendingDelete] = useState<{ id: string; darNo: string | null } | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
@@ -95,14 +77,12 @@ export default function QmsDarListClient({ dars: initialDars }: { dars: DarSumma
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["dars"] });
       setPendingDelete(null);
-      toast.success(isTh ? "ลบคำขอสำเร็จ" : "Delete successful");
+      toast.success(t("dar.list.deleteSuccess"));
     },
     onError: (err: Error) => {
-      setDeleteError(err.message ?? "เกิดข้อผิดพลาด");
+      setDeleteError(err.message ?? t("common.error"));
     },
-    onSettled: () => {
-      setDeleting(false);
-    }
+    onSettled: () => setDeleting(false),
   });
 
   function confirmDelete() {
@@ -112,7 +92,6 @@ export default function QmsDarListClient({ dars: initialDars }: { dars: DarSumma
     deleteMutation.mutate(pendingDelete.id);
   }
 
-  // ── URL-bound filters ──────────────────────────────────────────────────────
   const { params, rawValues, setParam, clearAll, hasFilters } = useUrlFilters({
     keys: ["search", "status", "objective", "page"] as const,
     searchKey: "search",
@@ -120,7 +99,7 @@ export default function QmsDarListClient({ dars: initialDars }: { dars: DarSumma
   });
 
   function objectiveLabel(key: DarObjective) {
-    return isTh ? OBJECTIVE_LABELS[key] : OBJECTIVE_LABELS_EN[key];
+    return OBJECTIVE_LABELS[key] ?? OBJECTIVE_LABELS_EN[key];
   }
 
   function toggleSort(key: SortKey) {
@@ -129,18 +108,17 @@ export default function QmsDarListClient({ dars: initialDars }: { dars: DarSumma
   }
 
   const counts = useMemo(
-    () =>
-      dars.reduce<Record<string, number>>((acc: Record<string, number>, d: DarSummary) => {
-        acc[d.status] = (acc[d.status] ?? 0) + 1;
-        return acc;
-      }, {}),
+    () => dars.reduce<Record<string, number>>((acc, d) => {
+      acc[d.status] = (acc[d.status] ?? 0) + 1;
+      return acc;
+    }, {}),
     [dars],
   );
 
   const filtered = useMemo(() => {
     const q = params.search.trim().toLowerCase();
     return dars
-      .filter((d: DarSummary) => {
+      .filter((d) => {
         if (params.status && d.status !== (params.status as DarStatus)) return false;
         if (params.objective && d.objective !== (params.objective as DarObjective)) return false;
         if (q) {
@@ -154,33 +132,27 @@ export default function QmsDarListClient({ dars: initialDars }: { dars: DarSumma
         }
         return true;
       })
-      .sort((a: DarSummary, b: DarSummary) => {
+      .sort((a, b) => {
         let cmp = 0;
         if (sortKey === "requestDate") cmp = new Date(a.requestDate).getTime() - new Date(b.requestDate).getTime();
         else if (sortKey === "darNo") cmp = (a.darNo ?? "").localeCompare(b.darNo ?? "");
         else if (sortKey === "status") cmp = a.status.localeCompare(b.status);
         return sortDir === "asc" ? cmp : -cmp;
       });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dars, params.search, params.status, params.objective, sortKey, sortDir, isTh]);
+  }, [dars, params.search, params.status, params.objective, sortKey, sortDir]);
 
   const isFilteredEmpty = dars.length > 0 && filtered.length === 0;
 
-  // ── Client-side pagination ────────────────────────────────────────────────
   const PAGE_SIZE = 20;
   const currentPage = Math.max(1, parseInt(params.page || "1", 10));
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const safePage = Math.min(currentPage, totalPages);
   const paginated = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
 
-  const statusOptions = [
-    { value: "DRAFT",           label: isTh ? "ฉบับร่าง"     : "Draft" },
-    { value: "PENDING_REVIEW",  label: isTh ? "รอตรวจสอบ"    : "Pending Review" },
-    { value: "PENDING_APPROVE", label: isTh ? "รออนุมัติ"     : "Pending Approve" },
-    { value: "QMS_PROCESSING",  label: isTh ? "QMS ดำเนินการ" : "QMS Processing" },
-    { value: "COMPLETED",       label: isTh ? "เสร็จสิ้น"     : "Completed" },
-    { value: "CANCELLED",       label: isTh ? "ยกเลิก"        : "Cancelled" },
-  ];
+  const statusOptions = ORDERED_STATUSES.map((s) => ({
+    value: s,
+    label: t(STATUS_META[s].labelKey),
+  }));
 
   const objectiveOptions = (Object.keys(OBJECTIVE_LABELS) as DarObjective[]).map((k) => ({
     value: k,
@@ -189,13 +161,12 @@ export default function QmsDarListClient({ dars: initialDars }: { dars: DarSumma
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
       <PageHeader
-        title={isTh ? "จัดการคำขอเอกสาร (DAR)" : "Manage Document Requests (DAR)"}
-        subtitle={isTh ? "ภาพรวมคำขอเอกสารทั้งหมดในระบบ" : "Overview of all document requests"}
+        title={t("dar.list.title")}
+        subtitle={t("dar.list.subtitle")}
       />
 
-      {/* Status count cards — clickable, synced to URL */}
+      {/* Status count cards */}
       <div className="grid grid-cols-3 md:grid-cols-6 gap-2 mb-6">
         {ORDERED_STATUSES.map((s) => {
           const meta = STATUS_META[s];
@@ -207,41 +178,36 @@ export default function QmsDarListClient({ dars: initialDars }: { dars: DarSumma
               onClick={() => setParam("status", active ? "" : s)}
               className={[
                 "rounded-xl px-3 py-3 text-left border transition-all duration-150",
-                active
-                  ? meta.active
-                  : "bg-white border-slate-100 hover:border-slate-200",
+                active ? meta.active : "bg-white border-slate-100 hover:border-slate-200",
               ].join(" ")}
             >
               <div className={`w-1.5 h-1.5 rounded-full mb-2.5 ${meta.dot}`} />
               <p className={`text-2xl font-semibold leading-none mb-1 ${active ? meta.count : "text-slate-700"}`}>
                 {count}
               </p>
-              <p className="text-[11px] text-slate-400 leading-snug">
-                {isTh ? meta.labelTh : meta.label}
-              </p>
+              <p className="text-[11px] text-slate-400 leading-snug">{t(meta.labelKey)}</p>
             </button>
           );
         })}
       </div>
 
-      {/* Filter bar */}
       {dars.length > 0 && (
         <FilterBar
           searchValue={rawValues.search}
           onSearchChange={(v) => setParam("search", v)}
-          searchPlaceholder={isTh ? "ค้นหา DAR No., ประเภท, สถานะ..." : "Search DAR No., type, status..."}
+          searchPlaceholder={t("dar.list.search")}
           filters={[
             {
               key: "status",
-              label: isTh ? "สถานะ" : "Status",
+              label: t("dar.list.filterStatus"),
               options: statusOptions,
-              allLabel: isTh ? "ทุกสถานะ" : "All Statuses",
+              allLabel: t("dar.list.allStatuses"),
             },
             {
               key: "objective",
-              label: isTh ? "วัตถุประสงค์" : "Objective",
+              label: t("dar.list.filterObjective"),
               options: objectiveOptions,
-              allLabel: isTh ? "ทุกวัตถุประสงค์" : "All Objectives",
+              allLabel: t("dar.list.allObjectives"),
               minWidth: "12rem",
             },
           ]}
@@ -249,30 +215,26 @@ export default function QmsDarListClient({ dars: initialDars }: { dars: DarSumma
           onFilterChange={setParam}
           hasActiveFilters={hasFilters}
           onClearAll={clearAll}
-          clearLabel={isTh ? "ล้างตัวกรอง" : "Clear"}
+          clearLabel={t("dar.list.clearFilters")}
           resultCount={filtered.length}
           totalCount={dars.length}
-          countLabel={isTh ? "รายการ" : "items"}
+          countLabel={t("dar.list.countLabel")}
         >
-          {/* Sort controls */}
           <div className="flex items-center gap-1.5 self-end">
-            <Select
-              value={sortKey}
-              onValueChange={(val) => setSortKey(val as SortKey)}
-            >
+            <Select value={sortKey} onValueChange={(val) => setSortKey(val as SortKey)}>
               <SelectTrigger className="h-8 w-28">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="requestDate">{isTh ? "วันที่ขอ" : "Date"}</SelectItem>
-                <SelectItem value="darNo">{isTh ? "เลขที่ DAR" : "DAR No."}</SelectItem>
-                <SelectItem value="status">{isTh ? "สถานะ" : "Status"}</SelectItem>
+                <SelectItem value="requestDate">{t("dar.list.sortDateLabel")}</SelectItem>
+                <SelectItem value="darNo">{t("dar.list.sortDarNo")}</SelectItem>
+                <SelectItem value="status">{t("dar.list.sortStatus")}</SelectItem>
               </SelectContent>
             </Select>
             <button
               onClick={() => setSortDir((d) => (d === "asc" ? "desc" : "asc"))}
               className="h-8 w-8 flex items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-primary transition-colors"
-              title={sortDir === "asc" ? (isTh ? "น้อย → มาก" : "Ascending") : (isTh ? "มาก → น้อย" : "Descending")}
+              title={sortDir === "asc" ? t("dar.list.sortAsc") : t("dar.list.sortDesc")}
             >
               {sortDir === "asc" ? (
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -288,23 +250,22 @@ export default function QmsDarListClient({ dars: initialDars }: { dars: DarSumma
         </FilterBar>
       )}
 
-      {/* Empty / filtered-empty / table */}
       {dars.length === 0 ? (
         <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
           <EmptyState
-            title={isTh ? "ยังไม่มีคำขอเอกสาร" : "No document requests yet"}
-            description={isTh ? "คำขอที่ผู้ใช้ส่งมาจะแสดงที่นี่" : "Requests submitted by users will appear here"}
+            title={t("dar.list.emptyTitle")}
+            description={t("dar.list.emptyDesc")}
           />
         </div>
       ) : isFilteredEmpty ? (
         <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] pb-8">
           <EmptyState
-            title={isTh ? "ไม่พบผลลัพธ์" : "No results found"}
-            description={isTh ? "ลองปรับตัวกรองหรือคำค้นหา" : "Try adjusting your filters or search term"}
+            title={t("dar.list.filteredEmptyTitle")}
+            description={t("dar.list.filteredEmptyDesc")}
           />
           <div className="flex justify-center">
             <Button variant="outline" size="sm" onClick={clearAll}>
-              {isTh ? "ล้างตัวกรอง" : "Clear Filters"}
+              {t("dar.list.filteredEmptyClear")}
             </Button>
           </div>
         </div>
@@ -322,7 +283,7 @@ export default function QmsDarListClient({ dars: initialDars }: { dars: DarSumma
             page={safePage}
             totalPages={totalPages}
             total={filtered.length}
-            countLabel={isTh ? "รายการ" : "items"}
+            countLabel={t("dar.list.countLabel")}
             onPageChange={(p) => setParam("page", String(p))}
           />
         </>
@@ -342,17 +303,11 @@ export default function QmsDarListClient({ dars: initialDars }: { dars: DarSumma
                 </svg>
               </div>
               <DialogTitle className="text-base">
-                {isTh
-                  ? `ลบคำขอ ${pendingDelete?.darNo ?? ""}?`
-                  : `Delete ${pendingDelete?.darNo ?? "request"}?`}
+                {t("dar.list.deleteConfirmTitle").replace("{darNo}", pendingDelete?.darNo ?? "")}
               </DialogTitle>
             </div>
           </DialogHeader>
-          <p className="text-sm text-slate-600">
-            {isTh
-              ? "การลบคำขอเอกสารนี้จะลบข้อมูลทั้งหมดรวมถึงไฟล์แนบ และไม่สามารถกู้คืนได้"
-              : "This will permanently delete the DAR and all its attachments. This action cannot be undone."}
-          </p>
+          <p className="text-sm text-slate-600">{t("dar.list.deleteConfirmMsg")}</p>
           {deleteError && (
             <p className="text-sm text-rose-600 bg-rose-50 rounded-xl px-3 py-2">{deleteError}</p>
           )}
@@ -362,7 +317,7 @@ export default function QmsDarListClient({ dars: initialDars }: { dars: DarSumma
               disabled={deleting}
               onClick={() => { setPendingDelete(null); setDeleteError(null); }}
             >
-              {isTh ? "ยกเลิก" : "Cancel"}
+              {t("common.cancel")}
             </Button>
             <Button
               disabled={deleting}
@@ -370,7 +325,7 @@ export default function QmsDarListClient({ dars: initialDars }: { dars: DarSumma
               className="bg-rose-600 text-white hover:bg-rose-700 gap-2"
             >
               {deleting && <div className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />}
-              {isTh ? "ยืนยันลบ" : "Delete"}
+              {t("dar.list.deleteConfirmYes")}
             </Button>
           </DialogFooter>
         </DialogContent>

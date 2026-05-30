@@ -7,7 +7,6 @@ import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { ChevronRight, Home } from 'lucide-react';
 import { useT } from '@/lib/i18n';
-import { useLocale } from '@/lib/locale-context';
 import { Skeleton } from '@/components/ui/skeleton';
 import { CategoryFolderGrid } from './CategoryFolderGrid';
 import { CategoryDrawer } from './CategoryDrawer';
@@ -23,7 +22,6 @@ interface CategoryListClientProps {
 
 export function CategoryListClient({ department, canManage }: CategoryListClientProps) {
   const t = useT();
-  const locale = useLocale();
   const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState('order-asc');
@@ -71,13 +69,12 @@ export function CategoryListClient({ department, canManage }: CategoryListClient
 
   const categories: DocumentCategorySummary[] = useMemo(() => data?.data ?? [], [data?.data]);
 
-  const isTh = locale === 'th';
 
   const sortOptions = [
-    { value: 'order-asc', label: isTh ? 'ลำดับแสดงผล' : 'Display Order' },
-    { value: 'name-asc', label: isTh ? 'ชื่อ (ก-ฮ)' : 'Name (A-Z)' },
-    { value: 'name-desc', label: isTh ? 'ชื่อ (ฮ-ก)' : 'Name (Z-A)' },
-    { value: 'doc-desc', label: isTh ? 'จำนวนเอกสาร (มาก-น้อย)' : 'Documents (High-Low)' },
+    { value: 'order-asc', label: t('documentControl.sort.displayOrder') },
+    { value: 'name-asc', label: t('documentControl.sort.nameAsc') },
+    { value: 'name-desc', label: t('documentControl.sort.nameDesc') },
+    { value: 'doc-desc', label: t('documentControl.sort.documentsDesc') },
   ];
 
   const filtered = useMemo(() => {
@@ -123,14 +120,14 @@ export function CategoryListClient({ department, canManage }: CategoryListClient
         <FilterBar
           searchValue={search}
           onSearchChange={setSearch}
-          searchPlaceholder={isTh ? 'ค้นหาหมวดหมู่...' : 'Search categories...'}
+          searchPlaceholder={t('documentCategory.placeholder.search')}
           searchLabel={t('common.search')}
           filters={[
             {
               key: 'sort',
-              label: isTh ? 'จัดเรียงตาม' : 'Sort By',
+              label: t('documentControl.sort.label'),
               options: sortOptions,
-              allLabel: isTh ? 'ลำดับแสดงผล' : 'Display Order',
+              allLabel: t('documentControl.sort.displayOrder'),
               minWidth: '14rem',
             },
           ]}
@@ -145,7 +142,7 @@ export function CategoryListClient({ department, canManage }: CategoryListClient
           }}
           resultCount={sorted.length}
           totalCount={categories.length}
-          countLabel={isTh ? 'หมวดหมู่' : 'categories'}
+          countLabel={t('documentCategory.countLabel')}
         />
 
         {isLoading ? (

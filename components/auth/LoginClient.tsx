@@ -1,10 +1,7 @@
 "use client";
 
 import Image from "next/image";
-
-interface LoginClientProps {
-  signInAction: () => Promise<void>;
-}
+import { signIn } from "next-auth/react";
 
 const YT_ID = "XKch3HFovaQ";
 const YT_SRC =
@@ -13,7 +10,7 @@ const YT_SRC =
   `&controls=0&showinfo=0&rel=0&iv_load_policy=3` +
   `&modestbranding=1&disablekb=1&fs=0&playsinline=1`;
 
-export default function LoginClient({ signInAction }: LoginClientProps) {
+export default function LoginClient() {
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-black">
       {/* ── YouTube background ── */}
@@ -96,7 +93,12 @@ export default function LoginClient({ signInAction }: LoginClientProps) {
             เข้าสู่ระบบด้วยบัญชีองค์กร
           </p>
 
-          <form action={signInAction} className="w-full">
+          <form
+            action={async () => {
+              await signIn("microsoft-entra-id", { callbackUrl: "/" });
+            }}
+            className="w-full"
+          >
             <button
               type="submit"
               className="w-full flex items-center justify-center gap-3 px-6 py-3.5 rounded-xl text-[13.5px] font-medium text-black transition-all duration-300 cursor-pointer"

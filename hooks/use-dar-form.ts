@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import type { DarObjective, DarDocType, DarDetail, TempAttachmentInput, SignatureType } from "@/types/dar";
 import type { ReviewerUser } from "@/components/dar/DarReviewerSelectModal";
+import { getErrorMessage } from "@/lib/error-message";
 
 type ItemRow = { docNumber: string; docName: string; revision: string };
 
@@ -172,8 +173,7 @@ export function useDarForm(
 
       const json = await res.json();
       if (!res.ok || json.error) {
-        onError(json.error ?? "เกิดข้อผิดพลาด");
-        return;
+        onError(getErrorMessage(json.error, "เกิดข้อผิดพลาด")); return;
       }
 
       const darId = json.data.id as string;
@@ -220,7 +220,7 @@ export function useDarForm(
           body: JSON.stringify({ ...buildBody(values, "SUBMIT"), tempAttachments }),
         });
         const json = await res.json();
-        if (!res.ok || json.error) { onError(json.error ?? "เกิดข้อผิดพลาด"); return; }
+        if (!res.ok || json.error) { onError(getErrorMessage(json.error, "เกิดข้อผิดพลาด")); return; }
         darId = json.data.id as string;
       } else {
         const id = initialData!.id;
@@ -231,7 +231,7 @@ export function useDarForm(
         });
         const res = await fetch(`/api/dar/${id}/submit`, { method: "POST" });
         const json = await res.json();
-        if (!res.ok || json.error) { onError(json.error ?? "เกิดข้อผิดพลาด"); return; }
+        if (!res.ok || json.error) { onError(getErrorMessage(json.error, "เกิดข้อผิดพลาด")); return; }
         darId = id;
       }
 
@@ -242,8 +242,7 @@ export function useDarForm(
       });
       const approveJson = await approveRes.json();
       if (!approveRes.ok || approveJson.error) {
-        onError(approveJson.error ?? "เกิดข้อผิดพลาดในการลงลายมือชื่อ");
-        return;
+        onError(getErrorMessage(approveJson.error, "เกิดข้อผิดพลาดในการลงลายมือชื่อ")); return;
       }
 
       const assignRes = await fetch(`/api/dar/${darId}/assign-reviewer`, {
@@ -253,8 +252,7 @@ export function useDarForm(
       });
       const assignJson = await assignRes.json();
       if (!assignRes.ok || assignJson.error) {
-        onError(assignJson.error ?? "เกิดข้อผิดพลาดในการกำหนดผู้ตรวจสอบ");
-        return;
+        onError(getErrorMessage(assignJson.error, "เกิดข้อผิดพลาดในการกำหนดผู้ตรวจสอบ")); return;
       }
 
       onSuccess("ส่งคำขอสำเร็จ");
@@ -282,3 +280,5 @@ export function useDarForm(
     submitWithReviewer,
   };
 }
+
+

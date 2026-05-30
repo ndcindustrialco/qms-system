@@ -117,6 +117,18 @@ export type DarDetail = {
   distributions: DarDistributionItem[];
   approvals: DarApprovalRow[];
   attachments: DarAttachmentRow[];
+  qmsProcessing: {
+    chkHasAttachment: boolean;
+    chkPrintAndValidate: boolean;
+    chkRenumber: boolean;
+    chkImpactInvestigated: boolean;
+    chkSubmitVerification: boolean;
+    chkGetBackProcess: boolean;
+    chkCopyDistribute: boolean;
+    comments: string | null;
+    processDate: string | null;
+    qmsUserId: string;
+  } | null;
 };
 
 export type DarSummary = {
@@ -148,4 +160,3 @@ export type CreateDarInput = {
   distributionDepartmentIds: string[];
   tempAttachments?: TempAttachmentInput[];
 };
-

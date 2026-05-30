@@ -11,6 +11,14 @@ export class KpiMonthlyReportRepository extends BaseRepository<KPIMonthlyReport,
     return this.getClient(tx).kPIMonthlyReport;
   }
 
+  async findByCompositeKey(kpiId: string, month: string, year: number, tx?: Prisma.TransactionClient) {
+    return this.delegate(tx).findUnique({ where: { kpiId_month_year: { kpiId, month, year } } });
+  }
+
+  async createReport(kpiId: string, month: string, year: number, tx?: Prisma.TransactionClient) {
+    return this.delegate(tx).create({ data: { kpiId, month, year } });
+  }
+
   async findOrCreate(kpiId: string, month: string, year: number, tx?: Prisma.TransactionClient) {
     const existing = await this.delegate(tx).findUnique({ where: { kpiId_month_year: { kpiId, month, year } } });
     if (existing) return existing;

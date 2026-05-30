@@ -50,12 +50,26 @@ export type ApprovalAction = (typeof ApprovalAction)[keyof typeof ApprovalAction
 
 
 export const ApprovalStep = {
+  REQUESTER: 'REQUESTER',
+  REQUESTER_MANAGER: 'REQUESTER_MANAGER',
   PREPARER: 'PREPARER',
   REVIEWER: 'REVIEWER',
-  APPROVER_MR: 'APPROVER_MR'
+  APPROVER: 'APPROVER',
+  APPROVER_MR: 'APPROVER_MR',
+  APPROVER_DCC: 'APPROVER_DCC',
+  QMS_PROCESSOR: 'QMS_PROCESSOR'
 } as const
 
 export type ApprovalStep = (typeof ApprovalStep)[keyof typeof ApprovalStep]
+
+
+export const ApprovalModule = {
+  DAR: 'DAR',
+  KPI: 'KPI',
+  KPI_MONTHLY: 'KPI_MONTHLY'
+} as const
+
+export type ApprovalModule = (typeof ApprovalModule)[keyof typeof ApprovalModule]
 
 
 export const SignatureType = {

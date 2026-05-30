@@ -4,7 +4,6 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useT } from '@/lib/i18n';
-import { useLocale } from '@/lib/locale-context';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -49,7 +48,6 @@ const STATUS_OPTIONS = ['DRAFT', 'ACTIVE', 'OBSOLETE'];
 
 export function DocumentControlListClient({ department, category, canCreate }: DocumentControlListClientProps) {
   const t = useT();
-  const locale = useLocale();
   const queryClient = useQueryClient();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedDocId, setSelectedDocId] = useState<string | null>(null);
@@ -135,15 +133,14 @@ export function DocumentControlListClient({ department, category, canCreate }: D
     );
   }
 
-  const isTh = locale === 'th';
   const sortOptions = [
-    { value: 'createdAt-desc', label: isTh ? 'วันที่สร้างล่าสุด' : 'Latest Created' },
-    { value: 'docNumber-asc', label: isTh ? 'เลขที่เอกสาร (ก-ฮ)' : 'Doc Number (A-Z)' },
-    { value: 'docNumber-desc', label: isTh ? 'เลขที่เอกสาร (ฮ-ก)' : 'Doc Number (Z-A)' },
-    { value: 'docName-asc', label: isTh ? 'ชื่อเอกสาร (ก-ฮ)' : 'Doc Name (A-Z)' },
-    { value: 'docName-desc', label: isTh ? 'ชื่อเอกสาร (ฮ-ก)' : 'Doc Name (Z-A)' },
-    { value: 'effectiveDate-desc', label: isTh ? 'วันที่มีผลบังคับใช้ (ใหม่-เก่า)' : 'Effective Date (New-Old)' },
-    { value: 'effectiveDate-asc', label: isTh ? 'วันที่มีผลบังคับใช้ (เก่า-ใหม่)' : 'Effective Date (Old-New)' },
+    { value: 'createdAt-desc', label: t('documentControl.sort.latestCreated') },
+    { value: 'docNumber-asc', label: t('documentControl.sort.docNumberAsc') },
+    { value: 'docNumber-desc', label: t('documentControl.sort.docNumberDesc') },
+    { value: 'docName-asc', label: t('documentControl.sort.docNameAsc') },
+    { value: 'docName-desc', label: t('documentControl.sort.docNameDesc') },
+    { value: 'effectiveDate-desc', label: t('documentControl.sort.effectiveDateDesc') },
+    { value: 'effectiveDate-asc', label: t('documentControl.sort.effectiveDateAsc') },
   ];
   const sortVal = params.sortBy && params.sortOrder ? `${params.sortBy}-${params.sortOrder}` : '';
 
@@ -203,9 +200,9 @@ export function DocumentControlListClient({ department, category, canCreate }: D
             },
             {
               key: 'sort',
-              label: isTh ? 'จัดเรียงตาม' : 'Sort By',
+              label: t('documentControl.sort.label'),
               options: sortOptions,
-              allLabel: isTh ? 'วันที่สร้างล่าสุด' : 'Latest Created',
+              allLabel: t('documentControl.sort.latestCreated'),
               minWidth: '14rem',
             },
           ]}

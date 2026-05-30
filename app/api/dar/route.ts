@@ -6,6 +6,7 @@ import { handleApiError } from "@/lib/apiErrorHandler";
 import { ValidationError } from "@/errors/customErrors";
 import { type NextRequest } from "next/server";
 import { revalidateTag } from "next/cache";
+import { isPrivilegedRole } from "@/lib/permissions";
 
 const darService = new DarService();
 
@@ -14,7 +15,7 @@ export async function GET(req: NextRequest) {
     const session = await requireAuth();
     const { searchParams } = req.nextUrl;
     
-    const isPrivileged = session.user.role === "QMS" || session.user.role === "MR" || session.user.role === "IT";
+    const isPrivileged = isPrivilegedRole(session.user.role);
     if (isPrivileged && searchParams.get("all") === "true") {
       const dars = await darService.getAllDars();
       return sendSuccess(dars, "All DARs retrieved successfully");

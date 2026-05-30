@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
+import { useT } from "@/lib/i18n";
 
 const BG_PRESETS = [
   "#0F1059", "#1D6A8A", "#065F46", "#7C2D12",
@@ -23,7 +24,7 @@ type Props = {
   onColorChange: (color: string) => void;
   onImageChange: (file: File | null) => void;
   onTextColorChange: (color: string) => void;
-  isTh: boolean;
+  isTh?: boolean;
 };
 
 function Swatches({ presets, active, onChange }: { presets: string[]; active: string; onChange: (c: string) => void }) {
@@ -43,8 +44,9 @@ function Swatches({ presets, active, onChange }: { presets: string[]; active: st
   );
 }
 
-export default function AnnouncementBgPicker({ bgColor, bgImageUrl, bgImageFile, textColor, onColorChange, onImageChange, onTextColorChange, isTh }: Props) {
+export default function AnnouncementBgPicker({ bgColor, bgImageUrl, bgImageFile, textColor, onColorChange, onImageChange, onTextColorChange }: Props) {
   const [tab, setTab] = useState<Tab>(bgImageUrl || bgImageFile ? "image" : "color");
+  const t = useT();
   const previewBg = tab === "image" ? (bgImageFile ? URL.createObjectURL(bgImageFile) : bgImageUrl) : bgColor;
 
   return (
@@ -52,13 +54,13 @@ export default function AnnouncementBgPicker({ bgColor, bgImageUrl, bgImageFile,
       {/* Background */}
       <div className="flex flex-col gap-2">
         <label className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">
-          {isTh ? "พื้นหลัง" : "Background"}
+          {t("announcement.bg.background")}
         </label>
         <div className="flex rounded-lg border border-base-300 overflow-hidden w-fit">
-          {(["color", "image"] as Tab[]).map((t) => (
-            <button key={t} type="button" onClick={() => setTab(t)}
-              className={`px-3 py-1.5 text-xs font-semibold transition-colors ${tab === t ? "bg-primary text-white" : "bg-white text-gray-500 hover:bg-base-200"}`}>
-              {t === "color" ? (isTh ? "สี" : "Color") : (isTh ? "รูปภาพ" : "Image")}
+          {(["color", "image"] as const).map((tabItem) => (
+            <button key={tabItem} type="button" onClick={() => setTab(tabItem as Tab)}
+              className={`px-3 py-1.5 text-xs font-semibold transition-colors ${tab === tabItem ? "bg-primary text-white" : "bg-white text-gray-500 hover:bg-base-200"}`}>
+              {tabItem === "color" ? t("announcement.bg.colorTab") : t("announcement.bg.imageTab")}
             </button>
           ))}
         </div>
@@ -83,7 +85,7 @@ export default function AnnouncementBgPicker({ bgColor, bgImageUrl, bgImageFile,
               </div>
             ) : (
               <div className="h-8 rounded-lg border border-dashed border-base-300 flex items-center justify-center">
-                <span className="text-[11px] text-gray-400">{isTh ? "ยังไม่มีรูปภาพ" : "No image"}</span>
+                <span className="text-[11px] text-gray-400">{t("announcement.bg.noImage")}</span>
               </div>
             )}
           </div>
@@ -93,12 +95,12 @@ export default function AnnouncementBgPicker({ bgColor, bgImageUrl, bgImageFile,
       {/* Text color */}
       <div className="flex flex-col gap-2 pt-3 border-t border-base-300">
         <label className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">
-          {isTh ? "สีตัวอักษร" : "Text Color"}
+          {t("announcement.bg.textColor")}
         </label>
         <Swatches presets={TEXT_PRESETS} active={textColor} onChange={onTextColorChange} />
         <div className="h-8 rounded-lg border border-base-300 flex items-center justify-center text-sm font-semibold transition-all duration-300"
           style={{ background: bgColor, color: textColor }}>
-          {isTh ? "ตัวอย่างข้อความ" : "Preview text"}
+          {t("announcement.bg.previewText")}
         </div>
       </div>
     </div>

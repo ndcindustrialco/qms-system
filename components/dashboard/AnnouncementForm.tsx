@@ -2,6 +2,7 @@
  
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -60,7 +61,7 @@ export default function AnnouncementForm() {
 
     } catch (error) {
       console.error(error);
-      alert(t("common.error") + ": " + (error as Error).message);
+      toast.error(t("common.error") + ": " + (error as Error).message, { duration: Infinity });
     } finally {
       setLoading(false);
     }

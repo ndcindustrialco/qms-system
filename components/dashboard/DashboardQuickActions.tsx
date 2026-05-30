@@ -2,20 +2,19 @@
 
 import Link from "next/link";
 import type { UserRole } from "@/generated/prisma/client";
+import { useT } from "@/lib/i18n";
 
 type ActionDef = {
   roles: UserRole[];
   href: string;
-  labelTh: string;
-  labelEn: string;
-  subTh: string;
-  subEn: string;
+  labelKey: string;
+  subKey: string;
   color: string;
   light: string;
   icon: React.ReactNode;
 };
 
-type Props = { isTh: boolean; role: UserRole };
+type Props = { role: UserRole };
 
 function PlusIcon() {
   return <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>;
@@ -43,31 +42,33 @@ function BuildingIcon() {
 }
 
 const ALL_ACTIONS: ActionDef[] = [
-  { roles: ["USER","QMS","MR","IT"], href: "/dar/new",           labelTh: "สร้างคำขอ",    labelEn: "New DAR",       subTh: "คำขออนุมัติเอกสาร",    subEn: "Document Request",  color: "#0F1059", light: "rgba(15,16,89,0.08)",    icon: <PlusIcon /> },
-  { roles: ["USER","QMS","MR","IT"], href: "/dar",               labelTh: "ติดตามคำขอ",   labelEn: "Track DAR",     subTh: "สถานะคำขอของฉัน",      subEn: "My Requests",       color: "#1D6A8A", light: "rgba(29,106,138,0.08)",  icon: <TrackIcon /> },
-  { roles: ["QMS","MR","IT"],        href: "/qms/dar",           labelTh: "จัดการ DAR",   labelEn: "Manage DAR",    subTh: "ตรวจสอบและอนุมัติ",    subEn: "Review & Approve",  color: "#7C3AED", light: "rgba(124,58,237,0.08)",  icon: <CheckDocIcon /> },
-  { roles: ["QMS","MR","IT"],        href: "/qms/sharepoint",    labelTh: "คลังเอกสาร",   labelEn: "Documents",     subTh: "SharePoint Files",      subEn: "SharePoint Files",  color: "#059669", light: "rgba(5,150,105,0.08)",   icon: <FolderIcon /> },
-  { roles: ["QMS","MR","IT"],        href: "/qms/announcements", labelTh: "จัดการประกาศ", labelEn: "Announcements", subTh: "เพิ่มและแก้ไขข่าวสาร", subEn: "Manage News",       color: "#D97706", light: "rgba(217,119,6,0.08)",   icon: <MegaphoneIcon /> },
-  { roles: ["QMS","IT","MR"],             href: "/qms/mr",            labelTh: "กำหนด MR",     labelEn: "Set MR",        subTh: "ผู้แทนฝ่ายบริหาร",     subEn: "Management Rep.",   color: "#DC2626", light: "rgba(220,38,38,0.08)",   icon: <UserStarIcon /> },
-  { roles: ["IT"],                   href: "/it/users",          labelTh: "จัดการผู้ใช้", labelEn: "Manage Users",  subTh: "บัญชีผู้ใช้งาน",       subEn: "User Accounts",     color: "#0369A1", light: "rgba(3,105,161,0.08)",   icon: <UsersIcon /> },
-  { roles: ["IT"],                   href: "/it/departments",    labelTh: "จัดการแผนก",   labelEn: "Departments",   subTh: "โครงสร้างองค์กร",      subEn: "Organization",      color: "#0F766E", light: "rgba(15,118,110,0.08)",  icon: <BuildingIcon /> },
+  { roles: ["USER","QMS","MR","IT"], href: "/dar/new",           labelKey: "dashboard.quickActions.newDar",       subKey: "dashboard.quickActions.docRequest",   color: "#0F1059", light: "rgba(15,16,89,0.08)",    icon: <PlusIcon /> },
+  { roles: ["USER","QMS","MR","IT"], href: "/dar",               labelKey: "dashboard.quickActions.trackDar",     subKey: "dashboard.quickActions.myRequests",   color: "#1D6A8A", light: "rgba(29,106,138,0.08)",  icon: <TrackIcon /> },
+  { roles: ["QMS","MR","IT"],        href: "/qms/dar",           labelKey: "dashboard.quickActions.manageDar",    subKey: "dashboard.quickActions.reviewApprove",color: "#7C3AED", light: "rgba(124,58,237,0.08)",  icon: <CheckDocIcon /> },
+  { roles: ["QMS","MR","IT"],        href: "/qms/sharepoint",    labelKey: "dashboard.quickActions.documents",    subKey: "dashboard.quickActions.sharepointFiles",color:"#059669", light: "rgba(5,150,105,0.08)",   icon: <FolderIcon /> },
+  { roles: ["QMS","MR","IT"],        href: "/qms/announcements", labelKey: "dashboard.quickActions.announcements",subKey: "dashboard.quickActions.manageNews",   color: "#D97706", light: "rgba(217,119,6,0.08)",   icon: <MegaphoneIcon /> },
+  { roles: ["QMS","IT","MR"],        href: "/qms/mr",            labelKey: "dashboard.quickActions.mr",           subKey: "dashboard.quickActions.mgmtRep",      color: "#DC2626", light: "rgba(220,38,38,0.08)",   icon: <UserStarIcon /> },
+  { roles: ["IT"],                   href: "/it/users",          labelKey: "dashboard.quickActions.users",        subKey: "dashboard.quickActions.userAccounts", color: "#0369A1", light: "rgba(3,105,161,0.08)",   icon: <UsersIcon /> },
+  { roles: ["IT"],                   href: "/it/departments",    labelKey: "dashboard.quickActions.departments",  subKey: "dashboard.quickActions.organization", color: "#0F766E", light: "rgba(15,118,110,0.08)",  icon: <BuildingIcon /> },
 ];
 
-export default function DashboardQuickActions({ isTh, role }: Props) {
+export default function DashboardQuickActions({ role }: Props) {
+  const t = useT();
   const actions = ALL_ACTIONS.filter((a) => (a.roles as string[]).includes(role));
+
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
       {actions.map((a) => (
         <Link key={a.href} href={a.href}
           className="group relative flex items-center gap-3 bg-white border border-slate-200 rounded-xl px-4 py-3.5 overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
-          <div className="absolute left-0 top-0 bottom-0 w-[3px] rounded-r-sm" style={{ background: a.color }} />
+          <div className="absolute left-0 top-0 bottom-0 w-0.75 rounded-r-sm" style={{ background: a.color }} />
           <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-all duration-200 group-hover:scale-110"
             style={{ background: a.light, color: a.color }}>
             {a.icon}
           </div>
           <div className="min-w-0">
-            <p className="text-sm font-bold truncate" style={{ color: a.color }}>{isTh ? a.labelTh : a.labelEn}</p>
-            <p className="text-xs text-slate-400 truncate">{isTh ? a.subTh : a.subEn}</p>
+            <p className="text-sm font-bold truncate" style={{ color: a.color }}>{t(a.labelKey)}</p>
+            <p className="text-xs text-slate-400 truncate">{t(a.subKey)}</p>
           </div>
         </Link>
       ))}

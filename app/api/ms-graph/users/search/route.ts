@@ -1,9 +1,8 @@
-
 import { NextResponse, type NextRequest } from "next/server";
 import { requireAuth } from "@/lib/auth";
-import { db } from "@/lib/db";
-import { searchEntraUsers, fetchAllEntraUsers } from "@/services/ms-graph";
 import { handleApiError } from "@/lib/apiErrorHandler";
+import { searchEntraUsers, fetchAllEntraUsers } from "@/services/ms-graph";
+import { UserService } from "@/services/userService";
 import { z } from "zod";
 
 export interface ReviewerCandidate {
@@ -15,17 +14,18 @@ export interface ReviewerCandidate {
   jobTitle: string | null;
 }
 
+const querySchema = z.object({
+  q: z.string().max(100).optional().default(""),
+});
+
+const userService = new UserService();
+
 export async function GET(req: NextRequest) {
   try {
     await requireAuth();
 
-    const querySchema = z.object({
-      q: z.string().max(100).optional().default(""),
-    });
     const { q } = querySchema.parse({ q: req.nextUrl.searchParams.get("q")?.trim() ?? undefined });
 
-    // Empty query → return all synced Graph users (capped at 100)
-    // Non-empty query → search Graph by displayName / mail
     const graphUsers = q.length === 0
       ? (await fetchAllEntraUsers()).slice(0, 100)
       : await searchEntraUsers(q);
@@ -35,12 +35,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ data: [], error: null });
     }
 
-    // Cross-reference with local DB to get internal user IDs
-    const dbUsers = await db.user.findMany({
-      where: { msUserId: { in: msUserIds } },
-      select: { id: true, msUserId: true },
-    });
-
+    const dbUsers = await userService.findByMsUserIds(msUserIds);
     const msToDbId = new Map(dbUsers.map((u) => [u.msUserId!, u.id]));
 
     const results: ReviewerCandidate[] = graphUsers

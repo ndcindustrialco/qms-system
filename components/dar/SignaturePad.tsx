@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, useCallback, useEffect } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useT } from "@/lib/i18n";
 import type { SignatureType } from "@/types/dar";
@@ -167,7 +168,7 @@ function ImagePad({ onChange }: { onChange: (url: string | null) => void }) {
 
   function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]; if (!file) return;
-    if (file.size > 2 * 1024 * 1024) { alert(t("dar.approval.sigImageSizeError")); return; }
+    if (file.size > 2 * 1024 * 1024) { toast.error(t("dar.approval.sigImageSizeError"), { duration: Infinity }); return; }
     const reader = new FileReader();
     reader.onload = (ev) => { const url = ev.target?.result as string; setPreview(url); onChange(url); };
     reader.readAsDataURL(file);
